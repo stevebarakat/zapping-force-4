@@ -13,7 +13,6 @@
   height: 4px;
   background: var(--component-border);
   border-radius: 2px;
-  -webkit-appearance: none;
   appearance: none;
 }
 
