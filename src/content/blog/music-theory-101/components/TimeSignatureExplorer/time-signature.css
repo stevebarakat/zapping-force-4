@@ -1,0 +1,212 @@
+.time-signature-explorer {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid var(--component-border);
+  border-radius: 0.5rem;
+  background-color: var(--component-bg);
+  box-shadow: var(--container-shadow);
+  transition: box-shadow 0.2s ease;
+}
+
+.time-signature-explorer:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.time-signature-explorer h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.time-signature-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.time-signature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .time-signature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.time-signature-button {
+  padding: 0.75rem;
+  border: 1px solid var(--component-border);
+  border-radius: 0.5rem;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.time-signature-button:hover {
+  background-color: var(--primary-button-3);
+  border-color: var(--primary-button);
+}
+
+.time-signature-button.active {
+  background-color: var(--primary-button);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.beat-visualization {
+  margin: 1rem 0;
+}
+
+.time-signature-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time-signature-description {
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 1rem;
+}
+
+.time-signature-number {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.time-signature-divider {
+  width: 2rem;
+  border-top: 3px solid var(--text-muted);
+  transform: rotate(105deg);
+  text-align: center;
+}
+
+.beat-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.beat-circle {
+  padding: 1rem;
+  border-radius: 9999px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--input-bg);
+  border: 1px solid var(--component-border);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.beat-circle:hover {
+  border-color: var(--primary-button);
+}
+
+.beat-circle.active {
+  background-color: var(--primary-button);
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.beat-number {
+  font-weight: 500;
+}
+
+.tempo-control {
+  margin-bottom: 1.5rem;
+}
+
+.tempo-value {
+  font-size: var(--font-size-xs);
+  margin-left: 0.5rem;
+}
+
+.tempo-slider {
+  width: 100%;
+  height: 0.5rem;
+  background-color: var(--component-border);
+  border-radius: 0.5rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+.tempo-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--primary-button);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tempo-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  > span:nth-of-type(2) {
+    position: relative;
+    left: -15px;
+  }
+}
+
+.play-button {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+.play-button:hover {
+  transform: translateY(-2px);
+}
+
+.play-button.playing {
+  background-color: #ef4444;
+  color: white;
+}
+
+.play-button.playing:hover {
+  background-color: #dc2626;
+}
+
+.play-button:not(.playing) {
+  background-color: var(--primary-button);
+  color: white;
+}
+
+.play-button:not(.playing):hover {
+  background-color: var(--primary-button-hover);
+}
+
+.interactive-grid-item.active.high-accent {
+  background-color: #ff6b6b; /* Bright red for high accent */
+  transform: scale(1.1);
+}
+
+.interactive-grid-item.active.mid-accent {
+  background-color: #ffd93d; /* Yellow for mid accent */
+  transform: scale(1.05);
+}
+
+.interactive-grid-item.active.low-accent {
+  background-color: var(--primary-blue); /* Primary blue for low accent */
+  transform: scale(1);
+}

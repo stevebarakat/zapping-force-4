@@ -1,0 +1,36 @@
+.select-wrapper {
+  display: flex;
+  width: fit-content;
+}
+
+.select-wrapper.top {
+  flex-direction: column;
+}
+
+.select-wrapper.left {
+  flex-direction: row;
+}
+
+.select-wrapper select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  height: 2rem;
+  font-size: var(--font-size-xs);
+}
+
+.select-wrapper label {
+  white-space: nowrap;
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.select-wrapper select:disabled {
+  background-color: var(--input-bg-disabled);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}

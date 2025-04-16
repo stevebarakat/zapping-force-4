@@ -1,0 +1,193 @@
+/* RhythmSequencer.css */
+.drum-machine {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.container {
+  background-color: var(--component-bg);
+  border: 1px solid var(--component-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--container-shadow);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.bpm-control,
+.time-signature-control,
+.shuffle-control,
+.preset-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bpm-input {
+  width: 60px;
+  padding: 0.5rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.shuffle-control {
+  width: 200px;
+}
+
+.shuffle-control .slider-value {
+  min-width: 45px;
+}
+
+.measure-numbers {
+  display: flex;
+  margin-bottom: 0.5rem;
+  padding-left: 80px;
+  list-style: none;
+  color: var(--text-secondary);
+}
+
+.measure-numbers li {
+  flex: 1;
+  text-align: center;
+}
+
+.rhythm-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  margin-left: 85px;
+  > div:first-child {
+    display: flex;
+    background: red;
+    width: fit-content;
+  }
+
+  > div:last-child {
+    @media (max-width: 860px) {
+      width: 100%;
+    }
+  }
+  @media (max-width: 860px) {
+    /* padding-right: 85px; */
+    justify-content: space-between;
+  }
+
+  @media (max-width: 480px) {
+    margin-left: 0;
+    gap: 0.75rem;
+    flex-direction: row;
+    /* align-items: stretch; */
+  }
+}
+
+.drum-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  @media (max-width: 768px) {
+    margin-bottom: 2px;
+  }
+  @media (max-width: 480px) {
+    margin-bottom: 1px;
+  }
+}
+
+.drum-row-4-4 {
+  grid-template-columns: 80px repeat(8, 1fr);
+  gap: 4px;
+  @media (max-width: 768px) {
+    gap: 2px;
+  }
+  @media (max-width: 480px) {
+    gap: 0;
+  }
+}
+
+.drum-row-3-4 {
+  grid-template-columns: 80px repeat(9, 1fr);
+  gap: 4px;
+  @media (max-width: 768px) {
+    gap: 2px;
+  }
+  @media (max-width: 480px) {
+    gap: 0;
+  }
+}
+
+.drum-label {
+  width: 80px;
+  color: var(--text-primary);
+  font-weight: 500;
+  @media (max-width: 768px) {
+    width: 60px;
+    font-size: 0.875rem;
+  }
+  @media (max-width: 480px) {
+    width: 40px;
+    font-size: 0.65rem;
+  }
+}
+
+.drum-pad {
+  flex: 1;
+  aspect-ratio: 1;
+  border: 1px solid var(--component-border);
+  border-radius: 4px;
+  background-color: var(--component-bg-darker);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drum-pad:hover {
+  border-color: var(--primary-blue);
+}
+
+.drum-pad.active {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.drum-pad.current-step {
+  box-shadow: 0 0 0 2px var(--primary-blue-light);
+}
+
+@media (max-width: 768px) {
+  .drum-machine {
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .bpm-control,
+  .time-signature-control,
+  .shuffle-control,
+  .preset-control {
+    justify-content: space-between;
+  }
+
+  .drum-label {
+    width: 60px;
+  }
+
+  .measure-numbers {
+    padding-left: 60px;
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "zapping-force",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.2.0",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.2.1",
+    "@radix-ui/react-slider": "^1.2.3",
+    "astro": "^5.5.2",
+    "glob": "^11.0.1",
+    "lucide-astro": "^0.483.0",
+    "lucide-react": "^0.483.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tone": "^15.0.4"
+  }
+}

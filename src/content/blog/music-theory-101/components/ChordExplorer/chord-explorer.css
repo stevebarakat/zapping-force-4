@@ -1,0 +1,95 @@
+.chord-info {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  justify-items: start;
+  width: 100%;
+  background-color: var(--component-bg-darker);
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--component-border);
+  padding-bottom: 1rem;
+  > header {
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--component-border);
+    > h4 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-weight: 800;
+      margin-bottom: 0;
+    }
+  }
+  > div {
+    padding: 1rem;
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.chord-symbol {
+  font-size: clamp(20px, 4vw, 24px);
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  display: inline;
+}
+
+.chord-name {
+  font-size: clamp(14px, 3vw, 16px);
+  margin: 0 0 5px;
+  color: var(--text-secondary);
+}
+
+.chord-description {
+  margin-top: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  font-size: clamp(13px, 2.5vw, 15px);
+}
+
+.chord-intervals {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.intervals-label {
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+
+.interval-item {
+  display: inline-block;
+  background-color: var(--primary-blue-2);
+  border: 1px solid var(--primary-button);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: clamp(12px, 2.5vw, 14px);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .flex.gap-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chord-info {
+    margin: 0 -10px;
+    border-radius: 0;
+  }
+}

@@ -1,0 +1,84 @@
+/* Base Styles */
+@import "./base/_variables.css";
+@import "./base/_typography.css";
+
+/* Layout */
+@import "./layouts/_containers.css";
+
+/* Components */
+@import "./components/_blog.css";
+
+/* Utilities */
+@import "./utilities/_helpers.css";
+
+/* Base Element Styles */
+body {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  background: var(--bg-color);
+  background-size: 100% 600px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+:root.dark body {
+  background-color: var(--bg-color);
+}
+
+/* Form Elements */
+textarea,
+input {
+  width: 100%;
+  font-size: var(--font-size-xs);
+}
+
+/* Media */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+}
+
+pre {
+  padding: 1.5em;
+  border-radius: var(--border-radius-md);
+}
+
+pre > code {
+  all: unset;
+}
+
+/* Tables */
+table {
+  width: 100%;
+}
+
+/* Horizontal Rule */
+hr {
+  border: none;
+  border-top: 1px solid hsl(var(--gray-light));
+  margin: 1em 0;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 1em;
+  margin-bottom: 2em;
+  padding-left: 1em;
+  line-height: 1.5;
+  li {
+    margin-bottom: 0.5em;
+  }
+}
+
+ol {
+  list-style-type: decimal;
+  margin-left: 1em;
+  margin-bottom: 2em;
+  padding-left: 1em;
+  line-height: 1.5;
+  li {
+    margin-bottom: 0.5em;
+  }
+}

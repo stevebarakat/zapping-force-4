@@ -1,0 +1,19 @@
+---
+import SocialLinks from "./SocialLinks.astro";
+const today = new Date();
+---
+
+<footer>
+  &copy; {today.getFullYear()}
+  <a href="https://stevebarakat.com" target="_blank">stevebarakat</a>. All
+  rights reserved.
+  <SocialLinks />
+</footer>
+<style>
+  footer {
+    padding: 1em;
+    background: black;
+    color: hsl(var(--gray));
+    text-align: center;
+  }
+</style>

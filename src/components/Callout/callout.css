@@ -1,0 +1,206 @@
+.callout {
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border-left: 4px solid;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.callout-content {
+  display: flex;
+  align-items: flex-start;
+}
+
+.callout-icon {
+  margin-right: 0.75rem;
+}
+
+.callout-text-container {
+  flex: 1;
+}
+
+.callout-title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.callout-text {
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--text-primary, #333);
+  margin: 0 0 10px;
+  text-align: left;
+}
+
+.callout-text > p:last-child {
+  margin-bottom: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Light theme */
+.info {
+  background-color: var(--component-bg-darker);
+  border-left: 4px solid var(--primary-blue);
+}
+.info svg,
+.info .callout-title {
+  color: var(--primary-blue);
+}
+
+.instructions {
+  background-color: rgba(37, 99, 235, 0.1);
+  border-left-color: #2563eb;
+}
+.instructions svg,
+.instructions .callout-title {
+  color: #2563eb;
+}
+
+.tip {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-left-color: #7c3aed;
+}
+.tip svg,
+.tip .callout-title {
+  color: #7c3aed;
+}
+
+.definition {
+  background-color: rgba(71, 85, 105, 0.1);
+  border-left-color: #475569;
+}
+.definition svg,
+.definition .callout-title {
+  color: #475569;
+}
+
+.warning {
+  background-color: rgba(202, 138, 4, 0.1);
+  border-left-color: #ca8a04;
+}
+.warning svg,
+.warning .callout-title {
+  color: #ca8a04;
+}
+
+.exercise {
+  background-color: rgba(236, 72, 153, 0.1);
+  border-left-color: #ec4899;
+}
+.exercise svg,
+.exercise .callout-title {
+  color: #ec4899;
+}
+
+.error {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-left-color: #dc2626;
+}
+.error svg,
+.error .callout-title {
+  color: #dc2626;
+}
+
+.success {
+  background-color: rgba(22, 163, 74, 0.1);
+  border-left-color: #16a34a;
+}
+.success svg,
+.success .callout-title {
+  color: #16a34a;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  .callout-text {
+    color: var(--text-primary, #f1f5f9);
+  }
+
+  .info {
+    background-color: var(--component-bg-darker);
+    border-left: 4px solid var(--primary-blue);
+  }
+  .info svg,
+  .info .callout-title {
+    color: var(--primary-blue);
+  }
+
+  .instructions {
+    background-color: rgba(96, 165, 250, 0.15);
+    border-left-color: #60a5fa;
+  }
+  .instructions svg,
+  .instructions .callout-title {
+    color: #60a5fa;
+  }
+
+  .tip {
+    background-color: rgba(167, 139, 250, 0.15);
+    border-left-color: #a78bfa;
+  }
+  .tip svg,
+  .tip .callout-title {
+    color: #a78bfa;
+  }
+
+  .definition {
+    background-color: rgba(148, 163, 184, 0.15);
+    border-left-color: #94a3b8;
+  }
+  .definition svg,
+  .definition .callout-title {
+    color: #94a3b8;
+  }
+
+  .warning {
+    background-color: rgba(252, 211, 77, 0.15);
+    border-left-color: #fcd34d;
+  }
+  .warning svg,
+  .warning .callout-title {
+    color: #fcd34d;
+  }
+
+  .exercise {
+    background-color: rgba(244, 114, 182, 0.15);
+    border-left-color: #f472b6;
+  }
+  .exercise svg,
+  .exercise .callout-title {
+    color: #f472b6;
+  }
+
+  .error {
+    background-color: rgba(248, 113, 113, 0.15);
+    border-left-color: #f87171;
+  }
+  .error svg,
+  .error .callout-title {
+    color: #f87171;
+  }
+
+  .success {
+    background-color: rgba(74, 222, 128, 0.15);
+    border-left-color: #4ade80;
+  }
+  .success svg,
+  .success .callout-title {
+    color: #4ade80;
+  }
+}

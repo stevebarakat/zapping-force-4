@@ -1,0 +1,198 @@
+/* Example selection buttons */
+.example-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.example-button {
+  composes: button;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.example-button.selected {
+  background-color: var(--primary-button-hover);
+  color: white;
+}
+
+/* File upload section */
+.file-upload-section {
+  margin-bottom: 1.5rem;
+}
+
+.file-upload-label {
+  composes: label;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.file-upload-input {
+  composes: music-theory-input;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.file-upload-note {
+  composes: text-muted;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Notes visualization grid */
+.notes-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+  min-width: 100%;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.note-cell {
+  composes: music-theory-grid-cell;
+  padding: 0.5rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.note-cell.active {
+  background-color: var(--primary-button-hover);
+  color: white;
+}
+
+.note-name {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.note-duration {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Analysis results section */
+.analysis-section {
+  composes: music-theory-component;
+  margin-bottom: 1.5rem;
+}
+
+.analysis-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  background-color: var(--component-bg-darker);
+  border-radius: 0.25rem 0.25rem 0 0;
+  padding: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.analysis-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--component-border);
+  background-color: var(--component-bg-darker);
+  &:nth-child(7) {
+    border-bottom: none;
+  }
+  &:nth-child(8) {
+    border-bottom: none;
+  }
+}
+
+.analysis-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.analysis-value {
+  color: var(--text-primary);
+}
+
+.analysis-summary {
+  padding: 0.5rem;
+  background-color: var(--component-bg-darker);
+  border-radius: 0 0 0.25rem 0.25rem;
+  color: var(--text-primary);
+  div {
+    border-top: 1px solid var(--component-border);
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+  }
+}
+
+/* Play button */
+.play-button {
+  composes: button;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.play-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--component-bg-darker);
+}
+
+/* Description text */
+.description-text {
+  composes: text-muted;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .analysis-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .notes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .notes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .example-buttons {
+    flex-direction: column;
+  }
+
+  .example-button {
+    width: 100%;
+  }
+}
+
+.example-select {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: 2px solid #4a90e2;
+  border-radius: 4px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  min-width: 200px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.example-select:hover {
+  border-color: #357abd;
+  background-color: #f8f9fa;
+}
+
+.example-select:focus {
+  border-color: #357abd;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}

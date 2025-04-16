@@ -1,0 +1,131 @@
+.chord-progression-container {
+  background-color: var(--component-bg);
+  border: 1px solid var(--component-border);
+  border-radius: 8px;
+  box-shadow: var(--container-shadow);
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.chord-progression-title {
+  color: var(--text-primary);
+  font-size: var(--music-font-size-lg);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.key-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.key-button {
+  padding: 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.key-button:hover {
+  background-color: var(--component-bg-darker);
+  border-color: var(--primary-button);
+}
+
+.key-button.selected {
+  background-color: var(--primary-button);
+  color: white;
+  border-color: var(--primary-button-hover);
+}
+
+.chord-visualization {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--input-border) var(--component-bg-darker);
+}
+
+.progression-pattern {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.progression-description {
+  color: var(--text-muted);
+  text-align: center;
+  margin: 1rem;
+}
+
+.chord-visualization::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chord-visualization::-webkit-scrollbar-track {
+  background: var(--component-bg-darker);
+  border-radius: 3px;
+}
+
+.chord-visualization::-webkit-scrollbar-thumb {
+  background-color: var(--input-border);
+  border-radius: 3px;
+}
+
+.chord-card {
+  min-width: 120px;
+  padding: 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.chord-card.active {
+  background-color: var(--primary-button);
+  color: white;
+  border-color: var(--primary-button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+.chord-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.chord-numeral {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.chord-card.active .chord-numeral {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chord-notes {
+  color: var(--text-muted);
+}
+
+.chord-card.active .chord-notes {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  .chord-progression-container {
+    padding: 1rem;
+  }
+
+  .chord-card {
+    min-width: 100px;
+  }
+}

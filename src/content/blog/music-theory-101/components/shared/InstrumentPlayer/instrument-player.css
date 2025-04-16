@@ -1,0 +1,129 @@
+.octave-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.octave-control {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.octave-toggle {
+  background: none;
+  padding: 4px 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.octave-toggle:hover {
+  background-color: var(--bg-color);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .octave-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .octave-control {
+    flex: 1;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .octave-controls {
+    /* flex-direction: column; */
+    gap: 8px;
+  }
+
+  .octave-control {
+    width: 100%;
+  }
+}
+
+.instrument-player {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.controls-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.instrument-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.instrument-selector.top {
+  flex-direction: column;
+}
+
+.instrument-selector.left {
+  flex-direction: row;
+}
+
+.instrument-selector select {
+  min-width: 120px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .instrument-player {
+    gap: 12px;
+  }
+
+  .controls-container {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .instrument-selector {
+    flex-direction: column;
+    justify-content: space-between;
+    label {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+      white-space: nowrap;
+      word-wrap: normal;
+    }
+  }
+
+  .instrument-selector select {
+    flex: 1;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .instrument-player {
+    gap: 8px;
+  }
+
+  .controls-container {
+    gap: 8px;
+  }
+}

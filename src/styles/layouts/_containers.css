@@ -1,0 +1,11 @@
+/* Base Container */
+main {
+  padding: var(--container-padding);
+}
+
+/* Media Queries */
+@media (max-width: 720px) {
+  main {
+    padding: var(--container-padding);
+  }
+}
