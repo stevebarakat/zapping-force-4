@@ -8,7 +8,6 @@ import { Slider } from "@/components/Slider";
 import { Number } from "../../../shared/Number";
 import { Select } from "../../../shared/Select";
 import { audioCoordinator } from "../../utils/audioCoordinator";
-import { Button } from "@/components/Button";
 import IconButton from "@/components/Button/IconButton";
 
 interface DrumPad {
@@ -66,12 +65,12 @@ function RhythmSequencer() {
     drumPads.reduce(
       (acc, pad) => ({
         ...acc,
-        [pad.id]: Array(STEPS).fill(false),
+        [pad.id]: drumPatterns[0].pattern[pad.id] || Array(STEPS).fill(false),
       }),
       {}
     )
   );
-  const [currentPreset, setCurrentPreset] = useState<string>("");
+  const [currentPreset, setCurrentPreset] = useState<string>("Rock");
   const [isTimeSignatureFromPreset, setIsTimeSignatureFromPreset] =
     useState(false);
 
@@ -265,8 +264,8 @@ function RhythmSequencer() {
   // Update sequence when time signature changes
   useEffect(() => {
     const newSteps = getStepsForTimeSignature(timeSignature);
-    // Only reset if not coming from a preset
-    if (!isTimeSignatureFromPreset) {
+    // Only reset if not coming from a preset and not the initial load
+    if (!isTimeSignatureFromPreset && currentPreset === "") {
       // Reset to empty pattern
       setSequence(
         drumPads.reduce(
@@ -278,12 +277,16 @@ function RhythmSequencer() {
         )
       );
       // Reset preset selection and enable shuffle
-      setCurrentPreset("");
       setShuffleDisabled(false);
       setShuffle(0);
     }
     setIsTimeSignatureFromPreset(false);
-  }, [timeSignature, getStepsForTimeSignature]);
+  }, [
+    timeSignature,
+    getStepsForTimeSignature,
+    isTimeSignatureFromPreset,
+    currentPreset,
+  ]);
 
   return (
     <div className="demo-container">

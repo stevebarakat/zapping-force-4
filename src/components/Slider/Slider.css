@@ -11,7 +11,7 @@
 .slider {
   flex: 1;
   height: 4px;
-  background: var(--component-border);
+  background: hsl(var(--gray));
   border-radius: 2px;
   appearance: none;
 }
@@ -21,14 +21,14 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background: var(--primary-blue);
+  background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
-  background: var(--primary-blue-hover);
+  background: var(--accent-dark);
 }
 
 .slider:disabled {
@@ -38,7 +38,7 @@
 
 .slider-value {
   min-width: 45px;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -46,7 +46,7 @@
 .slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: var(--primary-blue);
+  background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -54,11 +54,17 @@
 }
 
 .slider::-moz-range-thumb:hover {
-  background: var(--primary-blue-hover);
+  background: var(--accent-dark);
 }
 
 .slider::-moz-range-progress {
-  background: var(--primary-blue);
+  background: var(--accent);
+  height: 4px;
+  border-radius: 2px;
+}
+
+.slider::-moz-range-track {
+  background: hsl(var(--gray));
   height: 4px;
   border-radius: 2px;
 }

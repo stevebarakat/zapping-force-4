@@ -5,9 +5,9 @@ button {
 }
 
 .button {
-  background-color: var(--primary-button);
+  background-color: var(--accent);
   color: white;
-  border: 1px solid var(--primary-button-border);
+  border: 1px solid var(--accent);
   border-radius: 0.25rem;
   padding: 0.25rem 0.75rem;
   cursor: pointer;
@@ -16,27 +16,26 @@ button {
   height: fit-content;
   font-weight: 500;
   overflow: hidden;
-  background-color: var(--primary-blue);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .button:hover {
-  background-color: var(--primary-button-hover);
+  background-color: var(--accent-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .button:active {
-  background-color: none;
+  background-color: var(--accent);
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--primary-button-light);
+  box-shadow: 0 0 0 3px var(--accent-dark);
 }
 
 .button:focus:not(:focus-visible) {
@@ -44,7 +43,7 @@ button {
 }
 
 .button:disabled {
-  background-color: var(--primary-button-light);
+  background-color: var(--gray-light);
   cursor: not-allowed;
   opacity: 0.7;
   transform: none;
@@ -66,25 +65,25 @@ button {
 
 /* Variants */
 .button.secondary {
-  background-color: var(--component-bg);
+  background-color: var(--bg-color);
   color: var(--text-primary);
-  border-color: var(--component-border);
+  border-color: var(--gray-light);
 }
 
 .button.secondary:hover {
-  background-color: var(--component-bg-darker);
-  border-color: var(--primary-button);
+  background-color: var(--gray-light);
+  border-color: var(--accent);
 }
 
 .button.outline {
   background-color: transparent;
   color: var(--text-primary);
-  border-color: var(--component-border);
+  border-color: var(--gray-light);
 }
 
 .button.outline:hover {
-  background-color: var(--component-bg-darker);
-  border-color: var(--primary-button);
+  background-color: var(--gray-light);
+  border-color: var(--accent);
 }
 
 /* Sizes */

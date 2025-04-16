@@ -74,7 +74,6 @@
   margin-left: 85px;
   > div:first-child {
     display: flex;
-    background: red;
     width: fit-content;
   }
 
@@ -149,22 +148,23 @@
   aspect-ratio: 1;
   border: 1px solid var(--component-border);
   border-radius: 4px;
-  background-color: var(--component-bg-darker);
+  background-color: var(--component-bg);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .drum-pad:hover {
-  border-color: var(--primary-blue);
+  border-color: var(--accent);
+  background-color: var(--gray-light);
 }
 
 .drum-pad.active {
-  background-color: var(--primary-blue);
-  border-color: var(--primary-blue);
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 .drum-pad.current-step {
-  box-shadow: 0 0 0 2px var(--primary-blue-light);
+  box-shadow: 0 0 0 2px var(--accent-dark);
 }
 
 @media (max-width: 768px) {

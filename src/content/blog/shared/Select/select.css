@@ -13,9 +13,9 @@
 
 .select-wrapper select {
   padding: 0.25rem 0.5rem;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--gray-light);
   border-radius: 4px;
-  background-color: var(--input-bg);
+  background-color: var(--bg-color);
   color: var(--text-primary);
   cursor: pointer;
   height: 2rem;
@@ -30,7 +30,13 @@
 }
 
 .select-wrapper select:disabled {
-  background-color: var(--input-bg-disabled);
-  color: var(--text-muted);
+  background-color: var(--gray-light);
+  color: var(--text-secondary);
   cursor: not-allowed;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dark);
 }

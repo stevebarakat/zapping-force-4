@@ -23,9 +23,9 @@
 
 .number-input {
   padding: 0.25rem 0.5rem;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--gray-light);
   border-radius: 4px;
-  background-color: var(--input-bg);
+  background-color: var(--bg-color);
   color: var(--text-primary);
   cursor: pointer;
   height: 2rem;
@@ -34,9 +34,15 @@
 }
 
 .number-input:disabled {
-  background-color: hsl(0 0% 95%);
-  color: hsl(0 0% 60%);
+  background-color: var(--gray-light);
+  color: var(--text-secondary);
   cursor: not-allowed;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dark);
 }
 
 .number-input::-webkit-inner-spin-button,
