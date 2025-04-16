@@ -102,6 +102,7 @@ const AVAILABLE_NOTES = {
 
 export type SharedKeyboardRef = {
   playNote: (note: string) => void;
+  stopNote: (note: string) => void;
   isNoteAvailable: (note: string) => boolean;
 };
 
@@ -134,6 +135,7 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
       error: instrumentError,
       loadInstrument,
       playNote: contextPlayNote,
+      stopNote: contextStopNote,
       initializeAudio,
       isAudioInitialized,
       isSamplerReady,
@@ -173,6 +175,17 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
         }
       } else {
         console.warn("Cannot play note: audio not ready");
+      }
+    };
+
+    // Stop a note
+    const stopNote = (note: string) => {
+      if (isAudioInitialized && isSamplerReady) {
+        try {
+          contextStopNote(note);
+        } catch (e) {
+          console.error("Error stopping note:", e);
+        }
       }
     };
 
@@ -233,6 +246,8 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
                 isHighlighted ? "highlighted" : ""
               } ${!isAvailable ? "disabled" : ""}`}
               onPointerDown={() => handleKeyClick(key.note)}
+              onPointerUp={() => stopNote(key.note)}
+              onPointerLeave={() => stopNote(key.note)}
             >
               {showLabels && (
                 <span className="white-key-label">{key.label}</span>
@@ -283,8 +298,12 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
               }`}
               style={{ left: `${position}%`, width: `${whiteKeyWidth * 0.7}%` }}
               onPointerDown={() => handleKeyClick(key.note)}
+              onPointerUp={() => stopNote(key.note)}
+              onPointerLeave={() => {
+                stopNote(key.note);
+                setHoveredBlackKey(null);
+              }}
               onPointerEnter={() => setHoveredBlackKey(key.note)}
-              onPointerLeave={() => setHoveredBlackKey(null)}
             >
               {shouldShowLabels && (
                 <span
@@ -306,6 +325,7 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
     // Expose the playNote method to parent components via ref
     useImperativeHandle(ref, () => ({
       playNote,
+      stopNote,
       isNoteAvailable,
     }));
 

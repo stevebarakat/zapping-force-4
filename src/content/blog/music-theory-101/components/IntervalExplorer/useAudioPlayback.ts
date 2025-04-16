@@ -1,5 +1,12 @@
 import { useEffect, useRef } from "react";
-import { getContext, getTransport, start, Part, type BaseContext } from "tone";
+import {
+  getContext,
+  getTransport,
+  start,
+  Part,
+  type BaseContext,
+  Sequence,
+} from "tone";
 import type { InstrumentPlayerRef } from "./types";
 
 export const useAudioPlayback = () => {
@@ -69,10 +76,8 @@ export const useAudioPlayback = () => {
 
     const part = new Part(
       (time) => {
-        keyboardRef.playNote(noteId, time);
-        transport.schedule(() => {
-          setPlayingNotes([]);
-        }, "+0:0.5");
+        keyboardRef.playNote(noteId, "1s");
+        setPlayingNotes([noteId]);
       },
       [{ time: 0 }]
     );
@@ -80,7 +85,7 @@ export const useAudioPlayback = () => {
     activePartRef.current = part;
     part.start(0);
     transport.start();
-    part.stop("+0:1");
+    part.stop("+1");
   };
 
   const playInterval = (
@@ -103,35 +108,29 @@ export const useAudioPlayback = () => {
 
     resetTransport();
 
-    const part = new Part(
-      (time, event) => {
-        setPlayingNotes(event.notes);
-
-        if (event.isChord && keyboardRef.playNotes) {
-          keyboardRef.playNotes(event.notes);
-        } else {
-          event.notes.forEach((note: string) => {
-            keyboardRef.playNote(note, time);
-          });
-        }
-
-        if (event.isLast) {
-          transport.schedule(() => {
-            setPlayingNotes([]);
-          }, "+0:1");
+    const sequence = new Sequence(
+      (time, note) => {
+        if (note) {
+          keyboardRef.playNote(note, "1s");
+          setPlayingNotes([note]);
         }
       },
-      [
-        { time: 0, notes: [note1], isLast: false, isChord: false },
-        { time: "0:1.5", notes: [note2], isLast: false, isChord: false },
-        { time: "0:3", notes: [note1, note2], isLast: true, isChord: true },
-      ]
+      [note1, note2],
+      "4n"
     );
 
-    activePartRef.current = part;
-    part.start(0);
+    const sequenceRef = useRef<Sequence<string> | null>(sequence);
+    sequenceRef.current = sequence;
+
+    sequence.start(0);
     transport.start();
-    part.stop("+0:5");
+    sequence.stop("+2");
+
+    return () => {
+      if (sequenceRef.current) {
+        sequenceRef.current.dispose();
+      }
+    };
   };
 
   return {

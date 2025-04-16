@@ -7,7 +7,7 @@ interface InstrumentContextType {
   isLoading: boolean;
   error: Error | null;
   loadInstrument: (name: string) => Promise<void>;
-  playNote: (note: string) => void;
+  playNote: (note: string, duration?: string) => void;
   stopNote: (note: string) => void;
   stopAllNotes: () => void;
   instruments: typeof INSTRUMENTS;
@@ -103,13 +103,17 @@ export function InstrumentProvider({
   );
 
   const playNote = useCallback(
-    (note: string) => {
+    (note: string, duration?: string) => {
       if (!sampler || !isAudioInitialized || !isSamplerReady) {
         console.warn("Cannot play note: sampler not ready");
         return;
       }
       try {
-        sampler.triggerAttack(note);
+        if (duration) {
+          sampler.triggerAttackRelease(note, duration);
+        } else {
+          sampler.triggerAttack(note);
+        }
       } catch (e) {
         console.error("Error playing note:", e);
       }

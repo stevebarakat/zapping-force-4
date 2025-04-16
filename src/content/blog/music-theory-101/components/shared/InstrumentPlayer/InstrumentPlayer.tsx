@@ -37,6 +37,7 @@ const INSTRUMENT_OCTAVE_RANGES = {
 export interface InstrumentPlayerRef {
   playNote: (noteId: string, time?: number | string) => void;
   playNotes: (noteIds: string[]) => void;
+  stopNote: (noteId: string) => void;
   isNoteAvailable?: (note: string) => boolean;
 }
 
@@ -105,6 +106,11 @@ const InstrumentPlayer = forwardRef<InstrumentPlayerRef, InstrumentPlayerProps>(
           noteIds.forEach((noteId) => {
             keyboardRef.current?.playNote(noteId);
           });
+        }
+      },
+      stopNote: (noteId: string) => {
+        if (keyboardRef.current) {
+          keyboardRef.current.stopNote(noteId);
         }
       },
       isNoteAvailable: (note: string) => {

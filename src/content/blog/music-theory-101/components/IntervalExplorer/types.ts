@@ -15,6 +15,7 @@ export interface IntervalQuality {
 export interface InstrumentPlayerRef {
   playNote: (noteId: string, time?: number | string) => void;
   playNotes: (noteIds: string[]) => void;
+  stopNote: (noteId: string) => void;
   isNoteAvailable?: (note: string) => boolean;
 }
 
