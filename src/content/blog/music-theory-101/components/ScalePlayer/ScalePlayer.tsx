@@ -8,6 +8,10 @@ import { Callout } from "@/components/Callout";
 import { Select } from "@/content/blog/shared/Select";
 import { audioCoordinator } from "../ClientComponents";
 import { Button } from "@/components/Button";
+import { InstrumentPlayer } from "../shared/InstrumentPlayer";
+import { INSTRUMENT_TYPES } from "@/consts";
+import { InstrumentProvider } from "../../lib/contexts/InstrumentContext";
+import { useInstrument } from "../../lib/hooks/useInstrument";
 
 type ScaleType =
   | "major"
@@ -23,17 +27,19 @@ type Scale = {
   description: string;
 };
 
-const ScalePlayer = () => {
+const ScalePlayerContent = () => {
   const [selectedScale, setSelectedScale] = useState<ScaleType>("major");
   const [selectedRoot, setSelectedRoot] = useState("C4");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentNote, setCurrentNote] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [selectedInstrument, setSelectedInstrument] = useState("piano");
+  const [octaveRange, setOctaveRange] = useState({ min: 3, max: 5 });
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // References for audio
-  const synthRef = useRef<Tone.Synth | null>(null);
   const loopRef = useRef<Tone.Loop | null>(null);
+
+  // Get instrument context
+  const { playNote, stopNote, isSamplerReady } = useInstrument();
 
   // Define scale patterns (intervals from the root note)
   const scales: Record<ScaleType, Scale> = {
@@ -104,29 +110,6 @@ const ScalePlayer = () => {
     return () => window.removeEventListener("click", handleClick);
   }, [isInitialized]);
 
-  // Initialize audio
-  useEffect(() => {
-    synthRef.current = new Tone.Synth({
-      envelope: {
-        attack: 0.02,
-        decay: 0.1,
-        sustain: 0.3,
-        release: 1,
-      },
-    }).toDestination();
-
-    return () => {
-      if (synthRef.current) {
-        synthRef.current.dispose();
-      }
-      if (loopRef.current) {
-        loopRef.current.dispose();
-      }
-      Tone.Transport.cancel();
-      Tone.Transport.stop();
-    };
-  }, []);
-
   // Register with audio coordinator
   useEffect(() => {
     if (isInitialized) {
@@ -171,12 +154,8 @@ const ScalePlayer = () => {
     // Create a loop to play the scale
     loopRef.current = new Tone.Loop((time) => {
       // Play the current note
-      if (synthRef.current) {
-        synthRef.current.triggerAttackRelease(
-          scaleNotes[currentIndex],
-          "8n",
-          time
-        );
+      if (isSamplerReady) {
+        playNote(scaleNotes[currentIndex], "8n");
       }
 
       // Update current note for visualization
@@ -237,6 +216,13 @@ const ScalePlayer = () => {
     label: note,
   }));
 
+  // Get active keys for visualization
+  const getActiveKeys = () => {
+    if (currentNote === null) return [];
+    const scaleNotes = generateScaleNotes();
+    return [scaleNotes[currentNote]];
+  };
+
   return (
     <div className="demo-container" ref={containerRef}>
       <VisuallyHidden as="h3">Scale Explorer</VisuallyHidden>
@@ -280,19 +266,25 @@ const ScalePlayer = () => {
 
       <div className="info-box">{scales[selectedScale].description}</div>
 
-      <div className="interactive-grid">
-        {generateScaleNotes().map((note, index) => (
-          <div
-            key={index}
-            className={`interactive-grid-item ${
-              currentNote === index ? "active" : ""
-            }`}
-          >
-            {note}
-          </div>
-        ))}
-      </div>
+      <InstrumentPlayer
+        instrumentType={selectedInstrument}
+        octaveRange={octaveRange}
+        showLabels={true}
+        activeKeys={getActiveKeys()}
+        onInstrumentChange={(instrument) => {
+          setSelectedInstrument(instrument);
+        }}
+        onOctaveRangeChange={(newRange) => setOctaveRange(newRange)}
+      />
     </div>
+  );
+};
+
+const ScalePlayer = () => {
+  return (
+    <InstrumentProvider>
+      <ScalePlayerContent />
+    </InstrumentProvider>
   );
 };
 

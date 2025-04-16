@@ -6,6 +6,9 @@ import "@/content/blog/shared/dark-mode.css";
 import { Select } from "@/content/blog/shared/Select";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { Callout } from "@/components/Callout";
+import { InstrumentPlayer } from "../shared/InstrumentPlayer";
+import { INSTRUMENT_TYPES } from "@/consts";
+import { InstrumentProvider } from "../../lib/contexts/InstrumentContext";
 
 type KeyType = "major" | "minor";
 type Note = string;
@@ -21,11 +24,15 @@ interface ScaleNote {
   position: number;
 }
 
-const KeySignatureExplorer = () => {
+const KeySignatureExplorerContent = () => {
   const [selectedKey, setSelectedKey] = useState<string>("C");
   const [keyType, setKeyType] = useState<KeyType>("major");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentNote, setCurrentNote] = useState<number | null>(null);
+  const [selectedInstrument, setSelectedInstrument] = useState(
+    INSTRUMENT_TYPES.PIANO
+  );
+  const [octaveRange, setOctaveRange] = useState({ min: 3, max: 5 });
 
   // Reference to synth
   const synthRef = useRef<Tone.Synth | null>(null);
@@ -361,6 +368,13 @@ const KeySignatureExplorer = () => {
     label: key,
   }));
 
+  // Get active keys for visualization
+  const getActiveKeys = () => {
+    if (currentNote === null) return [];
+    const scaleNotes = generateScaleNotes();
+    return [scaleNotes[currentNote].note];
+  };
+
   return (
     <>
       <div className="demo-container">
@@ -392,19 +406,6 @@ const KeySignatureExplorer = () => {
 
         {/* Progression pattern and description */}
         <div className="info-box">
-          <div className="scale-notes">
-            {/* Scale visualization */}
-            {scaleNotes.map((note, index) => (
-              <div
-                key={index}
-                className={`scale-note ${
-                  currentNote === index ? "selected" : ""
-                }`}
-              >
-                {note.note.slice(0, -1)}
-              </div>
-            ))}
-          </div>
           <div className="progression-description">
             {selectedKey} {keyType}: {Math.abs(getKeySignatureCount())}{" "}
             {getKeySignatureCount() > -1
@@ -436,6 +437,18 @@ const KeySignatureExplorer = () => {
           )}
         </div>
 
+        {/* Instrument Player */}
+        <InstrumentPlayer
+          instrumentType={selectedInstrument}
+          octaveRange={octaveRange}
+          showLabels={true}
+          activeKeys={getActiveKeys()}
+          onInstrumentChange={(instrument) => {
+            setSelectedInstrument(instrument);
+          }}
+          onOctaveRangeChange={(newRange) => setOctaveRange(newRange)}
+        />
+
         {/* Play button */}
         <Button onClick={isPlaying ? stopScale : playScale}>
           {isPlaying ? "Stop" : "Play Scale"}
@@ -445,6 +458,14 @@ const KeySignatureExplorer = () => {
         Select a key to see its signature and hear the corresponding scale.
       </Callout>
     </>
+  );
+};
+
+const KeySignatureExplorer = () => {
+  return (
+    <InstrumentProvider>
+      <KeySignatureExplorerContent />
+    </InstrumentProvider>
   );
 };
 

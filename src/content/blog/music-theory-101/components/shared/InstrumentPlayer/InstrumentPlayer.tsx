@@ -13,24 +13,40 @@ import "./instrument-player.css";
 
 // Define available octave ranges for each instrument
 const INSTRUMENT_OCTAVE_RANGES = {
-  "bass-electric": [1, 4],
-  bassoon: [2, 5], // Matches available samples: A2-G2, A3-C3-G3, A4-C4-E4-G4, C5
-  cello: [2, 5],
-  clarinet: [3, 6],
-  contrabass: [1, 3],
-  flute: [4, 7],
-  "french-horn": [2, 5],
-  guitar: [2, 5],
-  marimba: [2, 5],
-  organ: [1, 7],
-  piano: [1, 7],
-  saxophone: [3, 6],
-  trombone: [2, 5],
-  trumpet: [3, 6],
-  tuba: [1, 3],
-  violin: [3, 7],
-  xylophone: [3, 6],
-  drums: [1, 5],
+  // Bass instruments
+  "bass-electric": [1, 4], // E1 to G4
+  contrabass: [1, 3], // C1 to G3
+  tuba: [1, 3], // D1 to F3
+
+  // Woodwinds
+  bassoon: [2, 5], // Bb1 to E5
+  clarinet: [3, 6], // D3 to Bb6
+  flute: [4, 7], // C4 to C7
+  saxophone: [3, 6], // Bb3 to F6
+
+  // Brass
+  "french-horn": [2, 5], // F2 to C5
+  trombone: [2, 5], // E2 to Bb5
+  trumpet: [3, 6], // F#3 to D6
+
+  // Strings
+  cello: [2, 5], // C2 to A5
+  violin: [3, 7], // G3 to A7
+  harp: [2, 6], // C2 to G6
+
+  // Plucked strings
+  guitar: [2, 5], // E2 to E5
+  "guitar-nylon": [2, 5], // E2 to E5
+
+  // Percussion
+  marimba: [2, 5], // C2 to C5
+  xylophone: [3, 6], // F3 to C7
+  drums: [1, 5], // Various drums across this range
+
+  // Keyboard instruments
+  harmonium: [2, 6], // C2 to C6
+  organ: [1, 7], // C1 to C7
+  piano: [1, 7], // A0 to C8
 };
 
 // Define types for the ref and props
