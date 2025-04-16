@@ -117,12 +117,12 @@
   color: #dc2626;
 }
 
-.success {
+.milestone {
   background-color: rgba(22, 163, 74, 0.1);
   border-left-color: #16a34a;
 }
-.success svg,
-.success .callout-title {
+.milestone svg,
+.milestone .callout-title {
   color: #16a34a;
 }
 
@@ -195,12 +195,12 @@
     color: #f87171;
   }
 
-  .success {
+  .milestone {
     background-color: rgba(74, 222, 128, 0.15);
     border-left-color: #4ade80;
   }
-  .success svg,
-  .success .callout-title {
+  .milestone svg,
+  .milestone .callout-title {
     color: #4ade80;
   }
 }

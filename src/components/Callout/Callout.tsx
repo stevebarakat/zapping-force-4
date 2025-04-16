@@ -38,10 +38,10 @@ const styles = {
     icon: KeyboardMusic,
     title: "Exercise",
   },
-  success: {
-    class: "success",
+  milestone: {
+    class: "milestone",
     icon: CheckCircle,
-    title: "Success",
+    title: "Milestone",
   },
   error: {
     class: "error",
@@ -53,6 +53,41 @@ const styles = {
     icon: ClipboardList,
     title: "Instructions",
   },
+  interactive: {
+    class: "instructions",
+    icon: ClipboardList,
+    title: "Interactive",
+  },
+  note: {
+    class: "info",
+    icon: Info,
+    title: "Note",
+  },
+  term: {
+    class: "definition",
+    icon: BookOpenText,
+    title: "Term",
+  },
+  practice: {
+    class: "tip",
+    icon: Lightbulb,
+    title: "Practice",
+  },
+  caution: {
+    class: "warning",
+    icon: AlertTriangle,
+    title: "Caution",
+  },
+  activity: {
+    class: "exercise",
+    icon: KeyboardMusic,
+    title: "Activity",
+  },
+  mistake: {
+    class: "error",
+    icon: XCircle,
+    title: "Mistake",
+  },
 };
 
 function Callout({
@@ -60,7 +95,15 @@ function Callout({
   children,
   title,
 }: {
-  type: keyof typeof styles;
+  type:
+    | "note"
+    | "term"
+    | "practice"
+    | "caution"
+    | "activity"
+    | "milestone"
+    | "mistake"
+    | "interactive";
   children: ReactNode;
   title?: string;
 }) {
