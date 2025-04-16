@@ -7,8 +7,6 @@ import { Play } from "lucide-react";
 import { Callout } from "@/components/Callout";
 import { Select } from "@/content/blog/shared/Select";
 import { audioCoordinator } from "../ClientComponents";
-import { INSTRUMENT_TYPES } from "@/consts";
-import SharedKeyboard from "../shared/SharedKeyboard/SharedKeyboard";
 import { Button } from "@/components/Button";
 
 type ScaleType =
@@ -32,7 +30,10 @@ const ScalePlayer = () => {
   const [currentNote, setCurrentNote] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const keyboardRef = useRef<any>(null);
+
+  // References for audio
+  const synthRef = useRef<Tone.Synth | null>(null);
+  const loopRef = useRef<Tone.Loop | null>(null);
 
   // Define scale patterns (intervals from the root note)
   const scales: Record<ScaleType, Scale> = {
@@ -103,6 +104,29 @@ const ScalePlayer = () => {
     return () => window.removeEventListener("click", handleClick);
   }, [isInitialized]);
 
+  // Initialize audio
+  useEffect(() => {
+    synthRef.current = new Tone.Synth({
+      envelope: {
+        attack: 0.02,
+        decay: 0.1,
+        sustain: 0.3,
+        release: 1,
+      },
+    }).toDestination();
+
+    return () => {
+      if (synthRef.current) {
+        synthRef.current.dispose();
+      }
+      if (loopRef.current) {
+        loopRef.current.dispose();
+      }
+      Tone.Transport.cancel();
+      Tone.Transport.stop();
+    };
+  }, []);
+
   // Register with audio coordinator
   useEffect(() => {
     if (isInitialized) {
@@ -133,48 +157,72 @@ const ScalePlayer = () => {
 
   // Play the selected scale
   const playScale = async () => {
-    if (
-      isPlaying ||
-      !keyboardRef.current ||
-      !audioCoordinator.isComponentActive("scale-player")
-    )
+    if (isPlaying || !audioCoordinator.isComponentActive("scale-player"))
       return;
 
+    // Make sure Tone.js is ready
+    await Tone.start();
     setIsPlaying(true);
-    const notes = generateScaleNotes();
 
-    // Schedule the notes to play in sequence
-    const duration = 0.4; // Duration of each note
+    const scaleNotes = generateScaleNotes();
+    let currentIndex = 0;
+    let isGoingUp = true;
 
-    notes.forEach((note: string, index: number) => {
-      if (!audioCoordinator.isComponentActive("scale-player")) {
-        setIsPlaying(false);
-        setCurrentNote(null);
-        return;
+    // Create a loop to play the scale
+    loopRef.current = new Tone.Loop((time) => {
+      // Play the current note
+      if (synthRef.current) {
+        synthRef.current.triggerAttackRelease(
+          scaleNotes[currentIndex],
+          "8n",
+          time
+        );
       }
 
-      // Use the keyboard's playNote method
-      keyboardRef.current?.playNote(note, Tone.now() + index * duration);
+      // Update current note for visualization
+      setCurrentNote(currentIndex);
 
-      // Update current note being played
-      setTimeout(() => {
-        if (!audioCoordinator.isComponentActive("scale-player")) {
+      // Move to next note
+      if (isGoingUp) {
+        currentIndex++;
+        // If we've reached the top, start going down
+        if (currentIndex >= scaleNotes.length) {
+          isGoingUp = false;
+          currentIndex = scaleNotes.length - 1;
+        }
+      } else {
+        currentIndex--;
+        // If we've reached the bottom, stop the loop
+        if (currentIndex < 0) {
+          // Update visualization one last time before stopping
+          setCurrentNote(0);
+          if (loopRef.current) {
+            loopRef.current.stop();
+          }
           setIsPlaying(false);
-          setCurrentNote(null);
-          return;
         }
+      }
+    }, "4n");
 
-        setCurrentNote(index);
+    // Start the loop
+    Tone.Transport.start();
+    if (loopRef.current) {
+      loopRef.current.start(0);
+    }
+  };
 
-        // Reset when done
-        if (index === notes.length - 1) {
-          setTimeout(() => {
-            setIsPlaying(false);
-            setCurrentNote(null);
-          }, duration * 1000);
-        }
-      }, index * duration * 1000);
-    });
+  // Stop playing the scale
+  const stopScale = () => {
+    if (!isPlaying) return;
+
+    // Clear any scheduled events
+    Tone.Transport.cancel();
+    Tone.Transport.stop();
+    if (loopRef.current) {
+      loopRef.current.stop();
+    }
+    setIsPlaying(false);
+    setCurrentNote(null);
   };
 
   // Convert scales object to options array
@@ -195,9 +243,8 @@ const ScalePlayer = () => {
       <div className="flex between">
         {/* Play button */}
         <Button
-          onClick={playScale}
+          onClick={isPlaying ? stopScale : playScale}
           style={{ alignSelf: "flex-end" }}
-          disabled={isPlaying}
         >
           <Play />
           {isPlaying ? "Playing..." : "Play"}
@@ -244,18 +291,6 @@ const ScalePlayer = () => {
             {note}
           </div>
         ))}
-      </div>
-
-      {/* Hidden keyboard for audio playback */}
-      <div style={{ display: "none" }}>
-        <SharedKeyboard
-          ref={keyboardRef}
-          instrumentType={INSTRUMENT_TYPES.PIANO}
-          octaveRange={{ min: 2, max: 6 }}
-          showLabels={false}
-          onKeyClick={() => {}}
-          showOctaves={false}
-        />
       </div>
     </div>
   );

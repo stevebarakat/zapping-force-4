@@ -31,7 +31,7 @@ export const useAudioPlayback = () => {
     return () => {
       stopPlayback();
       transport.stop();
-      transport.cancel();
+      // transport.cancel();
 
       if (activePartRef.current) {
         activePartRef.current.dispose();
@@ -42,7 +42,7 @@ export const useAudioPlayback = () => {
 
   const resetTransport = () => {
     transport.stop();
-    transport.cancel();
+    // transport.cancel();
     transport.position = 0;
   };
 
@@ -76,7 +76,7 @@ export const useAudioPlayback = () => {
 
     const part = new Part(
       (time) => {
-        keyboardRef.playNote(noteId, "1s");
+        keyboardRef.playNote(noteId, time + "1s");
         setPlayingNotes([noteId]);
       },
       [{ time: 0 }]
@@ -111,7 +111,7 @@ export const useAudioPlayback = () => {
     const sequence = new Sequence(
       (time, note) => {
         if (note) {
-          keyboardRef.playNote(note, "1s");
+          keyboardRef.playNote(note);
           setPlayingNotes([note]);
         }
       },

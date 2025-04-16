@@ -228,12 +228,6 @@ const ChordExplorer = () => {
     }
   };
 
-  // Handle individual key clicks on the keyboard
-  const handleKeyClick = (noteId: string) => {
-    // The SharedKeyboard already handles playing the note
-    return;
-  };
-
   // Format the chord symbol for display
   const formatChordSymbol = () => {
     return `${rootNote}${

@@ -264,7 +264,9 @@ const FrequencyVisualizer = () => {
             onClick={togglePlay}
             icon={isPlaying ? <Pause /> : <Play />}
             aria-label={isPlaying ? "Stop" : "Play"}
-          />
+          >
+            {isPlaying ? "Stop" : "Play"}
+          </IconButton>
 
           <Number
             id="frequency"
