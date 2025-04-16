@@ -6,9 +6,10 @@ import "@/content/blog/shared/dark-mode.css";
 import { Select } from "@/content/blog/shared/Select";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { INSTRUMENT_TYPES } from "@/consts";
-import { InstrumentSelector } from "../shared/InstrumentSelector";
 import { Slider } from "@/components/Slider";
 import { Play } from "lucide-react";
+import { InstrumentPlayer } from "../shared/InstrumentPlayer";
+import { InstrumentProvider } from "../../lib/contexts/InstrumentContext";
 
 // Define types
 type Note = string;
@@ -39,7 +40,7 @@ interface Progressions {
   [key: string]: Progression;
 }
 
-const ChordProgressionPlayer = () => {
+const ChordProgressionPlayerContent = () => {
   const [selectedProgression, setSelectedProgression] =
     useState<ProgressionKey>("pop");
   const [selectedKey, setSelectedKey] = useState<Note>("C");
@@ -50,6 +51,7 @@ const ChordProgressionPlayer = () => {
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const [bpm, setBpm] = useState(80);
+  const [octaveRange, setOctaveRange] = useState({ min: 2, max: 5 });
 
   // Reference to synth
   const synthRef = useRef<Tone.PolySynth<Tone.Synth> | Tone.Sampler | null>(
@@ -912,6 +914,26 @@ const ChordProgressionPlayer = () => {
   // Get all chords in the current progression
   const progressionChords = generateProgressionChords();
 
+  // Get active keys for visualization
+  const getActiveKeys = () => {
+    if (currentChord === null) return [];
+    const chords = generateProgressionChords();
+    const currentChordData = chords[currentChord];
+
+    // Get all notes including the bass note
+    return currentChordData.notes;
+  };
+
+  // Get highlighted keys (bass note) for visualization
+  const getHighlightedKeys = () => {
+    if (currentChord === null) return [];
+    const chords = generateProgressionChords();
+    const currentChordData = chords[currentChord];
+
+    // The bass note is always the first note in the chord
+    return [currentChordData.notes[0]];
+  };
+
   return (
     <div className="demo-container">
       <VisuallyHidden>Chord Progression Player</VisuallyHidden>
@@ -922,9 +944,9 @@ const ChordProgressionPlayer = () => {
           size="small"
           onClick={isPlaying ? stopProgression : playProgression}
           variant={isPlaying ? "secondary" : "primary"}
-          style={{ alignSelf: "flex-end" }}
+          style={{ display: "flex", alignSelf: "flex-end" }}
         >
-          <Play className="icon" />
+          <Play size={16} />
           {isPlaying ? "Stop" : "Play"}
         </Button>
 
@@ -958,14 +980,6 @@ const ChordProgressionPlayer = () => {
           ))}
         </Select>
 
-        {/* Instrument selector */}
-        <InstrumentSelector
-          id="chord-progression"
-          disabled={isPlaying}
-          selectedInstrument={selectedInstrument}
-          onChange={(value) => setSelectedInstrument(value)}
-        />
-
         {/* BPM control */}
         <div className="flex-col gap-12" style={{ alignSelf: "flex-start" }}>
           <div className="flex">
@@ -983,30 +997,43 @@ const ChordProgressionPlayer = () => {
 
       {/* Progression pattern and description */}
       <div className="info-box">
-        <div className="progression-pattern">
-          {progressions[selectedProgression].pattern}
+        {/* Chord visualization */}
+        <div className="chord-visualization">
+          {progressionChords.map((chord: Chord, index: number) => (
+            <div
+              key={index}
+              className={`chord-card ${currentChord === index ? "active" : ""}`}
+            >
+              <div className="chord-name">{chord.name}</div>
+              <div className="chord-numeral">{chord.numeral}</div>
+            </div>
+          ))}
         </div>
         <div className="progression-description">
           {progressions[selectedProgression].description}
         </div>
       </div>
-
-      {/* Chord visualization */}
-      <div className="chord-visualization">
-        {progressionChords.map((chord: Chord, index: number) => (
-          <div
-            key={index}
-            className={`chord-card ${currentChord === index ? "active" : ""}`}
-          >
-            <div className="chord-name">{chord.name}</div>
-            <div className="chord-numeral">{chord.numeral}</div>
-            <div className="chord-notes">
-              {chord.notes.map((note: string) => note.slice(0, -1)).join(" - ")}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Instrument Player */}
+      <InstrumentPlayer
+        instrumentType={selectedInstrument}
+        octaveRange={octaveRange}
+        showLabels={true}
+        activeKeys={getActiveKeys()}
+        highlightedKeys={getHighlightedKeys()}
+        onInstrumentChange={(instrument) => {
+          setSelectedInstrument(instrument);
+        }}
+        onOctaveRangeChange={(newRange) => setOctaveRange(newRange)}
+      />
     </div>
+  );
+};
+
+const ChordProgressionPlayer = () => {
+  return (
+    <InstrumentProvider>
+      <ChordProgressionPlayerContent />
+    </InstrumentProvider>
   );
 };
 

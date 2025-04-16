@@ -3,11 +3,12 @@ import * as Tone from "tone";
 type AudioComponent = {
   id: string;
   stopPlayback: () => void;
+  transport: ReturnType<typeof Tone.getTransport>;
 };
 
 class AudioCoordinator {
   private static instance: AudioCoordinator;
-  private activeComponent: AudioComponent | null = null;
+  private components: Map<string, AudioComponent> = new Map();
 
   private constructor() {}
 
@@ -18,29 +19,46 @@ class AudioCoordinator {
     return AudioCoordinator.instance;
   }
 
-  registerComponent(component: AudioComponent) {
-    // If there's already an active component, stop it
-    if (this.activeComponent && this.activeComponent.id !== component.id) {
-      this.activeComponent.stopPlayback();
-    }
-    this.activeComponent = component;
+  registerComponent(
+    componentId: string,
+    stopPlayback: () => void
+  ): ReturnType<typeof Tone.getTransport> {
+    // Get the transport instance for this component
+    const transport = Tone.getTransport();
+
+    // Store the component
+    this.components.set(componentId, {
+      id: componentId,
+      stopPlayback,
+      transport,
+    });
+
+    return transport;
   }
 
   unregisterComponent(componentId: string) {
-    if (this.activeComponent?.id === componentId) {
-      this.activeComponent.stopPlayback();
-      this.activeComponent = null;
+    const component = this.components.get(componentId);
+    if (component) {
+      component.stopPlayback();
+      this.components.delete(componentId);
     }
   }
 
+  getComponentTransport(
+    componentId: string
+  ): ReturnType<typeof Tone.getTransport> | null {
+    return this.components.get(componentId)?.transport || null;
+  }
+
+  isComponentActive(componentId: string): boolean {
+    return this.components.has(componentId);
+  }
+
   stopAllPlayback() {
-    if (this.activeComponent) {
-      this.activeComponent.stopPlayback();
-      this.activeComponent = null;
-    }
-    // Also stop the Tone.js transport
-    Tone.Transport.stop();
-    Tone.Transport.cancel();
+    this.components.forEach((component) => {
+      component.stopPlayback();
+      component.transport.stop();
+    });
   }
 }
 

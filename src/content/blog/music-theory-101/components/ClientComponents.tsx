@@ -10,32 +10,9 @@ import RhythmSequencer from "./RhythmSequencer";
 import ScalePlayer from "./ScalePlayer";
 import NotePlayer from "./NotePlayer/NotePlayer";
 import { InstrumentProvider } from "../lib/contexts/InstrumentContext";
+import { audioCoordinator } from "../utils/audioCoordinator";
 
-// Audio coordinator to manage global audio state
-export const audioCoordinator = {
-  activeComponents: new Set<string>(),
-
-  registerComponent(id: string) {
-    this.activeComponents.add(id);
-    console.log(
-      `Component ${id} registered. Active components:`,
-      Array.from(this.activeComponents)
-    );
-  },
-
-  unregisterComponent(id: string) {
-    this.activeComponents.delete(id);
-    console.log(
-      `Component ${id} unregistered. Active components:`,
-      Array.from(this.activeComponents)
-    );
-  },
-
-  isComponentActive(id: string) {
-    return this.activeComponents.has(id);
-  },
-};
-
+// Intersection observer wrapper for components
 const IntersectionWrapper = ({
   Component,
   id,
@@ -44,76 +21,42 @@ const IntersectionWrapper = ({
   id: string;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<number | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Clear any existing timeout
-        if (timeoutRef.current) {
-          window.clearTimeout(timeoutRef.current);
-        }
-
-        // Add a small delay before updating visibility to prevent rapid toggling
-        timeoutRef.current = window.setTimeout(() => {
-          setIsVisible(entry.isIntersecting);
-        }, 100);
+        setIsVisible(entry.isIntersecting);
       },
       {
-        threshold: 0.1,
-        rootMargin: "50px",
+        threshold: 0.3,
+        rootMargin: "200px",
       }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    if (ref.current) {
+      observer.observe(ref.current);
     }
 
     return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+      if (ref.current) {
+        observer.unobserve(ref.current);
       }
     };
-  }, [isClient]);
-
-  if (!isClient) {
-    return null;
-  }
+  }, []);
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       style={{
-        minHeight: "100px",
+        minHeight: "300px",
         position: "relative",
-        opacity: isVisible ? 1 : 0,
-        visibility: isVisible ? "visible" : "hidden",
-        transition: "opacity 0.2s ease-in-out, visibility 0.2s ease-in-out",
-        willChange: "opacity",
       }}
     >
-      <Component />
+      {isVisible && <Component />}
     </div>
   );
 };
-
-export const ClientTimeSignatureExplorer = () => (
-  <IntersectionWrapper
-    Component={TimeSignatureExplorer}
-    id="time-signature-explorer"
-  />
-);
 
 export const ClientScalePlayer = () => (
   <IntersectionWrapper
@@ -128,6 +71,13 @@ export const ClientScalePlayer = () => (
 
 export const ClientRhythmSequencer = () => (
   <IntersectionWrapper Component={RhythmSequencer} id="rhythm-sequencer" />
+);
+
+export const ClientTimeSignatureExplorer = () => (
+  <IntersectionWrapper
+    Component={TimeSignatureExplorer}
+    id="time-signature-explorer"
+  />
 );
 
 export const ClientPianoKeyboard = () => (

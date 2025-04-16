@@ -6,7 +6,7 @@ import VisuallyHidden from "@/components/VisuallyHidden";
 import { Play } from "lucide-react";
 import { Callout } from "@/components/Callout";
 import { Select } from "@/content/blog/shared/Select";
-import { audioCoordinator } from "../ClientComponents";
+import { audioCoordinator } from "../../utils/audioCoordinator";
 import { Button } from "@/components/Button";
 import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { INSTRUMENT_TYPES } from "@/consts";
@@ -113,7 +113,12 @@ const ScalePlayerContent = () => {
   // Register with audio coordinator
   useEffect(() => {
     if (isInitialized) {
-      audioCoordinator.registerComponent("scale-player");
+      const transport = audioCoordinator.registerComponent(
+        "scale-player",
+        stopScale
+      );
+      // Set up any transport-specific settings here
+      transport.bpm.value = 120;
     }
 
     return () => {
@@ -153,6 +158,15 @@ const ScalePlayerContent = () => {
 
     // Create a loop to play the scale
     loopRef.current = new Tone.Loop((time) => {
+      // Only play if this component is still active
+      if (!audioCoordinator.isComponentActive("scale-player")) {
+        if (loopRef.current) {
+          loopRef.current.stop();
+        }
+        setIsPlaying(false);
+        return;
+      }
+
       // Play the current note
       if (isSamplerReady) {
         playNote(scaleNotes[currentIndex], "8n");
@@ -184,9 +198,10 @@ const ScalePlayerContent = () => {
     }, "4n");
 
     // Start the loop
-    Tone.Transport.start();
-    if (loopRef.current) {
+    const transport = audioCoordinator.getComponentTransport("scale-player");
+    if (transport && loopRef.current) {
       loopRef.current.start(0);
+      transport.start();
     }
   };
 
@@ -194,9 +209,11 @@ const ScalePlayerContent = () => {
   const stopScale = () => {
     if (!isPlaying) return;
 
-    // Clear any scheduled events
-    Tone.Transport.cancel();
-    Tone.Transport.stop();
+    const transport = audioCoordinator.getComponentTransport("scale-player");
+    if (transport) {
+      transport.stop();
+    }
+
     if (loopRef.current) {
       loopRef.current.stop();
     }

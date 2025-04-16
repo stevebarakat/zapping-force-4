@@ -17,6 +17,9 @@ button {
   font-weight: 500;
   overflow: hidden;
   background-color: var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover {

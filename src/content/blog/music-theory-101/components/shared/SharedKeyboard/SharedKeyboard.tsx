@@ -199,8 +199,8 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
 
     // Handle key click
     const handleKeyClick = (note: string) => {
-      // Only play and trigger callback if the note is available and audio is ready
-      if (isNoteAvailable(note) && isSamplerReady) {
+      // Only play and trigger callback if the note is available, audio is ready, and not loading
+      if (isNoteAvailable(note) && isSamplerReady && !isLoading) {
         playNote(note);
         onKeyClick(note);
       }
@@ -238,13 +238,14 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
           const isActive = activeKeys.includes(key.note);
           const isHighlighted = highlightedKeys.includes(key.note);
           const isAvailable = isNoteAvailable(key.note);
+          const isDisabled = !isAvailable || isLoading || !isSamplerReady;
 
           return (
             <div
               key={`white-${key.note}-${index}`}
               className={`white-key ${isActive ? "active" : ""} ${
                 isHighlighted ? "highlighted" : ""
-              } ${!isAvailable ? "disabled" : ""}`}
+              } ${isDisabled ? "disabled" : ""}`}
               onPointerDown={() => handleKeyClick(key.note)}
               onPointerUp={() => stopNote(key.note)}
               onPointerLeave={() => stopNote(key.note)}
@@ -272,6 +273,7 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
           const isHighlighted = highlightedKeys.includes(key.note);
           const isAvailable = isNoteAvailable(key.note);
           const isHovered = hoveredBlackKey === key.note;
+          const isDisabled = !isAvailable || isLoading || !isSamplerReady;
 
           // Find the index of this black key in the full keys array
           const keyIndex = keys.findIndex((k) => k.note === key.note);
@@ -293,9 +295,7 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
               key={`black-${key.note}-${index}`}
               className={`black-key ${isActive ? "active" : ""} ${
                 isHighlighted ? "highlighted" : ""
-              } ${!isAvailable ? "disabled" : ""} ${
-                isHovered ? "hovered" : ""
-              }`}
+              } ${isDisabled ? "disabled" : ""} ${isHovered ? "hovered" : ""}`}
               style={{ left: `${position}%`, width: `${whiteKeyWidth * 0.7}%` }}
               onPointerDown={() => handleKeyClick(key.note)}
               onPointerUp={() => stopNote(key.note)}

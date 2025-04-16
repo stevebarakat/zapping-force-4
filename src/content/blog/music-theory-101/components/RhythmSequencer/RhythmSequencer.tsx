@@ -7,7 +7,7 @@ import VisuallyHidden from "@/components/VisuallyHidden";
 import { Slider } from "@/components/Slider";
 import { Number } from "../../../shared/Number";
 import { Select } from "../../../shared/Select";
-import { audioCoordinator } from "../ClientComponents";
+import { audioCoordinator } from "../../utils/audioCoordinator";
 import { Button } from "@/components/Button";
 import IconButton from "@/components/Button/IconButton";
 
@@ -105,7 +105,15 @@ function RhythmSequencer() {
 
   // Register with audio coordinator
   useEffect(() => {
-    audioCoordinator.registerComponent("rhythm-sequencer");
+    const transport = audioCoordinator.registerComponent(
+      "rhythm-sequencer",
+      () => {
+        if (isPlaying) {
+          Tone.Transport.stop();
+          setIsPlaying(false);
+        }
+      }
+    );
 
     return () => {
       audioCoordinator.unregisterComponent("rhythm-sequencer");
@@ -143,6 +151,10 @@ function RhythmSequencer() {
       return;
     }
 
+    const transport =
+      audioCoordinator.getComponentTransport("rhythm-sequencer");
+    if (!transport) return;
+
     const steps = getStepsForTimeSignature(timeSignature);
 
     // Use different subdivisions based on time signature
@@ -166,22 +178,22 @@ function RhythmSequencer() {
 
     // Apply shuffle if enabled
     if (shuffle > 0) {
-      Tone.Transport.swing = shuffle;
-      Tone.Transport.swingSubdivision = "8n"; // Always use 8n for swing subdivision
+      transport.swing = shuffle;
+      transport.swingSubdivision = "8n"; // Always use 8n for swing subdivision
     } else {
-      Tone.Transport.swing = 0;
+      transport.swing = 0;
     }
 
     // Set time signature and loop length
     if (timeSignature === "3/4") {
-      Tone.Transport.timeSignature = [3, 4];
-      Tone.Transport.loopEnd = "3m";
+      transport.timeSignature = [3, 4];
+      transport.loopEnd = "3m";
     } else if (timeSignature === "12/8") {
-      Tone.Transport.timeSignature = [12, 8];
-      Tone.Transport.loopEnd = "1m";
+      transport.timeSignature = [12, 8];
+      transport.loopEnd = "1m";
     } else {
-      Tone.Transport.timeSignature = [4, 4];
-      Tone.Transport.loopEnd = "1m";
+      transport.timeSignature = [4, 4];
+      transport.loopEnd = "1m";
     }
 
     return () => {
@@ -195,18 +207,26 @@ function RhythmSequencer() {
       return;
     }
 
-    Tone.Transport.bpm.value = bpm;
+    const transport =
+      audioCoordinator.getComponentTransport("rhythm-sequencer");
+    if (transport) {
+      transport.bpm.value = bpm;
+    }
   }, [bpm]);
 
   const toggleTransport = async () => {
     await Tone.start();
+    const transport =
+      audioCoordinator.getComponentTransport("rhythm-sequencer");
+    if (!transport) return;
+
     if (isPlaying) {
-      Tone.Transport.stop();
+      transport.stop();
       setCurrentStep(0);
     } else {
-      Tone.Transport.start();
-      Tone.Transport.loop = true;
-      Tone.Transport.loopEnd = "1m";
+      transport.start();
+      transport.loop = true;
+      transport.loopEnd = "1m";
     }
     setIsPlaying(!isPlaying);
   };

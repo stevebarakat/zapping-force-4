@@ -8,7 +8,7 @@ import {
   WholeNote,
 } from "@/components/Icons";
 import { Select } from "@/content/blog/shared/Select";
-import { audioCoordinator } from "../ClientComponents";
+import { audioCoordinator } from "../../utils/audioCoordinator";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { Button } from "@/components/Button";
 
@@ -159,7 +159,11 @@ function MusicAnalyzer() {
     const initAudio = async () => {
       try {
         await Tone.start();
-        Transport.bpm.value = 180;
+        const transport = audioCoordinator.registerComponent(
+          "music-analyzer",
+          stopPlayback
+        );
+        transport.bpm.value = 180;
 
         synthRef.current = new Tone.PolySynth(Tone.Synth, {
           envelope: {
@@ -171,7 +175,6 @@ function MusicAnalyzer() {
         }).toDestination();
 
         setIsInitialized(true);
-        audioCoordinator.registerComponent("music-analyzer");
       } catch (error) {
         console.error("Failed to initialize audio:", error);
       }
@@ -387,27 +390,35 @@ function MusicAnalyzer() {
     ).start(0);
 
     // Start the transport
-    Transport.start();
-    Transport.loop = false; // Disable looping
+    const transport = audioCoordinator.getComponentTransport("music-analyzer");
+    if (transport) {
+      transport.start();
+      transport.loop = false;
+    }
 
     // Calculate total duration based on the last note's time and duration
     const lastNote = midiData[midiData.length - 1];
     const totalDuration = `${lastNote.time} + ${lastNote.duration}`;
 
     // Stop at the end
-    Transport.schedule(() => {
-      if (audioCoordinator.isComponentActive("music-analyzer")) {
-        stopPlayback();
-      }
-    }, `+${totalDuration}`);
+    if (transport) {
+      transport.schedule(() => {
+        if (audioCoordinator.isComponentActive("music-analyzer")) {
+          stopPlayback();
+        }
+      }, `+${totalDuration}`);
+    }
   };
 
   // Stop playback
   const stopPlayback = () => {
     if (!isPlaying) return;
 
-    Transport.stop();
-    Transport.cancel();
+    const transport = audioCoordinator.getComponentTransport("music-analyzer");
+    if (transport) {
+      transport.stop();
+      transport.cancel();
+    }
 
     if (sequenceRef.current) {
       sequenceRef.current.dispose();
