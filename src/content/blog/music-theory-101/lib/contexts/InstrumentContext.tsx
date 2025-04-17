@@ -1,16 +1,21 @@
-import React, { createContext, useCallback, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import * as Tone from "tone";
-import { INSTRUMENTS } from "../instruments";
+import { INSTRUMENT_TYPES } from "@/consts";
+import { initializeAudio } from "../../utils/audioInitialization";
 
 interface InstrumentContextType {
   currentInstrument: string;
   isLoading: boolean;
   error: Error | null;
-  loadInstrument: (name: string) => Promise<void>;
-  playNote: (note: string, duration?: string) => void;
+  loadInstrument: (instrumentType: string) => Promise<void>;
+  playNote: (note: string) => void;
   stopNote: (note: string) => void;
-  stopAllNotes: () => void;
-  instruments: typeof INSTRUMENTS;
   initializeAudio: () => Promise<void>;
   isAudioInitialized: boolean;
   isSamplerReady: boolean;
@@ -18,121 +23,100 @@ interface InstrumentContextType {
 
 const InstrumentContext = createContext<InstrumentContextType | null>(null);
 
-export function InstrumentProvider({
+export const InstrumentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [sampler, setSampler] = useState<Tone.Sampler | null>(null);
-  const [currentInstrument, setCurrentInstrument] = useState("piano");
+}) => {
+  const [currentInstrument, setCurrentInstrument] = useState<string>(
+    INSTRUMENT_TYPES.PIANO
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isAudioInitialized, setIsAudioInitialized] = useState(false);
   const [isSamplerReady, setIsSamplerReady] = useState(false);
+  const samplerRef = useRef<Tone.Sampler | null>(null);
 
-  const initializeAudio = useCallback(async () => {
+  const initializeAudioContext = async () => {
     if (isAudioInitialized) return;
+    try {
+      await initializeAudio();
+      setIsAudioInitialized(true);
+    } catch (error) {
+      console.error("Error initializing audio context:", error);
+      setError(error as Error);
+    }
+  };
+
+  const loadInstrument = async (instrumentType: string) => {
+    if (instrumentType === currentInstrument && samplerRef.current) return;
+
+    setIsLoading(true);
+    setError(null);
 
     try {
-      await Tone.start();
-      setIsAudioInitialized(true);
-      await loadInstrument("piano");
-    } catch (err) {
-      setError(
-        err instanceof Error ? err : new Error("Failed to initialize audio")
-      );
+      if (samplerRef.current) {
+        samplerRef.current.dispose();
+      }
+
+      const baseUrl = "/audio/piano-mp3/";
+      const urls = {
+        C4: "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        A4: "A4.mp3",
+      };
+
+      samplerRef.current = new Tone.Sampler({
+        urls,
+        baseUrl,
+        onload: () => {
+          setIsLoading(false);
+          setIsSamplerReady(true);
+        },
+        onerror: (error) => {
+          console.error("Error loading sampler:", error);
+          setError(error);
+          setIsLoading(false);
+        },
+      }).toDestination();
+
+      setCurrentInstrument(instrumentType);
+    } catch (error) {
+      console.error("Error loading instrument:", error);
+      setError(error as Error);
+      setIsLoading(false);
     }
-  }, [isAudioInitialized]);
+  };
 
-  const loadInstrument = useCallback(
-    async (instrumentName: string) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        setIsSamplerReady(false);
+  const playNote = (note: string) => {
+    if (!isAudioInitialized || !isSamplerReady || !samplerRef.current) {
+      console.warn("Cannot play note: audio not ready");
+      return;
+    }
 
-        const instrument = INSTRUMENTS.find((i) => i.name === instrumentName);
-        if (!instrument)
-          throw new Error(`Instrument ${instrumentName} not found`);
+    try {
+      samplerRef.current.triggerAttack(note);
+    } catch (error) {
+      console.error("Error playing note:", error);
+    }
+  };
 
-        // Create URLs for all notes
-        const urls: Record<string, string> = {};
-        for (const note of instrument.notes) {
-          const mappedNote = note.replace("#", "s");
-          urls[note] = `${instrument.url}/${mappedNote}.ogg`;
-        }
+  const stopNote = (note: string) => {
+    if (!isAudioInitialized || !isSamplerReady || !samplerRef.current) return;
 
-        if (sampler) {
-          sampler.dispose();
-        }
+    try {
+      samplerRef.current.triggerRelease(note);
+    } catch (error) {
+      console.error("Error stopping note:", error);
+    }
+  };
 
-        const newSampler = new Tone.Sampler({
-          urls,
-          onerror: (error) => {
-            console.error(`Failed to load ${instrumentName}:`, error);
-            setError(
-              error instanceof Error
-                ? error
-                : new Error("Failed to load instrument")
-            );
-            setIsLoading(false);
-            setIsSamplerReady(false);
-          },
-          onload: () => {
-            console.log(`${instrumentName} loaded successfully`);
-            setIsLoading(false);
-            setIsSamplerReady(true);
-          },
-          release: 1,
-          attack: 0,
-          curve: "linear",
-          volume: 0,
-        }).toDestination();
-
-        setSampler(newSampler);
-        setCurrentInstrument(instrumentName);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to load instrument")
-        );
-        setIsLoading(false);
-        setIsSamplerReady(false);
+  useEffect(() => {
+    return () => {
+      if (samplerRef.current) {
+        samplerRef.current.dispose();
       }
-    },
-    [sampler]
-  );
-
-  const playNote = useCallback(
-    (note: string, duration?: string) => {
-      if (!sampler || !isAudioInitialized || !isSamplerReady) {
-        console.warn("Cannot play note: sampler not ready");
-        return;
-      }
-      try {
-        if (duration) {
-          sampler.triggerAttackRelease(note, duration);
-        } else {
-          sampler.triggerAttack(note);
-        }
-      } catch (e) {
-        console.error("Error playing note:", e);
-      }
-    },
-    [sampler, isAudioInitialized, isSamplerReady]
-  );
-
-  const stopNote = useCallback(
-    (note: string) => {
-      if (!sampler || !isAudioInitialized || !isSamplerReady) return;
-      sampler.triggerRelease(note);
-    },
-    [sampler, isAudioInitialized, isSamplerReady]
-  );
-
-  const stopAllNotes = useCallback(() => {
-    if (!sampler || !isAudioInitialized || !isSamplerReady) return;
-    sampler.releaseAll();
-  }, [sampler, isAudioInitialized, isSamplerReady]);
+    };
+  }, []);
 
   return (
     <InstrumentContext.Provider
@@ -143,9 +127,7 @@ export function InstrumentProvider({
         loadInstrument,
         playNote,
         stopNote,
-        stopAllNotes,
-        instruments: INSTRUMENTS,
-        initializeAudio,
+        initializeAudio: initializeAudioContext,
         isAudioInitialized,
         isSamplerReady,
       }}
@@ -153,6 +135,12 @@ export function InstrumentProvider({
       {children}
     </InstrumentContext.Provider>
   );
-}
+};
 
-export default InstrumentContext;
+export const useInstrument = () => {
+  const context = useContext(InstrumentContext);
+  if (!context) {
+    throw new Error("useInstrument must be used within an InstrumentProvider");
+  }
+  return context;
+};
