@@ -133,6 +133,7 @@ label {
 
 .number-input {
   width: fit-content;
+  min-width: 5ch;
   padding: 0;
   border: none;
   background-color: var(--component-bg);

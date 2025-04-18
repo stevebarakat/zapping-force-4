@@ -75,6 +75,7 @@
   > div:first-child {
     display: flex;
     width: fit-content;
+    gap: 0.5rem;
   }
 
   > div:last-child {
@@ -83,7 +84,7 @@
     }
   }
   @media (max-width: 860px) {
-    /* padding-right: 85px; */
+    padding-right: 85px;
     justify-content: space-between;
   }
 

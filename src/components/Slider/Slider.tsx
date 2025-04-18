@@ -36,7 +36,7 @@ export default function Slider({
   return (
     <div className="slider-container">
       {label && showLabel && (
-        <div className="flex">
+        <div>
           <label>{label}</label>
           {showValue && (
             <span className="slider-value">
