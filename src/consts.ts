@@ -8,10 +8,4 @@ export const SITE_DESCRIPTION =
 // Music-related constants
 export const INSTRUMENT_TYPES = {
   PIANO: "piano",
-  SYNTH: "synth",
-  XYLO: "xylophone",
-  FLUTE: "flute",
-  VIOLIN: "violin",
-  CELLO: "cello",
-  HORN: "french-horn",
-};
+} as const;

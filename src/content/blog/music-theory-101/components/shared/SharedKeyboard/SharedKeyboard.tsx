@@ -4,101 +4,8 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import { useInstrument } from "../../../lib/hooks/useInstrument";
-import { INSTRUMENT_TYPES } from "@/consts";
 import "./shared-keyboard.css";
-
-// Define available notes for each instrument
-const AVAILABLE_NOTES = {
-  [INSTRUMENT_TYPES.PIANO]: null, // All notes available
-  [INSTRUMENT_TYPES.SYNTH]: null, // All notes available
-  [INSTRUMENT_TYPES.XYLO]: [
-    // F4-B4
-    "F4",
-    "F#4",
-    "G4",
-    "G#4",
-    "A4",
-    "A#4",
-    "B4",
-    // All notes in octaves 5-7
-    ...[5, 6, 7].flatMap((octave) =>
-      ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map(
-        (note) => `${note}${octave}`
-      )
-    ),
-    // C8
-    "C8",
-  ],
-  [INSTRUMENT_TYPES.FLUTE]: [
-    // B3
-    "B3",
-    // All notes in octaves 4-6
-    ...[4, 5, 6].flatMap((octave) =>
-      ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map(
-        (note) => `${note}${octave}`
-      )
-    ),
-    // C#7
-    "C#7",
-  ],
-  [INSTRUMENT_TYPES.VIOLIN]: [
-    // G#3-B3
-    "G#3",
-    "A3",
-    "A#3",
-    "B3",
-    // All notes in octaves 4-6
-    ...[4, 5, 6].flatMap((octave) =>
-      ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map(
-        (note) => `${note}${octave}`
-      )
-    ),
-    // C7-E7
-    "C7",
-    "C#7",
-    "D7",
-    "D#7",
-    "E7",
-  ],
-  [INSTRUMENT_TYPES.CELLO]: [
-    // All notes in octaves 2-4
-    ...[2, 3, 4].flatMap((octave) =>
-      ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map(
-        (note) => `${note}${octave}`
-      )
-    ),
-    // C5-A5
-    "C5",
-    "C#5",
-    "D5",
-    "D#5",
-    "E5",
-    "F5",
-    "F#5",
-    "G5",
-    "G#5",
-    "A5",
-  ],
-  [INSTRUMENT_TYPES.HORN]: [
-    // A#1-B1
-    "A#1",
-    "B1",
-    // All notes in octaves 2-4
-    ...[2, 3, 4].flatMap((octave) =>
-      ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map(
-        (note) => `${note}${octave}`
-      )
-    ),
-    // C5-F5
-    "C5",
-    "C#5",
-    "D5",
-    "D#5",
-    "E5",
-    "F5",
-  ],
-};
+import { useInstrument } from "../../../lib/hooks/useInstrument";
 
 export type SharedKeyboardRef = {
   playNote: (note: string) => void;
@@ -112,7 +19,6 @@ interface SharedKeyboardProps {
   octaveRange?: { min: number; max: number };
   onKeyClick?: (note: string) => void;
   showLabels?: boolean;
-  instrumentType?: string;
   showOctaves: boolean;
 }
 
@@ -124,7 +30,6 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
       octaveRange = { min: 4, max: 5 },
       onKeyClick = () => {},
       showLabels = true,
-      instrumentType = INSTRUMENT_TYPES.PIANO,
       showOctaves = false,
     },
     ref
@@ -142,14 +47,6 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
     } = useInstrument();
 
     const [hoveredBlackKey, setHoveredBlackKey] = useState<string | null>(null);
-    const [availableNotes, setAvailableNotes] = useState<string[] | null>(null);
-
-    // Update available notes when instrument type changes
-    useEffect(() => {
-      setAvailableNotes(
-        AVAILABLE_NOTES[instrumentType as keyof typeof AVAILABLE_NOTES]
-      );
-    }, [instrumentType]);
 
     // Initialize audio when component mounts
     useEffect(() => {
@@ -158,12 +55,12 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
       }
     }, [isAudioInitialized, initializeAudio]);
 
-    // Load instrument when instrument type changes
+    // Load piano when component mounts
     useEffect(() => {
-      if (instrumentType !== currentInstrument) {
-        loadInstrument(instrumentType);
+      if (currentInstrument !== "piano") {
+        loadInstrument("piano");
       }
-    }, [instrumentType, currentInstrument, loadInstrument]);
+    }, [currentInstrument, loadInstrument]);
 
     // Play a note
     const playNote = async (note: string) => {
@@ -189,18 +86,12 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
       }
     };
 
-    // Check if a note is available for the current instrument
-    const isNoteAvailable = (note: string) => {
-      // If availableNotes is null, all notes are available
-      if (!availableNotes) return true;
-      // Otherwise, check if the note is in the availableNotes array
-      return availableNotes.includes(note);
-    };
+    // Check if a note is available (always true for piano)
+    const isNoteAvailable = (note: string) => true;
 
     // Handle key click
     const handleKeyClick = (note: string) => {
-      // Only play and trigger callback if the note is available, audio is ready, and not loading
-      if (isNoteAvailable(note) && isSamplerReady && !isLoading) {
+      if (isSamplerReady && !isLoading) {
         playNote(note);
         onKeyClick(note);
       }
@@ -237,8 +128,7 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
         .map((key, index) => {
           const isActive = activeKeys.includes(key.note);
           const isHighlighted = highlightedKeys.includes(key.note);
-          const isAvailable = isNoteAvailable(key.note);
-          const isDisabled = !isAvailable || isLoading || !isSamplerReady;
+          const isDisabled = isLoading || !isSamplerReady;
 
           return (
             <div
@@ -271,9 +161,8 @@ const SharedKeyboard = forwardRef<SharedKeyboardRef, SharedKeyboardProps>(
         .map((key, index) => {
           const isActive = activeKeys.includes(key.note);
           const isHighlighted = highlightedKeys.includes(key.note);
-          const isAvailable = isNoteAvailable(key.note);
           const isHovered = hoveredBlackKey === key.note;
-          const isDisabled = !isAvailable || isLoading || !isSamplerReady;
+          const isDisabled = isLoading || !isSamplerReady;
 
           // Find the index of this black key in the full keys array
           const keyIndex = keys.findIndex((k) => k.note === key.note);

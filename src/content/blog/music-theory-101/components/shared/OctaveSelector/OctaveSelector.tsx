@@ -7,11 +7,9 @@ type OctaveSelectorProps = {
   availableOctaves: number[]; // Array of available octaves for the instrument
 };
 
-function OctaveSelector({
-  octaveRange,
-  onOctaveChange,
-  availableOctaves,
-}: OctaveSelectorProps) {
+const availableOctaves = [1, 2, 3, 4, 5, 6, 7];
+
+function OctaveSelector({ octaveRange, onOctaveChange }: OctaveSelectorProps) {
   const [localOctaveRange, setLocalOctaveRange] = useState(octaveRange);
 
   useEffect(() => {

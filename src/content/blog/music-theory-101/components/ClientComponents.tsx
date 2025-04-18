@@ -11,7 +11,6 @@ import ScalePlayer from "./ScalePlayer";
 import NotePlayer from "./NotePlayer/NotePlayer";
 import { InstrumentProvider } from "../lib/contexts/InstrumentContext";
 import { audioCoordinator } from "../utils/audioCoordinator";
-import { initializeAudio } from "../utils/audioInitialization";
 
 // Intersection observer wrapper for components
 const IntersectionWrapper = ({
@@ -45,25 +44,6 @@ const IntersectionWrapper = ({
       }
     };
   }, []);
-
-  // Handle audio initialization on user interaction
-  useEffect(() => {
-    const handleInteraction = async () => {
-      if (isVisible) {
-        await initializeAudio();
-      }
-    };
-
-    window.addEventListener("click", handleInteraction);
-    window.addEventListener("keydown", handleInteraction);
-    window.addEventListener("touchstart", handleInteraction);
-
-    return () => {
-      window.removeEventListener("click", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
-    };
-  }, [isVisible]);
 
   return (
     <div
