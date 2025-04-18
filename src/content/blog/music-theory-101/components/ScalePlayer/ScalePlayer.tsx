@@ -243,7 +243,7 @@ const ScalePlayerContent = () => {
   return (
     <div className="demo-container" ref={containerRef}>
       <VisuallyHidden as="h3">Scale Explorer</VisuallyHidden>
-      <div className="flex between">
+      <div className="controls">
         {/* Play button */}
         <Button
           onClick={isPlaying ? stopScale : playScale}
@@ -258,6 +258,7 @@ const ScalePlayerContent = () => {
           value={selectedScale}
           onChange={(value) => setSelectedScale(value as ScaleType)}
           label="Scale Type"
+          style={{ maxWidth: "15ch" }}
         >
           {scaleOptions.map((option) => (
             <option key={option.value} value={option.value}>

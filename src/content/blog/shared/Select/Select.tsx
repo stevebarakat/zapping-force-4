@@ -14,6 +14,7 @@ interface SelectProps {
   labelPosition?: "top" | "left";
   disabled?: boolean;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 function Select({
@@ -24,6 +25,7 @@ function Select({
   labelPosition = "left",
   disabled = false,
   children,
+  style,
 }: SelectProps) {
   return (
     <div
@@ -36,6 +38,7 @@ function Select({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
+        style={{ ...style }}
       >
         {children}
       </select>
