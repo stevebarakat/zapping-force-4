@@ -938,7 +938,7 @@ const ChordProgressionPlayerContent = () => {
     <div className="demo-container">
       <VisuallyHidden>Chord Progression Player</VisuallyHidden>
 
-      <div className="flex between">
+      <div className="chord-progression-controls">
         {/* Play button */}
         <Button
           size="small"
@@ -1015,14 +1015,10 @@ const ChordProgressionPlayerContent = () => {
       </div>
       {/* Instrument Player */}
       <InstrumentPlayer
-        instrumentType={selectedInstrument}
         octaveRange={octaveRange}
         showLabels={true}
         activeKeys={getActiveKeys()}
         highlightedKeys={getHighlightedKeys()}
-        onInstrumentChange={(instrument) => {
-          setSelectedInstrument(instrument);
-        }}
         onOctaveRangeChange={(newRange) => setOctaveRange(newRange)}
       />
     </div>

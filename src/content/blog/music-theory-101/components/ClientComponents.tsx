@@ -49,7 +49,6 @@ const IntersectionWrapper = ({
     <div
       ref={ref}
       style={{
-        minHeight: "300px",
         position: "relative",
       }}
     >

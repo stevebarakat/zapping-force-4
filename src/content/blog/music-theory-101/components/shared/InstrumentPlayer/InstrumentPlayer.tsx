@@ -7,7 +7,7 @@ import React, {
 import { OctaveSelector } from "../OctaveSelector";
 import { SharedKeyboard } from "../SharedKeyboard/index";
 import type { SharedKeyboardRef } from "../SharedKeyboard/index";
-import { Button } from "@/components/Button";
+import * as Switch from "@radix-ui/react-switch";
 import "./instrument-player.css";
 
 // Define types for the ref and props
@@ -83,12 +83,20 @@ const InstrumentPlayer = forwardRef<InstrumentPlayerRef, InstrumentPlayerProps>(
             }}
             availableOctaves={[1, 2, 3, 4, 5, 6, 7]}
           />
-          <Button
-            onClick={() => setShowOctaves(!showOctaves)}
-            aria-label={showOctaves ? "Hide octaves" : "Show octaves"}
-          >
-            {showOctaves ? "Hide Octaves" : "Show Octaves"}
-          </Button>
+          <div className="switch-container">
+            <label className="switch-label" htmlFor="show-octaves">
+              Show Octaves
+            </label>
+            <Switch.Root
+              className="switch-root"
+              id="show-octaves"
+              checked={showOctaves}
+              onCheckedChange={setShowOctaves}
+              aria-label={showOctaves ? "Hide octaves" : "Show octaves"}
+            >
+              <Switch.Thumb className="switch-thumb" />
+            </Switch.Root>
+          </div>
         </div>
         <SharedKeyboard
           ref={keyboardRef}

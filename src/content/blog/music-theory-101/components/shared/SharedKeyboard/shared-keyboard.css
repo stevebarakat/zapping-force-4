@@ -289,59 +289,34 @@
 }
 
 /* Dark mode compatibility */
-:root.dark .octave-label:nth-child(1) {
+:root.dark .octave-label:nth-child(1n) {
   background-color: rgba(26, 35, 126, 0.5);
   color: #90caf9;
   border: 1px solid hsl(210, 79%, 26%);
   border-bottom: none;
 }
-:root.dark .octave-label:nth-child(2) {
+:root.dark .octave-label:nth-child(2n) {
   background-color: rgba(74, 20, 140, 0.5);
   color: #ce93d8;
   border: 1px solid hsl(270, 79%, 26%);
   border-bottom: none;
 }
-:root.dark .octave-label:nth-child(3) {
+:root.dark .octave-label:nth-child(3n) {
   background-color: rgba(27, 94, 32, 0.5);
   color: #a5d6a7;
   border: 1px solid hsl(120, 79%, 26%);
   border-bottom: none;
 }
-:root.dark .octave-label:nth-child(4) {
+:root.dark .octave-label:nth-child(4n) {
   background-color: rgba(230, 81, 0, 0.5);
   color: #ffcc80;
   border: 1px solid hsl(330, 79%, 26%);
   border-bottom: none;
 }
-:root.dark .octave-label:nth-child(5) {
+:root.dark .octave-label:nth-child(5n) {
   background-color: rgba(136, 14, 79, 0.5);
   color: #f48fb1;
   border: 1px solid hsl(300, 79%, 26%);
-  border-bottom: none;
-}
-:root.dark .octave-label:nth-child(6) {
-  background-color: rgba(0, 77, 64, 0.5);
-  color: #80cbc4;
-  border: 1px solid hsl(170, 79%, 26%);
-  border-bottom: none;
-}
-:root.dark .octave-label:nth-child(7) {
-  background-color: rgba(74, 20, 140, 0.5);
-  color: #ce93d8;
-  border: 1px solid hsl(270, 79%, 26%);
-  border-bottom: none;
-}
-:root.dark .octave-label:nth-child(8) {
-  background-color: rgba(26, 35, 126, 0.5);
-  color: #90caf9;
-  border: 1px solid hsl(210, 79%, 26%);
-  border-bottom: none;
-}
-
-:root.dark .octave-label:last-child {
-  background-color: rgba(230, 81, 0, 0.5);
-  color: #ffcc80;
-  border: 1px solid hsl(330, 79%, 26%);
   border-bottom: none;
 }
 

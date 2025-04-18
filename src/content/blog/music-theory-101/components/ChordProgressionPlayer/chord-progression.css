@@ -7,6 +7,12 @@
   margin: 2rem 0;
 }
 
+.chord-progression-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .chord-progression-title {
   color: var(--text-primary);
   font-size: var(--music-font-size-lg);
@@ -135,17 +141,17 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
-  .flex.between {
+  .chord-progression-controls {
     flex-direction: column;
     align-items: stretch;
   }
 
   .chord-visualization {
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: stretch;
   }
 
   .chord-card {
-    width: 100%;
+    width: fit-content;
   }
 }
