@@ -259,7 +259,7 @@ const FrequencyVisualizer = () => {
             {error}
           </div>
         )}
-        <div className="flex between">
+        <div className="controls">
           <IconButton
             onClick={togglePlay}
             icon={isPlaying ? <Pause /> : <Play />}
@@ -279,7 +279,13 @@ const FrequencyVisualizer = () => {
             suffix="Hz"
             labelPosition="left"
           />
-          <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              minHeight: "2rem",
+            }}
+          >
             <span className="label">Nearest Note:</span>
             <span>{getNoteFromFrequency(frequency)}</span>
           </div>
