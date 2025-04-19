@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
 import type { CSSProperties } from "react";
 import * as Tone from "tone";
-import { Play } from "lucide-react";
 import "@/styles/shared/dark-mode.css";
 import styles from "./StaffNoteExplorer.module.css";
-import { Button } from "@/components/Button";
 
 type Note = {
   name: string;
