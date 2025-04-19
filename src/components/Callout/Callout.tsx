@@ -88,22 +88,21 @@ const styles = {
     icon: XCircle,
     title: "Mistake",
   },
-};
+  success: {
+    class: "success",
+    icon: CheckCircle,
+    title: "Success",
+  },
+} as const;
+
+type CalloutType = keyof typeof styles;
 
 function Callout({
   type,
   children,
   title,
 }: {
-  type:
-    | "note"
-    | "term"
-    | "practice"
-    | "caution"
-    | "activity"
-    | "milestone"
-    | "mistake"
-    | "interactive";
+  type: CalloutType;
   children: ReactNode;
   title?: string;
 }) {

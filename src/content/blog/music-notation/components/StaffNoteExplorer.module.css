@@ -1,0 +1,113 @@
+.staffContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  background: var(--component-bg);
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.staff {
+  position: relative;
+  height: 220px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 80px;
+  min-width: 300px;
+}
+
+.clef {
+  position: absolute;
+  left: 20px;
+  top: -24px;
+  font-size: 6.5rem;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.staffLines {
+  position: relative;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.staffLine {
+  height: 1px;
+  width: 100%;
+  background-color: var(--text-primary);
+}
+
+.noteAreas {
+  position: absolute;
+  top: 20px;
+  left: 80px;
+  right: 0;
+  height: 165px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+  gap: 10px;
+}
+
+.noteArea {
+  height: 14px;
+  margin-top: -8px;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.noteArea:hover {
+  border-color: rgba(0, 100, 255, 0.3);
+  background-color: rgba(0, 100, 255, 0.1);
+}
+
+.noteArea.active {
+  background-color: rgba(0, 100, 255, 0.2);
+}
+
+.noteLabel {
+  position: absolute;
+  right: 20px;
+  background-color: #fff;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  opacity: 1;
+  color: #000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 40px;
+  text-align: center;
+  line-height: 1.4;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noteArea:hover .noteLabel,
+.noteArea.active .noteLabel {
+  background-color: rgba(0, 100, 255, 0.1);
+}
+
+@media (min-width: 768px) {
+  .staffContainer {
+    flex-direction: row;
+  }
+
+  .staff {
+    flex: 2;
+  }
+
+  .info-box {
+    flex: 1;
+  }
+}

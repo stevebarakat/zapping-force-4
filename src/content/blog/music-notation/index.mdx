@@ -1,0 +1,223 @@
+---
+title: "Music Notation 102: How to Read Music"
+description: "An interactive guide to understanding how to read and write music notation"
+pubDate: "Mar 30 2025"
+heroImage: "/images/hero-placeholder.jpg"
+---
+
+import {
+  ClientStaffNoteExplorer,
+  ClientRhythmNotationExplorer,
+  ClientKeySignatureReader,
+  ClientTimeSignatureExplorer,
+  ClientScoreReader,
+  ClientInteractiveStaff,
+  ClientClefExplorer,
+  ClientNoteValueExplorer,
+} from "./components/ClientComponents";
+
+import { Callout } from "@/components/Callout";
+
+# Music Notation 102: How to Read Music
+
+In our previous guide, we explored the fundamental concepts of music theory. Now it's time to dive into one of the most powerful tools for musicians: music notation. Learning to read music is like unlocking a universal language that has evolved over centuries to capture and communicate musical ideas.
+
+Whether you want to play an instrument, compose your own music, or just deepen your appreciation for the art form, understanding music notation will open new doors in your musical journey. Let's get started!
+
+## The Staff: Music's Canvas
+
+At the heart of music notation is the **staff**—five horizontal lines and four spaces that serve as the framework on which notes are placed. Each line and space represents a specific pitch, with higher positions indicating higher pitches.
+
+<ClientStaffNoteExplorer client:load />
+
+<Callout type="instructions" title="Explore the staff">
+  Click on different lines and spaces to see and hear the notes they represent.
+</Callout>
+
+## Clefs: Setting the Reference Point
+
+While the staff provides the framework, **clefs** tell us which specific pitches those lines and spaces represent. Think of clefs as the legend on a map, giving meaning to the staff's geography.
+
+<ClientClefExplorer client:load />
+
+<Callout type="info" title="Major clef types">
+  The three most common clefs are: - **Treble clef**: Used for higher-pitched
+  instruments and typically the right hand in piano music - **Bass clef**: Used
+  for lower-pitched instruments and typically the left hand in piano music -
+  **Alto clef**: Commonly used for viola and some trombone music
+</Callout>
+
+## Notes on the Staff: Pitch Visualization
+
+Notes placed on different lines and spaces of the staff represent different pitches. The higher a note appears on the staff, the higher its pitch.
+
+<ClientInteractiveStaff client:load />
+
+<Callout type="instructions" title="Place notes on the staff">
+  Click on any position on the staff to place a note. Click on the note again to
+  remove it. Use the buttons at the bottom to hear the notes you've placed.
+</Callout>
+
+When notes go beyond the five lines and four spaces of the staff, we use small additional lines called **ledger lines** to extend the range.
+
+<Callout type="tip">
+  A helpful mnemonic for remembering the notes on the lines of the treble clef: **E**very **G**ood **B**oy **D**oes **F**ine (E, G, B, D, F from bottom to top).
+
+For the spaces: spell **F-A-C-E** (from bottom to top).
+
+</Callout>
+
+## Note Values: Depicting Duration
+
+Notes don't just show pitch; their shape tells us how long they should be played. These different note values are the building blocks of rhythm.
+
+<ClientNoteValueExplorer client:load />
+
+<Callout type="instructions" title="Explore note values">
+  Click on different note values to hear their relative duration. You can change
+  the tempo to hear how it affects the timing.
+</Callout>
+
+The most common note values include:
+
+1. **Whole note** (semibreve): 4 beats
+2. **Half note** (minim): 2 beats
+3. **Quarter note** (crotchet): 1 beat
+4. **Eighth note** (quaver): ½ beat
+5. **Sixteenth note** (semiquaver): ¼ beat
+
+Notes can be further modified with **dots** that increase their duration by 50% (e.g., a dotted quarter note equals 1.5 beats).
+
+## Rests: The Sound of Silence
+
+Just as important as the notes themselves are the moments of silence between them. **Rests** tell us when not to play, and like notes, they have different values indicating different durations.
+
+<Callout type="definition" title="Rest values">
+  Each note value has a corresponding rest:
+
+- Whole rest: 4 beats of silence
+- Half rest: 2 beats of silence
+- Quarter rest: 1 beat of silence
+- Eighth rest: ½ beat of silence
+- Sixteenth rest: ¼ beat of silence
+
+</Callout>
+
+## Putting Rhythm Together
+
+Let's explore how different note values and rests work together to create rhythmic patterns.
+
+<ClientRhythmNotationExplorer client:load />
+
+<Callout type="instructions" title="Explore rhythm patterns">
+  Click "Play" to hear the rhythmic pattern. You can change the pattern by
+  selecting a different preset or adjusting the tempo.
+</Callout>
+
+## Key Signatures: Musical Context
+
+We learned about key signatures in our previous lesson. On the staff, key signatures appear at the beginning of each line, right after the clef, and tell us which notes are consistently sharp or flat throughout the piece.
+
+<ClientKeySignatureReader client:load />
+
+<Callout type="instructions" title="Identify key signatures">
+  Try to identify the key signature shown. Click "Show Answer" to check if
+  you're correct, or "New Key Signature" to practice with a different one.
+</Callout>
+
+<Callout type="tip" title="Key signature tips">
+  For sharp keys, the last sharp is a half step below the key name. For example, if the last sharp is F♯, the key is G major or E minor.
+
+For flat keys, the second-to-last flat is the name of the key. For example, if the flats are B♭, E♭, A♭, and D♭, then the key is A♭ major or F minor.
+
+</Callout>
+
+## Time Signatures: Organizing Beats
+
+Time signatures, shown as two numbers stacked vertically, tell us how beats are organized into measures. The top number indicates how many beats are in each measure, and the bottom number tells us what type of note gets one beat.
+
+<ClientTimeSignatureExplorer client:load />
+
+<Callout type="instructions" title="Explore time signatures">
+  Select different time signatures to see how they organize notes into measures.
+  Listen to the different feel each time signature creates.
+</Callout>
+
+## Reading a Complete Score
+
+Now that we've covered the individual elements of music notation, let's put it all together and read a complete score.
+
+<ClientScoreReader client:load />
+
+<Callout type="instructions" title="Practice reading music">
+  Play through the example by clicking the "Play" button. Try to follow along
+  with the highlighted notes. You can adjust the playback speed using the
+  slider.
+</Callout>
+
+## Additional Notation Elements
+
+Here are some other common notation elements you'll encounter as you continue to read music:
+
+### Dynamic Markings
+
+Dynamics indicate the volume at which notes should be played:
+
+- **pp** (pianissimo): very soft
+- **p** (piano): soft
+- **mp** (mezzo-piano): moderately soft
+- **mf** (mezzo-forte): moderately loud
+- **f** (forte): loud
+- **ff** (fortissimo): very loud
+
+### Articulation Marks
+
+Articulation marks tell us how to play individual notes:
+
+- **Staccato** (dot above or below note): play the note short and detached
+- **Accent** (> above or below note): emphasize the note
+- **Legato** (curved line connecting notes): play the notes smoothly connected
+- **Tenuto** (horizontal line above or below note): hold the note for its full value
+
+### Expression Marks
+
+Expression marks provide guidance on the overall mood and character:
+
+- **Allegro**: lively, fast
+- **Andante**: at a walking pace
+- **Adagio**: slow and stately
+- **Ritardando (rit.)**: gradually slow down
+- **Accelerando (accel.)**: gradually speed up
+- **Crescendo**: gradually get louder
+- **Diminuendo**: gradually get softer
+
+## Conclusion: The Journey Continues
+
+Learning to read music notation is a journey that continues throughout a musician's life. The elements we've covered here provide a solid foundation, but like any language, fluency comes with practice.
+
+<Callout type="exercise" title="Next steps">
+  To continue building your music notation skills:
+
+1. **Practice regularly**: Try to read a little bit of music every day
+2. **Start simple**: Begin with single-line melodies before moving to more complex pieces
+3. **Connect sound and sight**: Always try to hear the music in your head as you read it
+4. **Use technology**: Apps and websites offer interactive ways to practice reading music
+5. **Play with others**: Reading music in an ensemble setting adds an exciting dimension to your practice
+
+</Callout>
+
+Remember, the goal of music notation is not just to accurately reproduce notes on a page, but to breathe life into the composer's musical ideas. As you become more comfortable with notation, you'll find yourself focusing less on decoding the symbols and more on expressing the music they represent.
+
+Keep exploring, keep practicing, and enjoy the journey of musical discovery!
+
+<Callout type="success" title="What you've learned">
+  Congratulations! You now understand the fundamental elements of music notation:
+
+- The staff and clefs
+- Notes and their positions
+- Note values and rhythm
+- Rests and silence
+- Key and time signatures
+- Additional expression markings
+
+</Callout>
