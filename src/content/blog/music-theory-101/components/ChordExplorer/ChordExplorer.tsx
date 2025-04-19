@@ -250,11 +250,12 @@ const ChordExplorer = () => {
   return (
     <div className="demo-container">
       <VisuallyHidden as="h3">Chord Explorer</VisuallyHidden>
-      <div className="flex between">
+      <div className="controls">
         <Select
           value={chordType}
           onChange={handleChordTypeChange}
           label="Chord Type"
+          style={{ maxWidth: "19ch" }}
         >
           {chordTypeOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -271,7 +272,7 @@ const ChordExplorer = () => {
         </Select>
         {/* Play button */}
         <Button onClick={playChord} disabled={isPlaying}>
-          {isPlaying ? "Playing..." : "Play Chord"}
+          Play
         </Button>
       </div>
 
