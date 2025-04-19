@@ -1,64 +1,65 @@
 import * as Tone from "tone";
 
+type AudioComponent = {
+  id: string;
+  stopPlayback: () => void;
+  transport: ReturnType<typeof Tone.getTransport>;
+};
+
 class AudioCoordinator {
-  private activeComponent: string | null = null;
-  private componentTransports: Map<
-    string,
-    ReturnType<typeof Tone.getTransport>
-  > = new Map();
+  private static instance: AudioCoordinator;
+  private components: Map<string, AudioComponent> = new Map();
+
+  private constructor() {}
+
+  static getInstance(): AudioCoordinator {
+    if (!AudioCoordinator.instance) {
+      AudioCoordinator.instance = new AudioCoordinator();
+    }
+    return AudioCoordinator.instance;
+  }
 
   registerComponent(
     componentId: string,
-    cleanupCallback: () => void
+    stopPlayback: () => void
   ): ReturnType<typeof Tone.getTransport> {
-    // If another component is active, stop it
-    if (this.activeComponent && this.activeComponent !== componentId) {
-      const activeTransport = this.componentTransports.get(
-        this.activeComponent
-      );
-      if (activeTransport) {
-        activeTransport.stop();
-        activeTransport.cancel();
-      }
-    }
-
-    // Get a new transport for this component
+    // Get the transport instance for this component
     const transport = Tone.getTransport();
-    this.componentTransports.set(componentId, transport);
-    this.activeComponent = componentId;
 
-    // Set up cleanup
-    transport.on("stop", () => {
-      if (this.activeComponent === componentId) {
-        this.activeComponent = null;
-        cleanupCallback();
-      }
+    // Store the component
+    this.components.set(componentId, {
+      id: componentId,
+      stopPlayback,
+      transport,
     });
 
     return transport;
   }
 
-  unregisterComponent(componentId: string): void {
-    const transport = this.componentTransports.get(componentId);
-    if (transport) {
-      transport.stop();
-      transport.cancel();
-      this.componentTransports.delete(componentId);
-      if (this.activeComponent === componentId) {
-        this.activeComponent = null;
-      }
+  unregisterComponent(componentId: string) {
+    const component = this.components.get(componentId);
+    if (component) {
+      component.stopPlayback();
+      this.components.delete(componentId);
     }
   }
 
   getComponentTransport(
     componentId: string
-  ): ReturnType<typeof Tone.getTransport> | undefined {
-    return this.componentTransports.get(componentId);
+  ): ReturnType<typeof Tone.getTransport> | null {
+    return this.components.get(componentId)?.transport || null;
   }
 
   isComponentActive(componentId: string): boolean {
-    return this.activeComponent === componentId;
+    return this.components.has(componentId);
+  }
+
+  stopAllPlayback() {
+    this.components.forEach((component) => {
+      component.stopPlayback();
+      component.transport.stop();
+    });
   }
 }
 
-export const audioCoordinator = new AudioCoordinator();
+export const audioCoordinator = AudioCoordinator.getInstance();

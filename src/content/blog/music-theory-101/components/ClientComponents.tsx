@@ -22,15 +22,16 @@ const IntersectionWrapper = ({
   id: string;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [key, setKey] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
-        if (entry.isIntersecting) {
-          setHasBeenVisible(true);
+        if (!entry.isIntersecting) {
+          // When component goes off screen, increment the key to force a re-render
+          setKey((prev) => prev + 1);
         }
       },
       {
@@ -58,7 +59,7 @@ const IntersectionWrapper = ({
         minHeight: "1px",
       }}
     >
-      {(isVisible || hasBeenVisible) && <Component />}
+      {isVisible && <Component key={key} />}
     </div>
   );
 };

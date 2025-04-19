@@ -546,26 +546,28 @@ const ChordProgressionPlayerContent = () => {
     }
   };
 
-  // Register with audio coordinator
+  // Register with audio coordinator and cleanup
   useEffect(() => {
+    const stopPlayback = () => {
+      if (sequenceRef.current) {
+        sequenceRef.current.stop();
+        sequenceRef.current.dispose();
+        sequenceRef.current = null;
+      }
+      setIsPlaying(false);
+      setCurrentChord(null);
+    };
+
+    // Register with audio coordinator
     const transport = audioCoordinator.registerComponent(
       "chord-progression",
-      () => {
-        if (isPlaying) {
-          setIsPlaying(false);
-          setCurrentChord(null);
-        }
-      }
+      stopPlayback
     );
 
+    // Cleanup function
     return () => {
+      stopPlayback();
       audioCoordinator.unregisterComponent("chord-progression");
-      if (pianoRef.current) {
-        pianoRef.current.dispose();
-      }
-      if (sequenceRef.current) {
-        sequenceRef.current.dispose();
-      }
     };
   }, []);
 
@@ -582,27 +584,19 @@ const ChordProgressionPlayerContent = () => {
     // Get all chords in the progression
     const chords = generateProgressionChords();
 
-    // Get the transport for this component
+    // Get the transport from the coordinator
     const transport =
       audioCoordinator.getComponentTransport("chord-progression");
     if (!transport) return;
 
-    // Clean up existing sequence
-    if (sequenceRef.current) {
-      sequenceRef.current.dispose();
-      sequenceRef.current = null;
-    }
-
-    // Set tempo and time signature based on progression
+    // Reset transport settings
+    transport.loop = true;
+    transport.timeSignature = [4, 4];
     transport.bpm.value = bpm;
 
     // Set time signature for Andalusian Cadence to 4/8
     if (selectedProgression === "andalusian") {
       transport.timeSignature = [4, 8];
-      // In 4/8, each measure is 4 beats of triplets
-      transport.loopEnd = `${chords.length}m`;
-    } else {
-      transport.timeSignature = [4, 4];
     }
 
     // Calculate the total duration in measures
@@ -610,6 +604,10 @@ const ChordProgressionPlayerContent = () => {
       selectedProgression === "andalusian"
         ? chords.length // One measure per chord in 4/8
         : chords.length * (selectedProgression === "blues" ? 1 : 2);
+
+    // Set loop points to encompass the entire progression
+    transport.loopStart = 0;
+    transport.loopEnd = `${totalDuration}m`;
 
     // Create a sequence to play each chord
     sequenceRef.current = new Tone.Sequence(
@@ -628,14 +626,17 @@ const ChordProgressionPlayerContent = () => {
         : "2n" // Use full measure for Andalusian Cadence
     );
 
-    // Start the sequence and transport
-    sequenceRef.current.start(0);
-    transport.start();
+    // Ensure sequence loops
+    if (sequenceRef.current) {
+      sequenceRef.current.loop = true;
+      sequenceRef.current.loopEnd = chords.length;
+    }
 
-    // Stop after playing through once
-    transport.schedule((time: number) => {
-      stopProgression();
-    }, `+${totalDuration}m`);
+    // Start the sequence
+    transport.start();
+    if (sequenceRef.current) {
+      sequenceRef.current.start(0);
+    }
   };
 
   // Stop the progression
@@ -648,6 +649,7 @@ const ChordProgressionPlayerContent = () => {
       transport.stop();
       transport.cancel();
     }
+
     if (sequenceRef.current) {
       sequenceRef.current.stop();
       sequenceRef.current.dispose();

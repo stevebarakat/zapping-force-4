@@ -73,6 +73,7 @@ function RhythmSequencer() {
   const [currentPreset, setCurrentPreset] = useState<string>("Rock");
   const [isTimeSignatureFromPreset, setIsTimeSignatureFromPreset] =
     useState(false);
+  const sequenceRef = useRef<Tone.Sequence | null>(null);
 
   // Initialize samples
   const [samples] = useState<Samples>(() =>
@@ -90,9 +91,6 @@ function RhythmSequencer() {
     )
   );
 
-  // Reference to sequence
-  const sequenceRef = useRef<Tone.Sequence | null>(null);
-
   // Get current number of steps based on time signature
   const getStepsForTimeSignature = useCallback((sig: string) => {
     switch (sig) {
@@ -105,25 +103,29 @@ function RhythmSequencer() {
     }
   }, []);
 
-  // Register with audio coordinator
+  // Register with audio coordinator and cleanup
   useEffect(() => {
+    const stopPlayback = () => {
+      if (sequenceRef.current) {
+        sequenceRef.current.stop();
+        sequenceRef.current.dispose();
+        sequenceRef.current = null;
+      }
+      Tone.Transport.stop();
+      setIsPlaying(false);
+      setCurrentStep(0);
+    };
+
+    // Register with audio coordinator
     const transport = audioCoordinator.registerComponent(
       "rhythm-sequencer",
-      () => {
-        if (isPlaying) {
-          setIsPlaying(false);
-          setCurrentStep(0);
-        }
-      }
+      stopPlayback
     );
 
+    // Cleanup function
     return () => {
+      stopPlayback();
       audioCoordinator.unregisterComponent("rhythm-sequencer");
-      // Clean up samples
-      Object.values(samples).forEach((sample) => sample.dispose());
-      if (sequenceRef.current) {
-        sequenceRef.current.dispose();
-      }
     };
   }, []);
 
@@ -156,12 +158,6 @@ function RhythmSequencer() {
       audioCoordinator.getComponentTransport("rhythm-sequencer");
     if (!transport) return;
 
-    // Clean up existing sequence
-    if (sequenceRef.current) {
-      sequenceRef.current.dispose();
-      sequenceRef.current = null;
-    }
-
     const steps = getStepsForTimeSignature(timeSignature);
 
     // Use different subdivisions based on time signature
@@ -177,12 +173,11 @@ function RhythmSequencer() {
         subdivision = "8n"; // Eighth notes for 4/4
     }
 
-    // Create new sequence
-    sequenceRef.current = new Tone.Sequence(
+    const seq = new Tone.Sequence(
       (time) => handleStep(time),
       Array(steps).fill(0),
       subdivision
-    );
+    ).start(0);
 
     // Apply shuffle if enabled
     if (shuffle > 0) {
@@ -204,11 +199,10 @@ function RhythmSequencer() {
       transport.loopEnd = "1m";
     }
 
+    sequenceRef.current = seq;
+
     return () => {
-      if (sequenceRef.current) {
-        sequenceRef.current.dispose();
-        sequenceRef.current = null;
-      }
+      seq.dispose();
     };
   }, [handleStep, shuffle, timeSignature, getStepsForTimeSignature]);
 
@@ -233,16 +227,8 @@ function RhythmSequencer() {
 
     if (isPlaying) {
       transport.stop();
-      transport.cancel();
-      if (sequenceRef.current) {
-        sequenceRef.current.stop();
-      }
       setCurrentStep(0);
     } else {
-      transport.bpm.value = bpm;
-      if (sequenceRef.current) {
-        sequenceRef.current.start(0);
-      }
       transport.start();
       transport.loop = true;
       transport.loopEnd = "1m";
