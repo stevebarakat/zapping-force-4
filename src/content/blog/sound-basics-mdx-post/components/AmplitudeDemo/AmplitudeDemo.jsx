@@ -341,7 +341,7 @@ const AmplitudeDemo = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style jsx="true">{`
         .amplitude-demo {
           background-color: #1e293b;
           border-radius: 8px;
