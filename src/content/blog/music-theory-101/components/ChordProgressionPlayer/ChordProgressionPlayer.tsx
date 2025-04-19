@@ -50,8 +50,8 @@ const ChordProgressionPlayerContent = () => {
   const [bpm, setBpm] = useState(80);
   const [octaveRange, setOctaveRange] = useState({ min: 2, max: 5 });
 
-  // Reference to synth
-  const synthRef = useRef<Tone.Sampler | null>(null);
+  // Reference to piano
+  const pianoRef = useRef<Tone.Sampler | null>(null);
   const sequenceRef = useRef<Tone.Sequence | null>(null);
 
   // Define notes
@@ -303,7 +303,7 @@ const ChordProgressionPlayerContent = () => {
           onload: () => {
             console.log("Piano samples loaded successfully!");
             setIsLoaded(true);
-            synthRef.current = newInstrument;
+            pianoRef.current = newInstrument;
           },
           onerror: (error: Error) => {
             console.error("Error loading piano samples:", error);
@@ -329,8 +329,8 @@ const ChordProgressionPlayerContent = () => {
     initializePiano();
 
     return () => {
-      if (synthRef.current) {
-        synthRef.current.dispose();
+      if (pianoRef.current) {
+        pianoRef.current.dispose();
       }
       if (sequenceRef.current) {
         sequenceRef.current.dispose();
@@ -446,7 +446,7 @@ const ChordProgressionPlayerContent = () => {
 
   // Play a single chord
   const playChord = (notes: string[], time: number): void => {
-    if (synthRef.current && isLoaded) {
+    if (pianoRef.current && isLoaded) {
       // For blues, arpeggiate the chord while keeping bass steady
       if (selectedProgression === "blues") {
         // Get the bass note (first note) and chord notes (remaining notes)
@@ -454,11 +454,11 @@ const ChordProgressionPlayerContent = () => {
         const chordNotes = notes.slice(1);
 
         // Play the bass note as a steady quarter note
-        synthRef.current.triggerAttackRelease(bassNote, "4n", time);
+        pianoRef.current.triggerAttackRelease(bassNote, "4n", time);
 
         // Arpeggiate the chord notes
         chordNotes.forEach((note, index) => {
-          synthRef.current?.triggerAttackRelease(
+          pianoRef.current?.triggerAttackRelease(
             note,
             "8n",
             time + index * Tone.Time("8n").toSeconds()
@@ -472,16 +472,16 @@ const ChordProgressionPlayerContent = () => {
         const chordNotes = notes.slice(1);
 
         // Play the full chord for first three beats
-        synthRef.current.triggerAttackRelease(chordNotes, "2n", time);
+        pianoRef.current.triggerAttackRelease(chordNotes, "2n", time);
 
         // Play bass note on first three beats
-        synthRef.current.triggerAttackRelease(bassNote, "8n", time);
-        synthRef.current.triggerAttackRelease(
+        pianoRef.current.triggerAttackRelease(bassNote, "8n", time);
+        pianoRef.current.triggerAttackRelease(
           bassNote,
           "8n",
           time + Tone.Time("8n").toSeconds()
         );
-        synthRef.current.triggerAttackRelease(
+        pianoRef.current.triggerAttackRelease(
           bassNote,
           "8n",
           time + Tone.Time("8n").toSeconds() * 2
@@ -496,12 +496,12 @@ const ChordProgressionPlayerContent = () => {
 
         // Play the full chord with flamenco rhythm
         // In 12/8 time, we'll use a pattern of 3+3+3+3 eighth notes
-        synthRef.current.triggerAttackRelease(chordNotes, "2n", time);
+        pianoRef.current.triggerAttackRelease(chordNotes, "2n", time);
 
         // Play bass notes in a flamenco pattern
         // Pattern: 1-2-3-1-2-3-1-2-3-1-2-3 (in 12/8)
         for (let i = 0; i < 4; i++) {
-          synthRef.current.triggerAttackRelease(
+          pianoRef.current.triggerAttackRelease(
             bassNote,
             "8n",
             time + i * Tone.Time("8n").toSeconds()
@@ -519,28 +519,28 @@ const ChordProgressionPlayerContent = () => {
         const chordNotes = notes.slice(1);
 
         // Play the full chord
-        synthRef.current.triggerAttackRelease(chordNotes, "2n", time);
+        pianoRef.current.triggerAttackRelease(chordNotes, "2n", time);
 
         // Arpeggiate the bass note
-        synthRef.current.triggerAttackRelease(bassNote, "8n", time);
-        synthRef.current.triggerAttackRelease(
+        pianoRef.current.triggerAttackRelease(bassNote, "8n", time);
+        pianoRef.current.triggerAttackRelease(
           bassNote,
           "8n",
           time + Tone.Time("8n").toSeconds()
         );
-        synthRef.current.triggerAttackRelease(
+        pianoRef.current.triggerAttackRelease(
           bassNote,
           "8n",
           time + Tone.Time("8n").toSeconds() * 2
         );
-        synthRef.current.triggerAttackRelease(
+        pianoRef.current.triggerAttackRelease(
           bassNote,
           "8n",
           time + Tone.Time("8n").toSeconds() * 3
         );
       } else {
         // For other progressions, play the chord normally with the passed time
-        synthRef.current.triggerAttackRelease(notes, "2n", time);
+        pianoRef.current.triggerAttackRelease(notes, "2n", time);
       }
     }
   };

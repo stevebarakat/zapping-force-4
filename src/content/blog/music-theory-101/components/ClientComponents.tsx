@@ -22,15 +22,19 @@ const IntersectionWrapper = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setHasBeenVisible(true);
+        }
       },
       {
-        threshold: 0.3,
-        rootMargin: "200px",
+        threshold: 0.1, // Reduced threshold for earlier detection
+        rootMargin: "300px", // Increased margin for earlier detection
       }
     );
 
@@ -50,9 +54,10 @@ const IntersectionWrapper = ({
       ref={ref}
       style={{
         position: "relative",
+        minHeight: "1px", // Prevent collapse when empty
       }}
     >
-      {isVisible && <Component />}
+      {(isVisible || hasBeenVisible) && <Component />}
     </div>
   );
 };
