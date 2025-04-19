@@ -1,136 +1,164 @@
 .harmonics-explorer {
   background-color: var(--component-bg);
   border-radius: 8px;
-  padding: 20px;
-  margin: 24px 0;
+  padding: 16px;
+  margin: 20px 0;
   box-shadow: var(--container-shadow);
 }
 
 .visualization-container {
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .visualization-canvas {
   width: 100%;
-  height: 300px;
+  height: auto;
+  max-height: 200px;
   background-color: var(--component-bg-darker);
+  border: 1px solid var(--component-border);
   border-radius: 8px;
 }
 
 .controls {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.control-section {
-  flex: 1;
-  min-width: 250px;
-  background-color: var(--component-bg-darker);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
+.presets-section {
+  margin-bottom: 8px;
 }
 
-.control-row {
+.preset-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 8px;
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 12px;
+.preset-button {
+  padding: 6px 12px;
+  background-color: var(--component-bg-darker);
+  border: none;
+  border-radius: 4px;
   color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.slider-container {
-  margin-bottom: 8px;
+.preset-button:hover {
+  background-color: var(--component-bg-darker-2);
+}
+
+.preset-button.selected {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.preset-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.harmonics-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.harmonic-control {
+  background-color: var(--component-bg-darker);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.harmonic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.harmonic-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.harmonic-checkbox {
+  margin: 0;
+  cursor: pointer;
+}
+
+.harmonic-checkbox-label {
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.harmonic-frequency {
+  color: var(--text-muted);
+  font-size: 13px;
+  min-width: 80px;
+  text-align: right;
 }
 
 .slider {
   width: 100%;
-  height: 6px;
+  height: 4px;
   -webkit-appearance: none;
   appearance: none;
   background: var(--component-bg-darker-2);
-  border-radius: 3px;
+  border-radius: 2px;
   outline: none;
-  margin-bottom: 4px;
 }
 
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   background: var(--primary-blue);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   background: var(--primary-blue);
   border-radius: 50%;
   cursor: pointer;
 }
 
-.value-display {
-  font-size: 14px;
-  color: var(--text-muted);
-  text-align: right;
-}
-
-.harmonics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.harmonic-control {
-  background-color: var(--component-bg-darker);
-  padding: 12px;
-  border-radius: 6px;
-}
-
-.harmonic-label {
+.bottom-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-.harmonic-number {
-  font-weight: 600;
-}
-
-.harmonic-frequency {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.frequency-controls {
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-top: 8px;
 }
 
 .frequency-buttons {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .frequency-button {
-  padding: 8px 12px;
+  padding: 6px 10px;
   background-color: var(--component-bg-darker);
   border: none;
   border-radius: 4px;
   color: var(--text-primary);
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -141,13 +169,13 @@
 
 .frequency-button.selected {
   background-color: var(--primary-blue);
-  color: var(--text-primary);
+  color: white;
 }
 
 .play-button {
-  padding: 10px 16px;
+  padding: 8px 16px;
   background-color: var(--primary-blue);
-  color: var(--text-primary);
+  color: white;
   border: none;
   border-radius: 4px;
   font-size: 14px;
@@ -162,45 +190,45 @@
 
 .harmonics-info {
   background-color: var(--component-bg-darker);
-  padding: 16px;
+  padding: 12px;
   border-radius: 6px;
+  margin-top: 16px;
 }
 
 .harmonics-info p {
-  margin: 0 0 12px 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--text-primary);
 }
 
-.harmonics-info strong {
-  color: var(--text-primary);
+@media (max-width: 768px) {
+  .harmonics-explorer {
+    padding: 12px;
+  }
+
+  .bottom-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .frequency-buttons {
+    justify-content: center;
+  }
+
+  .play-button {
+    width: 100%;
+  }
 }
 
-.preset-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
+@media (max-width: 480px) {
+  .harmonic-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
 
-.preset-button {
-  padding: 8px 12px;
-  background-color: var(--component-bg-darker);
-  border: none;
-  border-radius: 4px;
-  color: var(--text-primary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.preset-button:hover {
-  background-color: var(--component-bg-darker-2);
-}
-
-.play-controls {
-  display: flex;
-  justify-content: center;
-  margin: 16px 0;
+  .harmonic-frequency {
+    text-align: left;
+  }
 }

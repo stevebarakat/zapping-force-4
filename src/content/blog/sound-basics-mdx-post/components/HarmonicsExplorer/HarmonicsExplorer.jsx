@@ -52,6 +52,10 @@ const HarmonicsExplorer = () => {
   const spectrumCanvasRef = useRef(null);
   const animationRef = useRef(null);
 
+  // Add new refs for container dimensions
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
+
   // Instrument presets
   const presets = {
     sine: {
@@ -110,10 +114,10 @@ const HarmonicsExplorer = () => {
   };
 
   // Apply preset
-  const applyPreset = (presetName) => {
-    if (!presets[presetName]) return;
+  const applyPreset = (presetKey) => {
+    if (!presets[presetKey]) return;
 
-    const preset = presets[presetName];
+    const preset = presets[presetKey];
     const newHarmonics = harmonics.map((h, index) => {
       if (index < preset.harmonics.length) {
         return {
@@ -126,11 +130,17 @@ const HarmonicsExplorer = () => {
     });
 
     setHarmonics(newHarmonics);
-    setSelectedPreset(presetName);
+    setSelectedPreset(presetKey);
 
-    // Update audio if playing
+    // Update audio and visualization if playing
     if (isPlaying) {
+      // Cancel existing animation frame before starting new one
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
       updateOscillators(newHarmonics);
+      startVisualization(); // Restart visualization with new harmonics
     }
   };
 
@@ -245,7 +255,13 @@ const HarmonicsExplorer = () => {
   // Update harmonics
   useEffect(() => {
     if (isPlaying) {
+      // Cancel existing animation frame before starting new one
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
       updateOscillators(harmonics);
+      startVisualization(); // Restart visualization when harmonics change
     }
 
     // Set preset to custom if values changed
@@ -280,19 +296,69 @@ const HarmonicsExplorer = () => {
     setHarmonics(newHarmonics);
   };
 
-  // Draw waveform visualization
+  // Add resize handler
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.clientWidth;
+        // Set canvas dimensions based on container width
+        setDimensions({
+          width: containerWidth,
+          height: Math.min(400, containerWidth * 0.5), // Maintain aspect ratio with max height
+        });
+      }
+    };
+
+    // Initial size
+    handleResize();
+
+    // Add resize listener
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Modify startVisualization to use responsive dimensions
   const startVisualization = () => {
     const waveCanvas = waveCanvasRef.current;
     const spectrumCanvas = spectrumCanvasRef.current;
-    if (!waveCanvas || !spectrumCanvas) return;
+    if (!waveCanvas || !spectrumCanvas) {
+      console.error("Canvas elements not found");
+      return;
+    }
+
+    // Set canvas dimensions
+    waveCanvas.width = dimensions.width;
+    waveCanvas.height = dimensions.height;
+    spectrumCanvas.width = dimensions.width;
+    spectrumCanvas.height = dimensions.height * 0.5;
 
     const waveCtx = waveCanvas.getContext("2d");
     const spectrumCtx = spectrumCanvas.getContext("2d");
+
+    if (!waveCtx || !spectrumCtx) {
+      console.error("Could not get canvas context");
+      return;
+    }
+
+    // Calculate responsive font sizes
+    const baseFontSize = Math.max(10, Math.min(14, dimensions.width / 50));
+    const titleFontSize = Math.max(12, Math.min(16, dimensions.width / 40));
 
     const waveWidth = waveCanvas.width;
     const waveHeight = waveCanvas.height;
     const spectrumWidth = spectrumCanvas.width;
     const spectrumHeight = spectrumCanvas.height;
+
+    // Clear any existing animation frame
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    // Set canvas background to make it visible
+    waveCtx.fillStyle = "#1a1a1a";
+    waveCtx.fillRect(0, 0, waveWidth, waveHeight);
+    spectrumCtx.fillStyle = "#1a1a1a";
+    spectrumCtx.fillRect(0, 0, spectrumWidth, spectrumHeight);
 
     let phase = 0;
 
@@ -358,8 +424,8 @@ const HarmonicsExplorer = () => {
       waveCtx.stroke();
 
       // Draw spectrum
-      const barWidth = Math.min(50, spectrumWidth / 10);
-      const barSpacing = 10;
+      const barWidth = Math.min(dimensions.width / 15, 50);
+      const barSpacing = Math.max(5, dimensions.width / 80);
       const maxBarHeight = spectrumHeight - 40;
 
       // Draw frequency axis
@@ -373,7 +439,7 @@ const HarmonicsExplorer = () => {
       spectrumCtx.stroke();
 
       // Draw frequency labels
-      spectrumCtx.font = "12px Arial";
+      spectrumCtx.font = `${baseFontSize}px Arial`;
       spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--text-primary")
         .trim();
@@ -420,7 +486,7 @@ const HarmonicsExplorer = () => {
       });
 
       // Add spectrum title
-      spectrumCtx.font = "14px Arial";
+      spectrumCtx.font = `${titleFontSize}px Arial`;
       spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--text-primary")
         .trim();
@@ -428,7 +494,7 @@ const HarmonicsExplorer = () => {
       spectrumCtx.fillText("Frequency Spectrum", spectrumWidth / 2, 20);
 
       // Add waveform title
-      waveCtx.font = "14px Arial";
+      waveCtx.font = `${titleFontSize}px Arial`;
       waveCtx.fillStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--text-primary")
         .trim();
@@ -453,18 +519,19 @@ const HarmonicsExplorer = () => {
 
   return (
     <div className={styles["harmonics-explorer"]}>
-      <div className={styles["visualization-container"]}>
+      <div ref={containerRef} className={styles["visualization-container"]}>
         <canvas
           ref={waveCanvasRef}
-          width={800}
-          height={400}
+          className={styles["visualization-canvas"]}
+        />
+        <canvas
+          ref={spectrumCanvasRef}
           className={styles["visualization-canvas"]}
         />
       </div>
 
       <div className={styles.controls}>
         <div className={styles["presets-section"]}>
-          <h3 className={styles["section-title"]}>Instrument Types</h3>
           <div className={styles["preset-buttons"]}>
             {Object.keys(presets).map((presetKey) => (
               <button
@@ -484,69 +551,73 @@ const HarmonicsExplorer = () => {
         </div>
 
         <div className={styles["harmonics-controls"]}>
-          <h3 className={styles["section-title"]}>Harmonic Components</h3>
           {harmonics.map((harmonic, index) => (
             <div key={index} className={styles["harmonic-control"]}>
-              <div className={styles["harmonic-label"]}>
-                <input
-                  type="checkbox"
-                  checked={harmonic.enabled}
-                  onChange={() => toggleHarmonic(index)}
-                  className={styles["harmonic-checkbox"]}
-                />
-                {harmonic.name} ({harmonic.number}×{baseFrequency} Hz)
-              </div>
-              <div className={styles["harmonic-slider-container"]}>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={harmonic.amplitude}
-                  onChange={(e) =>
-                    changeHarmonicAmplitude(index, parseFloat(e.target.value))
-                  }
-                  className={styles.slider}
-                />
-                <span className={styles["amplitude-value"]}>
-                  {harmonic.amplitude.toFixed(2)}
+              <div className={styles["harmonic-header"]}>
+                <div className={styles["harmonic-checkbox-container"]}>
+                  <input
+                    type="checkbox"
+                    checked={harmonic.enabled}
+                    onChange={() => toggleHarmonic(index)}
+                    className={styles["harmonic-checkbox"]}
+                    id={`harmonic-${index}`}
+                  />
+                  <label
+                    htmlFor={`harmonic-${index}`}
+                    className={styles["harmonic-checkbox-label"]}
+                  >
+                    {harmonic.name}
+                  </label>
+                </div>
+                <span className={styles["harmonic-frequency"]}>
+                  {harmonic.number}×{baseFrequency} Hz
                 </span>
               </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={harmonic.amplitude}
+                onChange={(e) =>
+                  changeHarmonicAmplitude(index, parseFloat(e.target.value))
+                }
+                className={styles.slider}
+              />
             </div>
           ))}
         </div>
 
-        <div className={styles["frequency-controls"]}>
-          <h3 className={styles["section-title"]}>Fundamental Frequency</h3>
-          <div className={styles["frequency-buttons"]}>
-            <button
-              className={`${styles["frequency-button"]} ${
-                baseFrequency === 110 ? styles.selected : ""
-              }`}
-              onClick={() => setBaseFrequency(110)}
-            >
-              A2 (110 Hz)
-            </button>
-            <button
-              className={`${styles["frequency-button"]} ${
-                baseFrequency === 220 ? styles.selected : ""
-              }`}
-              onClick={() => setBaseFrequency(220)}
-            >
-              A3 (220 Hz)
-            </button>
-            <button
-              className={`${styles["frequency-button"]} ${
-                baseFrequency === 440 ? styles.selected : ""
-              }`}
-              onClick={() => setBaseFrequency(440)}
-            >
-              A4 (440 Hz)
-            </button>
+        <div className={styles["bottom-controls"]}>
+          <div className={styles["frequency-controls"]}>
+            <div className={styles["frequency-buttons"]}>
+              <button
+                className={`${styles["frequency-button"]} ${
+                  baseFrequency === 110 ? styles.selected : ""
+                }`}
+                onClick={() => setBaseFrequency(110)}
+              >
+                A2 (110 Hz)
+              </button>
+              <button
+                className={`${styles["frequency-button"]} ${
+                  baseFrequency === 220 ? styles.selected : ""
+                }`}
+                onClick={() => setBaseFrequency(220)}
+              >
+                A3 (220 Hz)
+              </button>
+              <button
+                className={`${styles["frequency-button"]} ${
+                  baseFrequency === 440 ? styles.selected : ""
+                }`}
+                onClick={() => setBaseFrequency(440)}
+              >
+                A4 (440 Hz)
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className={styles["play-controls"]}>
           <button onClick={togglePlay} className={styles["play-button"]}>
             {isPlaying ? "Stop Sound" : "Play Sound"}
           </button>
@@ -561,12 +632,6 @@ const HarmonicsExplorer = () => {
           strength of higher harmonics create the characteristic{" "}
           <strong>timbre</strong> or tone color that helps us distinguish
           different instruments.
-        </p>
-        <p>
-          Experiment with the controls above to see and hear how different
-          harmonic structures create different timbres. Notice how certain
-          patterns of harmonics recreate the sound characteristics of familiar
-          instrument families.
         </p>
       </div>
     </div>
