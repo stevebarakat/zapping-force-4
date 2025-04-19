@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import type { CSSProperties } from "react";
 import * as Tone from "tone";
 import { Play } from "lucide-react";
 import "@/styles/shared/dark-mode.css";
@@ -11,6 +12,11 @@ type Note = {
   isLine: boolean;
   position: number; // 1 is bottom line (E4), counting up
 };
+
+// Define custom property type
+interface CustomStyle extends CSSProperties {
+  "--label-offset": string;
+}
 
 const StaffNoteExplorer = () => {
   const [activeNotes, setActiveNotes] = useState<Set<string>>(new Set());
@@ -132,9 +138,7 @@ const StaffNoteExplorer = () => {
                 <div
                   className={styles.noteLabel}
                   style={
-                    {
-                      "--label-offset": `${20 + index * 15}px`,
-                    } as React.CSSProperties
+                    { "--label-offset": `${20 + index * 15}px` } as CustomStyle
                   }
                 >
                   {note.name}

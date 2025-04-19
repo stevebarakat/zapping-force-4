@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import * as Tone from "tone";
 import { Music, Play, Pause } from "lucide-react";
 import { Slider } from "@/components/Slider";
+import styles from "./ScoreReader.module.css";
 
 type Note = {
   name: string; // e.g., "C4"
@@ -276,7 +277,7 @@ function ScoreReader() {
         ledgerLines.push(
           <div
             key={`ledger-top-${pos}-${note.measure}-${note.beat}`}
-            className="ledger-line"
+            className={styles.ledgerLine}
             style={{
               top: `${yPos}px`,
               left: `${getXPosition(note.measure, note.beat) - 10}px`,
@@ -293,7 +294,7 @@ function ScoreReader() {
         ledgerLines.push(
           <div
             key={`ledger-bottom-${pos}-${note.measure}-${note.beat}`}
-            className="ledger-line"
+            className={styles.ledgerLine}
             style={{
               top: `${yPos}px`,
               left: `${getXPosition(note.measure, note.beat) - 10}px`,
@@ -310,8 +311,8 @@ function ScoreReader() {
     <div className="demo-container">
       <h3 className="component-title">Score Reader</h3>
 
-      <div className="score-controls">
-        <div className="score-selector">
+      <div className={styles.scoreControls}>
+        <div className={styles.scoreSelector}>
           <label htmlFor="score-select">Select Piece:</label>
           <select
             id="score-select"
@@ -326,7 +327,7 @@ function ScoreReader() {
               }
             }}
             disabled={isPlaying}
-            className="select"
+            className={styles.select}
           >
             {musicScores.map((score) => (
               <option key={score.title} value={score.title}>
@@ -336,7 +337,7 @@ function ScoreReader() {
           </select>
         </div>
 
-        <div className="speed-control">
+        <div className={styles.speedControl}>
           <Slider
             value={playbackSpeed * 100}
             onChange={(value) => setPlaybackSpeed(value / 100)}
@@ -351,57 +352,55 @@ function ScoreReader() {
 
         <button
           onClick={playScore}
-          className={`button ${isPlaying ? "stop" : "play"}`}
+          className={`${styles.button} ${
+            isPlaying ? styles.stop : styles.play
+          }`}
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           {isPlaying ? "Stop" : "Play"}
         </button>
       </div>
 
-      <div className="score-header">
-        <h4 className="score-title">{selectedScore.title}</h4>
-        <p className="score-composer">By {selectedScore.composer}</p>
+      <div className={styles.scoreHeader}>
+        <h4 className={styles.scoreTitle}>{selectedScore.title}</h4>
+        <p className={styles.scoreComposer}>By {selectedScore.composer}</p>
       </div>
 
-      <div className="score-display">
-        <div className="scroll-container">
+      <div className={styles.scoreDisplay}>
+        <div className={styles.scrollContainer}>
           <div
-            className="staff"
+            className={styles.staff}
             style={{ width: `${totalMeasures * 180 + 120}px` }}
           >
             {/* Clef and time signature */}
-            <div className="clef-time-signature">
-              <div className="clef">𝄞</div>
-              <div className="time-signature">
-                <div className="time-upper">
-                  {selectedScore.timeSignature[0]}
-                </div>
-                <div className="time-lower">
-                  {selectedScore.timeSignature[1]}
-                </div>
+            <div className={styles.clefTimeSignature}>
+              <div className={styles.clef}>𝄞</div>
+              <div className={styles.timeSignature}>
+                <div>{selectedScore.timeSignature[0]}</div>
+                <div>{selectedScore.timeSignature[1]}</div>
               </div>
             </div>
 
             {/* Staff lines */}
-            <div className="staff-lines">
+            <div className={styles.staffLines}>
               {[0, 1, 2, 3, 4].map((line) => (
-                <div key={`line-${line}`} className="staff-line" />
+                <div key={`line-${line}`} className={styles.staffLine} />
               ))}
             </div>
 
             {/* Measure bars */}
-            <div className="measure-bars">
+            <div className={styles.measureBars}>
               {Array.from({ length: totalMeasures + 1 }).map((_, index) => (
                 <div
                   key={`bar-${index}`}
-                  className="measure-bar"
+                  className={styles.measureBar}
                   style={{ left: `${120 + index * 180}px` }}
                 />
               ))}
             </div>
 
             {/* Notes */}
-            <div className="notes">
+            <div className={styles.notes}>
               {selectedScore.notes.map((note, index) => {
                 const noteStyle = getNoteStyle(note.duration);
                 const noteFlag = getNoteFlag(note.duration);
@@ -415,9 +414,9 @@ function ScoreReader() {
 
                     {/* Note head */}
                     <div
-                      className={`note ${noteStyle.filled ? "filled" : ""} ${
-                        currentNoteIndex === index ? "active" : ""
-                      }`}
+                      className={`${styles.note} ${
+                        noteStyle.filled ? styles.filled : ""
+                      } ${currentNoteIndex === index ? styles.active : ""}`}
                       style={{
                         left: `${xPos}px`,
                         top: `${yPos}px`,
@@ -426,29 +425,37 @@ function ScoreReader() {
                     >
                       {/* Note stem and flags for notes that have them */}
                       {noteFlag !== "" && (
-                        <div className={`note-stem ${noteFlag}`}>
-                          {noteFlag === "flag" && <div className="flag" />}
+                        <div
+                          className={`${styles.noteStem} ${styles[noteFlag]}`}
+                        >
+                          {noteFlag === "flag" && (
+                            <div className={styles.flag} />
+                          )}
                           {noteFlag === "flag2" && (
                             <>
-                              <div className="flag flag-top" />
-                              <div className="flag flag-bottom" />
+                              <div
+                                className={`${styles.flag} ${styles.flagTop}`}
+                              />
+                              <div
+                                className={`${styles.flag} ${styles.flagBottom}`}
+                              />
                             </>
                           )}
                         </div>
                       )}
 
                       {/* Dot for dotted notes */}
-                      {note.dotted && <div className="note-dot" />}
+                      {note.dotted && <div className={styles.noteDot} />}
 
                       {/* Accidentals */}
                       {note.accidental === "sharp" && (
-                        <div className="accidental sharp">♯</div>
+                        <div className={styles.accidental}>♯</div>
                       )}
                       {note.accidental === "flat" && (
-                        <div className="accidental flat">♭</div>
+                        <div className={styles.accidental}>♭</div>
                       )}
                       {note.accidental === "natural" && (
-                        <div className="accidental natural">♮</div>
+                        <div className={styles.accidental}>♮</div>
                       )}
                     </div>
                   </React.Fragment>
@@ -459,7 +466,7 @@ function ScoreReader() {
         </div>
       </div>
 
-      <div className="score-info">
+      <div className={styles.scoreInfo}>
         <p>
           <strong>Key:</strong>{" "}
           {selectedScore.keySignature.sharps > 0
@@ -480,277 +487,6 @@ function ScoreReader() {
           <strong>Tempo:</strong> {selectedScore.tempo} BPM
         </p>
       </div>
-
-      <style jsx>{`
-        .score-controls {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          align-items: center;
-          margin-bottom: 1.5rem;
-        }
-
-        .score-selector {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .select {
-          padding: 0.25rem 0.5rem;
-          border: 1px solid var(--component-border);
-          border-radius: 4px;
-          background-color: var(--component-bg);
-          color: var(--text-primary);
-          cursor: pointer;
-        }
-
-        .speed-control {
-          flex: 1;
-          min-width: 200px;
-        }
-
-        .button {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem 1rem;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.2s ease;
-        }
-
-        .button.play {
-          background-color: var(--primary-blue);
-          color: white;
-        }
-
-        .button.stop {
-          background-color: hsl(0 80% 50%);
-          color: white;
-        }
-
-        .score-header {
-          text-align: center;
-          margin-bottom: 1rem;
-        }
-
-        .score-title {
-          font-size: 1.25rem;
-          margin: 0 0 0.25rem 0;
-        }
-
-        .score-composer {
-          font-size: 0.9rem;
-          color: var(--text-secondary);
-          margin: 0;
-        }
-
-        .score-display {
-          width: 100%;
-          background-color: var(--component-bg);
-          border: 1px solid var(--component-border);
-          border-radius: 8px;
-          padding: 1rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .scroll-container {
-          width: 100%;
-          overflow-x: auto;
-          padding-bottom: 0.5rem;
-        }
-
-        .staff {
-          position: relative;
-          height: 120px;
-          min-width: 500px;
-          padding-top: 10px;
-        }
-
-        .clef-time-signature {
-          position: absolute;
-          left: 10px;
-          top: 0;
-          display: flex;
-          align-items: center;
-          height: 100%;
-        }
-
-        .clef {
-          font-size: 5rem;
-          line-height: 0;
-          color: var(--text-primary);
-        }
-
-        .time-signature {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-left: 20px;
-          font-size: 2rem;
-          font-weight: bold;
-          color: var(--text-primary);
-        }
-
-        .staff-lines {
-          position: absolute;
-          top: 40px;
-          left: 0;
-          right: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          height: 40px;
-        }
-
-        .staff-line {
-          height: 1px;
-          width: 100%;
-          background-color: var(--text-primary);
-        }
-
-        .measure-bars {
-          position: absolute;
-          top: 30px;
-          left: 0;
-          right: 0;
-          height: 60px;
-        }
-
-        .measure-bar {
-          position: absolute;
-          top: 0;
-          height: 100%;
-          width: 1px;
-          background-color: var(--text-primary);
-        }
-
-        .notes {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-        }
-
-        .note {
-          position: absolute;
-          width: 12px;
-          height: 10px;
-          background-color: transparent;
-          border: 2px solid var(--text-primary);
-          border-radius: 50%;
-          transform-origin: center;
-        }
-
-        .note.filled {
-          background-color: var(--text-primary);
-        }
-
-        .note.active {
-          background-color: var(--primary-blue);
-          border-color: var(--primary-blue);
-        }
-
-        .note-stem {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 1px;
-          height: 30px;
-          background-color: var(--text-primary);
-          transform-origin: bottom right;
-          transform: translateY(-100%);
-        }
-
-        .note.active .note-stem {
-          background-color: var(--primary-blue);
-        }
-
-        .flag {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 10px;
-          height: 10px;
-          border-top: 2px solid var(--text-primary);
-          border-right: 2px solid var(--text-primary);
-          border-radius: 0 100% 0 0;
-        }
-
-        .note.active .flag {
-          border-color: var(--primary-blue);
-        }
-
-        .flag-top {
-          top: 0;
-        }
-
-        .flag-bottom {
-          top: 10px;
-        }
-
-        .note-dot {
-          position: absolute;
-          top: 50%;
-          right: -10px;
-          width: 4px;
-          height: 4px;
-          background-color: var(--text-primary);
-          border-radius: 50%;
-          transform: translateY(-50%);
-        }
-
-        .note.active .note-dot {
-          background-color: var(--primary-blue);
-        }
-
-        .accidental {
-          position: absolute;
-          top: 50%;
-          left: -15px;
-          font-size: 1.2rem;
-          line-height: 0;
-          transform: translateY(-50%);
-          color: var(--text-primary);
-        }
-
-        .note.active .accidental {
-          color: var(--primary-blue);
-        }
-
-        .ledger-line {
-          position: absolute;
-          width: 20px;
-          height: 1px;
-          background-color: var(--text-primary);
-        }
-
-        .score-info {
-          background-color: var(--component-bg-darker);
-          padding: 1rem;
-          border-radius: 8px;
-        }
-
-        .score-info p {
-          margin: 0 0 0.5rem 0;
-          font-size: 0.9rem;
-        }
-
-        .score-info p:last-child {
-          margin-bottom: 0;
-        }
-
-        @media (max-width: 768px) {
-          .score-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-        }
-      `}</style>
     </div>
   );
 }

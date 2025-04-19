@@ -4,7 +4,7 @@
   gap: 1.5rem;
   width: 100%;
   background: var(--component-bg);
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 8px;
 }
 
@@ -19,9 +19,9 @@
 
 .clef {
   position: absolute;
-  left: 20px;
+  left: -12px;
   top: -24px;
-  font-size: 6.5rem;
+  font-size: 13.5rem;
   line-height: 1;
   color: var(--text-primary);
 }
