@@ -263,7 +263,7 @@ const DualOscillator = () => {
   return (
     <div className={styles.container}>
       <div className={styles.controlSection}>
-        <button onClick={toggleSound} className={styles.button}>
+        <button onClick={toggleSound} className={styles.playButton}>
           {isPlaying ? "Stop" : "Play"}
         </button>
         <div className={styles.sliderContainer}>

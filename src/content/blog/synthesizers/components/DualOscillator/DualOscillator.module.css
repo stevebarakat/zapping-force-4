@@ -41,7 +41,8 @@
   flex-wrap: wrap;
 }
 
-.button {
+.button,
+.playButton {
   padding: 0.5rem 1rem;
   background-color: #111827;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -57,6 +58,18 @@
 .button:hover {
   background-color: var(--primary-blue);
   border-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.playButton {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.playButton:hover {
+  background-color: var(--primary-blue);
+  background-color: #111827;
   color: var(--text-primary);
 }
 
