@@ -12,21 +12,12 @@ const WaveformExplorer = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Get the computed styles to access CSS variables
-    const computedStyle = getComputedStyle(document.documentElement);
-    const bgColor = computedStyle
-      .getPropertyValue("--component-bg-darker")
-      .trim();
-    const primaryBlue = computedStyle.getPropertyValue("--primary-blue").trim();
-
-    // Clear with background color from CSS
-    ctx.fillStyle = bgColor;
+    ctx.fillStyle = "rgb(17, 24, 39)"; // Always dark background
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw waveform
-    ctx.beginPath();
-    ctx.strokeStyle = primaryBlue;
     ctx.lineWidth = 2;
+    ctx.strokeStyle = "#60a5fa"; // Always use the blue color
+    ctx.beginPath();
 
     const width = canvas.width;
     const height = canvas.height;

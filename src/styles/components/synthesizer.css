@@ -55,8 +55,3 @@
 .control-info {
   color: var(--text-secondary) !important;
 }
-
-/* Grid lines and waveform colors */
-canvas {
-  filter: invert(1) hue-rotate(180deg);
-}

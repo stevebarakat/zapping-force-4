@@ -1,7 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import styles from "./ADSRVisualizer.module.css";
+
+interface ADSRState {
+  attack: number;
+  decay: number;
+  sustain: number;
+  release: number;
+}
+
+type SoundType = "synth" | "piano";
+type ADSRParameter = keyof ADSRState;
 
 const ADSRVisualizer = () => {
-  const [adsr, setADSR] = useState({
+  const [adsr, setADSR] = useState<ADSRState>({
     attack: 0.2,
     decay: 0.3,
     sustain: 0.7,
@@ -9,13 +20,13 @@ const ADSRVisualizer = () => {
   });
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [activeSound, setActiveSound] = useState("synth"); // "synth" or "piano"
+  const [activeSound, setActiveSound] = useState<SoundType>("synth");
 
-  const audioContextRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const gainNodeRef = useRef(null);
-  const canvasRef = useRef(null);
-  const animationRef = useRef(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationRef = useRef<number | null>(null);
 
   // Draw the ADSR envelope
   useEffect(() => {
@@ -23,6 +34,8 @@ const ADSRVisualizer = () => {
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     const width = canvas.width;
     const height = canvas.height;
 
@@ -30,11 +43,11 @@ const ADSRVisualizer = () => {
     ctx.clearRect(0, 0, width, height);
 
     // Draw grid
-    ctx.strokeStyle = "#e5e7eb";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
     ctx.lineWidth = 1;
 
     // Vertical grid lines
-    for (let x = 0; x < width; x += width / 10) {
+    for (let x = 0; x < width; x += width / 20) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, height);
@@ -42,7 +55,7 @@ const ADSRVisualizer = () => {
     }
 
     // Horizontal grid lines
-    for (let y = 0; y < height; y += height / 5) {
+    for (let y = 0; y < height; y += height / 10) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(width, y);
@@ -50,72 +63,113 @@ const ADSRVisualizer = () => {
     }
 
     // Draw timeline labels
-    ctx.font = "12px sans-serif";
-    ctx.fillStyle = "#9ca3af";
+    ctx.font = "12px Inter, system-ui, sans-serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
     ctx.textAlign = "center";
 
     // Key pressed indicator
     if (isPlaying) {
-      ctx.fillStyle = "rgba(79, 70, 229, 0.1)";
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, "rgba(79, 70, 229, 0.1)");
+      gradient.addColorStop(1, "rgba(79, 70, 229, 0.05)");
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width * 0.7, height);
-      ctx.fillStyle = "#9ca3af";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
     }
 
-    ctx.fillText("Key Pressed", width * 0.35, height - 5);
-    ctx.fillText("Key Released", width * 0.85, height - 5);
+    ctx.fillText("Key Pressed", width * 0.35, height - 10);
+    ctx.fillText("Key Released", width * 0.85, height - 10);
 
-    // Draw ADSR envelope
-    ctx.beginPath();
+    // Draw ADSR envelope with glow effect
+    ctx.save();
+
+    // Glow effect
+    ctx.shadowColor = "rgba(79, 70, 229, 0.5)";
+    ctx.shadowBlur = 10;
     ctx.strokeStyle = "#4F46E5";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
 
     const startX = 0;
-    const startY = height; // Start at bottom (silence)
+    const startY = height;
 
     // Starting point
+    ctx.beginPath();
     ctx.moveTo(startX, startY);
 
     // Calculate ADSR points
-    const totalDuration = adsr.attack + adsr.decay + 0.5 + adsr.release; // 0.5 is arbitrary sustain time
-    const pixelsPerSecond = (width * 0.7) / (adsr.attack + adsr.decay + 0.5); // Scale to fit 70% of canvas for pressed portion
+    const pixelsPerSecond = (width * 0.7) / (adsr.attack + adsr.decay + 0.5);
 
     // Attack
     const attackX = startX + adsr.attack * pixelsPerSecond;
-    ctx.lineTo(attackX, 0); // Top of canvas (max volume)
+    ctx.lineTo(attackX, 0);
 
     // Decay
     const decayX = attackX + adsr.decay * pixelsPerSecond;
     const sustainY = height * (1 - adsr.sustain);
     ctx.lineTo(decayX, sustainY);
 
-    // Sustain (constant until key release)
-    const sustainX = width * 0.7; // 70% of width
+    // Sustain
+    const sustainX = width * 0.7;
     ctx.lineTo(sustainX, sustainY);
 
     // Release
     const releaseX =
-      sustainX + width * 0.3 * (adsr.release / (adsr.release + 0.2)); // Scale release to remaining 30%
+      sustainX + width * 0.3 * (adsr.release / (adsr.release + 0.2));
     ctx.lineTo(releaseX, height);
 
     // Stroke the path
     ctx.stroke();
 
-    // Add labels
-    ctx.font = "12px sans-serif";
-    ctx.fillStyle = "#4F46E5";
+    // Draw points at key positions
+    const drawPoint = (x: number, y: number) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
+      ctx.strokeStyle = "#4F46E5";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    };
 
-    // "Attack" label
+    drawPoint(startX, startY);
+    drawPoint(attackX, 0);
+    drawPoint(decayX, sustainY);
+    drawPoint(sustainX, sustainY);
+    drawPoint(releaseX, height);
+
+    ctx.restore();
+
+    // Add labels with improved styling
+    ctx.font = "bold 12px Inter, system-ui, sans-serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
     ctx.textAlign = "center";
-    ctx.fillText("A", attackX / 2, height / 2);
 
-    // "Decay" label
-    ctx.fillText("D", attackX + (decayX - attackX) / 2, sustainY / 2);
+    // Draw label backgrounds
+    const drawLabel = (text: string, x: number, y: number) => {
+      const padding = 6;
+      const metrics = ctx.measureText(text);
+      const labelWidth = metrics.width + padding * 2;
+      const labelHeight = 20;
 
-    // "Sustain" label
-    ctx.fillText("S", decayX + (sustainX - decayX) / 2, sustainY - 10);
+      ctx.fillStyle = "rgba(79, 70, 229, 0.1)";
+      ctx.fillRect(
+        x - labelWidth / 2,
+        y - labelHeight / 2,
+        labelWidth,
+        labelHeight
+      );
 
-    // "Release" label
-    ctx.fillText(
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fillText(text, x, y + 4);
+    };
+
+    // Position labels with better spacing
+    drawLabel("A", attackX / 2, height / 2);
+    drawLabel("D", attackX + (decayX - attackX) / 2, sustainY / 2);
+    drawLabel("S", decayX + (sustainX - decayX) / 2, sustainY - 20);
+    drawLabel(
       "R",
       sustainX + (releaseX - sustainX) / 2,
       (height + sustainY) / 2
@@ -126,7 +180,7 @@ const ADSRVisualizer = () => {
   const playSound = () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext ||
-        window.webkitAudioContext)();
+        (window as any).webkitAudioContext)();
     }
 
     const audioContext = audioContextRef.current;
@@ -165,9 +219,9 @@ const ADSRVisualizer = () => {
 
       // Store it to stop later
       const originalStop = oscillator.stop;
-      oscillator.stop = function () {
-        originalStop.apply(this, arguments);
-        oscillator2.stop();
+      oscillator.stop = function (when?: number) {
+        originalStop.call(this, when);
+        oscillator2.stop(when);
       };
     }
 
@@ -228,14 +282,14 @@ const ADSRVisualizer = () => {
     setIsPlaying(false);
   };
 
-  const handleADSRChange = (parameter, value) => {
+  const handleADSRChange = (parameter: ADSRParameter, value: number) => {
     setADSR((prev) => ({
       ...prev,
       [parameter]: value,
     }));
   };
 
-  const getPreset = (presetName) => {
+  const getPreset = (presetName: string): ADSRState => {
     switch (presetName) {
       case "pluck":
         return {
@@ -270,7 +324,7 @@ const ADSRVisualizer = () => {
     }
   };
 
-  const applyPreset = (presetName) => {
+  const applyPreset = (presetName: string) => {
     setADSR(getPreset(presetName));
   };
 
@@ -289,69 +343,69 @@ const ADSRVisualizer = () => {
   }, []);
 
   return (
-    <div className="adsr-visualizer">
-      <div className="waveform-container">
+    <div className={styles.container}>
+      <div className={styles.waveformContainer}>
         <canvas
           ref={canvasRef}
           width={600}
           height={200}
-          className="adsr-canvas"
+          className={styles.canvas}
         />
       </div>
 
-      <div className="controls">
-        <div className="presets-section">
-          <h3 className="control-title">Presets</h3>
-          <div className="preset-buttons">
+      <div className={styles.controls}>
+        <div className={styles.controlSection}>
+          <h3 className={styles.controlTitle}>Presets</h3>
+          <div className={styles.presetButtons}>
             <button
               onClick={() => applyPreset("pluck")}
-              className="preset-button"
+              className={styles.presetButton}
             >
               Pluck
             </button>
             <button
               onClick={() => applyPreset("pad")}
-              className="preset-button"
+              className={styles.presetButton}
             >
               Pad
             </button>
             <button
               onClick={() => applyPreset("piano")}
-              className="preset-button"
+              className={styles.presetButton}
             >
               Piano
             </button>
             <button
               onClick={() => applyPreset("brass")}
-              className="preset-button"
+              className={styles.presetButton}
             >
               Brass
             </button>
           </div>
         </div>
 
-        <div className="sound-toggle">
+        <div className={styles.soundToggle}>
           <button
             onClick={() => setActiveSound("synth")}
-            className={`sound-button ${
-              activeSound === "synth" ? "selected" : ""
+            className={`${styles.soundButton} ${
+              activeSound === "synth" ? styles.selected : ""
             }`}
           >
             Synth Sound
           </button>
           <button
             onClick={() => setActiveSound("piano")}
-            className={`sound-button ${
-              activeSound === "piano" ? "selected" : ""
+            className={`${styles.soundButton} ${
+              activeSound === "piano" ? styles.selected : ""
             }`}
           >
             Piano-like Sound
           </button>
         </div>
 
-        <div className="adsr-sliders">
-          <div className="flex">
-            <label className="control-label">
+        <div className={styles.controlSection}>
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Attack: {adsr.attack.toFixed(2)}s
             </label>
             <input
@@ -363,15 +417,15 @@ const ADSRVisualizer = () => {
               onChange={(e) =>
                 handleADSRChange("attack", parseFloat(e.target.value))
               }
-              className="slider"
+              className={styles.slider}
             />
-            <div className="parameter-description">
+            <div className={styles.parameterDescription}>
               How quickly the sound reaches full volume
             </div>
           </div>
 
-          <div className="flex">
-            <label className="control-label">
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Decay: {adsr.decay.toFixed(2)}s
             </label>
             <input
@@ -383,15 +437,15 @@ const ADSRVisualizer = () => {
               onChange={(e) =>
                 handleADSRChange("decay", parseFloat(e.target.value))
               }
-              className="slider"
+              className={styles.slider}
             />
-            <div className="parameter-description">
+            <div className={styles.parameterDescription}>
               How quickly the sound falls to the sustain level
             </div>
           </div>
 
-          <div className="flex">
-            <label className="control-label">
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Sustain: {(adsr.sustain * 100).toFixed(0)}%
             </label>
             <input
@@ -403,15 +457,15 @@ const ADSRVisualizer = () => {
               onChange={(e) =>
                 handleADSRChange("sustain", parseFloat(e.target.value))
               }
-              className="slider"
+              className={styles.slider}
             />
-            <div className="parameter-description">
+            <div className={styles.parameterDescription}>
               The volume level while the key is held down
             </div>
           </div>
 
-          <div className="flex">
-            <label className="control-label">
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Release: {adsr.release.toFixed(2)}s
             </label>
             <input
@@ -423,28 +477,28 @@ const ADSRVisualizer = () => {
               onChange={(e) =>
                 handleADSRChange("release", parseFloat(e.target.value))
               }
-              className="slider"
+              className={styles.slider}
             />
-            <div className="parameter-description">
+            <div className={styles.parameterDescription}>
               How quickly the sound fades after release
             </div>
           </div>
         </div>
 
-        <div className="play-controls">
+        <div className={styles.playControls}>
           <button
             onMouseDown={playSound}
             onMouseUp={releaseSound}
             onMouseLeave={isPlaying ? releaseSound : undefined}
             onTouchStart={playSound}
             onTouchEnd={releaseSound}
-            className="play-button"
+            className={styles.playButton}
           >
             Hold to Play
           </button>
         </div>
 
-        <div className="adsr-description">
+        <div className={styles.description}>
           <p>
             The ADSR envelope shapes how a sound evolves over time. Try
             different settings and notice how they affect the character of the
@@ -453,179 +507,6 @@ const ADSRVisualizer = () => {
           </p>
         </div>
       </div>
-
-      <style jsx>{`
-        .adsr-visualizer {
-          margin: 24px 0;
-          padding: 20px;
-          background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .adsr-canvas {
-          width: 100%;
-          height: 200px;
-          background-color: #f9fafb;
-          border-radius: 8px;
-          margin-bottom: 20px;
-        }
-
-        .controls {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .control-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 8px;
-        }
-
-        .presets-section {
-          margin-bottom: 16px;
-        }
-
-        .preset-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .preset-button {
-          padding: 6px 12px;
-          background-color: #f3f4f6;
-          border: 1px solid #d1d5db;
-          border-radius: 4px;
-          font-size: var(--font-size-xs);
-          color: #4b5563;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .preset-button:hover {
-          background-color: #e5e7eb;
-        }
-
-        .sound-toggle {
-          display: flex;
-          gap: 8px;
-          margin-bottom: 16px;
-        }
-
-        .sound-button {
-          flex: 1;
-          padding: 8px 12px;
-          background-color: #f3f4f6;
-          border: 1px solid #d1d5db;
-          border-radius: 4px;
-          font-size: var(--font-size-xs);
-          color: #4b5563;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .sound-button:hover {
-          background-color: #e5e7eb;
-        }
-
-        .sound-button.selected {
-          background-color: #4f46e5;
-          color: white;
-          border-color: #4f46e5;
-        }
-
-        .adsr-sliders {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 16px;
-          margin-bottom: 20px;
-        }
-
-        .flex {
-          margin-bottom: 12px;
-        }
-
-        .control-label {
-          display: block;
-          font-size: var(--font-size-xs);
-          font-weight: 500;
-          color: #4b5563;
-          margin-bottom: 4px;
-        }
-
-        .parameter-description {
-          font-size: 12px;
-          color: #6b7280;
-          margin-top: 4px;
-        }
-
-        .slider {
-          width: 100%;
-          height: 6px;
-          -webkit-appearance: none;
-          appearance: none;
-          background: #e5e7eb;
-          border-radius: 3px;
-          outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .play-controls {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 16px;
-        }
-
-        .play-button {
-          padding: 12px 32px;
-          background-color: #4f46e5;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .play-button:hover {
-          background-color: #4338ca;
-        }
-
-        .play-button:active {
-          transform: translateY(1px);
-          background-color: #3730a3;
-        }
-
-        .adsr-description {
-          margin-top: 16px;
-          padding: 12px;
-          background-color: #f9fafb;
-          border-radius: 6px;
-          font-size: var(--font-size-xs);
-          color: #4b5563;
-          line-height: 1.5;
-        }
-      `}</style>
     </div>
   );
 };
