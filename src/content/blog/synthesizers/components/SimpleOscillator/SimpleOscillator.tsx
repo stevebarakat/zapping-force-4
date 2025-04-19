@@ -7,7 +7,7 @@ import { Slider } from "@/components/Slider";
 import { Number } from "@/content/blog/shared/Number";
 import IconButton from "@/components/Button/IconButton";
 
-const FrequencyVisualizer = () => {
+const SimpleOscillator = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -230,25 +230,9 @@ const FrequencyVisualizer = () => {
     }
   };
 
-  // Convert note names to options array
-  const noteOptions = [
-    { value: "C", label: "C" },
-    { value: "C#", label: "C#" },
-    { value: "D", label: "D" },
-    { value: "D#", label: "D#" },
-    { value: "E", label: "E" },
-    { value: "F", label: "F" },
-    { value: "F#", label: "F#" },
-    { value: "G", label: "G" },
-    { value: "G#", label: "G#" },
-    { value: "A", label: "A" },
-    { value: "A#", label: "A#" },
-    { value: "B", label: "B" },
-  ];
-
   return (
     <div className="demo-container">
-      <VisuallyHidden as="h3">Frequency and Pitch Visualizer</VisuallyHidden>
+      <VisuallyHidden as="h3">Simple Oscillator</VisuallyHidden>
       <div className="visualizer-content">
         {error && (
           <div
@@ -347,4 +331,4 @@ const FrequencyVisualizer = () => {
   );
 };
 
-export default FrequencyVisualizer;
+export default SimpleOscillator;
