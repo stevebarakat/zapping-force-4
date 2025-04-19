@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import * as Switch from "@radix-ui/react-switch";
 import styles from "./HarmonicsExplorer.module.css";
 import "@/styles/shared/dark-mode.css";
 
@@ -459,13 +460,14 @@ const HarmonicsExplorer = () => {
             <div key={index} className={styles["harmonic-control"]}>
               <div className={styles["harmonic-header"]}>
                 <div className={styles["harmonic-checkbox-container"]}>
-                  <input
-                    type="checkbox"
+                  <Switch.Root
                     checked={harmonic.enabled}
-                    onChange={() => toggleHarmonic(index)}
-                    className={styles["harmonic-checkbox"]}
+                    onCheckedChange={() => toggleHarmonic(index)}
+                    className={styles["harmonic-switch"]}
                     id={`harmonic-${index}`}
-                  />
+                  >
+                    <Switch.Thumb className={styles["harmonic-switch-thumb"]} />
+                  </Switch.Root>
                   <label
                     htmlFor={`harmonic-${index}`}
                     className={styles["harmonic-checkbox-label"]}

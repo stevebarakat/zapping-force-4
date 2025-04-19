@@ -10,6 +10,7 @@ import { Slider } from "@/components/Slider";
 import { Play } from "lucide-react";
 import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { InstrumentProvider } from "../../lib/contexts/InstrumentContext";
+import { audioCoordinator } from "../../utils/audioCoordinator";
 
 // Define types
 type Note = string;
@@ -545,6 +546,29 @@ const ChordProgressionPlayerContent = () => {
     }
   };
 
+  // Register with audio coordinator
+  useEffect(() => {
+    const transport = audioCoordinator.registerComponent(
+      "chord-progression",
+      () => {
+        if (isPlaying) {
+          setIsPlaying(false);
+          setCurrentChord(null);
+        }
+      }
+    );
+
+    return () => {
+      audioCoordinator.unregisterComponent("chord-progression");
+      if (pianoRef.current) {
+        pianoRef.current.dispose();
+      }
+      if (sequenceRef.current) {
+        sequenceRef.current.dispose();
+      }
+    };
+  }, []);
+
   // Play the entire progression
   const playProgression = async (): Promise<void> => {
     if (isPlaying) return;
@@ -558,16 +582,27 @@ const ChordProgressionPlayerContent = () => {
     // Get all chords in the progression
     const chords = generateProgressionChords();
 
+    // Get the transport for this component
+    const transport =
+      audioCoordinator.getComponentTransport("chord-progression");
+    if (!transport) return;
+
+    // Clean up existing sequence
+    if (sequenceRef.current) {
+      sequenceRef.current.dispose();
+      sequenceRef.current = null;
+    }
+
     // Set tempo and time signature based on progression
-    Tone.Transport.bpm.value = bpm;
+    transport.bpm.value = bpm;
 
     // Set time signature for Andalusian Cadence to 4/8
     if (selectedProgression === "andalusian") {
-      Tone.Transport.timeSignature = [4, 8];
+      transport.timeSignature = [4, 8];
       // In 4/8, each measure is 4 beats of triplets
-      Tone.Transport.loopEnd = `${chords.length}m`;
+      transport.loopEnd = `${chords.length}m`;
     } else {
-      Tone.Transport.timeSignature = [4, 4];
+      transport.timeSignature = [4, 4];
     }
 
     // Calculate the total duration in measures
@@ -593,14 +628,12 @@ const ChordProgressionPlayerContent = () => {
         : "2n" // Use full measure for Andalusian Cadence
     );
 
-    // Start the sequence
-    Tone.Transport.start();
-    if (sequenceRef.current) {
-      sequenceRef.current.start(0);
-    }
+    // Start the sequence and transport
+    sequenceRef.current.start(0);
+    transport.start();
 
     // Stop after playing through once
-    Tone.Transport.schedule((time) => {
+    transport.schedule((time: number) => {
       stopProgression();
     }, `+${totalDuration}m`);
   };
@@ -609,10 +642,16 @@ const ChordProgressionPlayerContent = () => {
   const stopProgression = (): void => {
     if (!isPlaying) return;
 
-    Tone.Transport.stop();
+    const transport =
+      audioCoordinator.getComponentTransport("chord-progression");
+    if (transport) {
+      transport.stop();
+      transport.cancel();
+    }
     if (sequenceRef.current) {
       sequenceRef.current.stop();
       sequenceRef.current.dispose();
+      sequenceRef.current = null;
     }
     setIsPlaying(false);
     setCurrentChord(null);

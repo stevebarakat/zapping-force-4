@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import * as Tone from "tone";
 import { Play, Pause } from "lucide-react";
 import { drumPatterns, type DrumPattern } from "./presets";
@@ -90,6 +90,9 @@ function RhythmSequencer() {
     )
   );
 
+  // Reference to sequence
+  const sequenceRef = useRef<Tone.Sequence | null>(null);
+
   // Get current number of steps based on time signature
   const getStepsForTimeSignature = useCallback((sig: string) => {
     switch (sig) {
@@ -108,20 +111,19 @@ function RhythmSequencer() {
       "rhythm-sequencer",
       () => {
         if (isPlaying) {
-          Tone.Transport.stop();
           setIsPlaying(false);
+          setCurrentStep(0);
         }
       }
     );
 
     return () => {
       audioCoordinator.unregisterComponent("rhythm-sequencer");
-      if (isPlaying) {
-        Tone.Transport.stop();
-        setIsPlaying(false);
-      }
       // Clean up samples
       Object.values(samples).forEach((sample) => sample.dispose());
+      if (sequenceRef.current) {
+        sequenceRef.current.dispose();
+      }
     };
   }, []);
 
@@ -154,6 +156,12 @@ function RhythmSequencer() {
       audioCoordinator.getComponentTransport("rhythm-sequencer");
     if (!transport) return;
 
+    // Clean up existing sequence
+    if (sequenceRef.current) {
+      sequenceRef.current.dispose();
+      sequenceRef.current = null;
+    }
+
     const steps = getStepsForTimeSignature(timeSignature);
 
     // Use different subdivisions based on time signature
@@ -169,11 +177,12 @@ function RhythmSequencer() {
         subdivision = "8n"; // Eighth notes for 4/4
     }
 
-    const seq = new Tone.Sequence(
+    // Create new sequence
+    sequenceRef.current = new Tone.Sequence(
       (time) => handleStep(time),
       Array(steps).fill(0),
       subdivision
-    ).start(0);
+    );
 
     // Apply shuffle if enabled
     if (shuffle > 0) {
@@ -196,7 +205,10 @@ function RhythmSequencer() {
     }
 
     return () => {
-      seq.dispose();
+      if (sequenceRef.current) {
+        sequenceRef.current.dispose();
+        sequenceRef.current = null;
+      }
     };
   }, [handleStep, shuffle, timeSignature, getStepsForTimeSignature]);
 
@@ -221,8 +233,16 @@ function RhythmSequencer() {
 
     if (isPlaying) {
       transport.stop();
+      transport.cancel();
+      if (sequenceRef.current) {
+        sequenceRef.current.stop();
+      }
       setCurrentStep(0);
     } else {
+      transport.bpm.value = bpm;
+      if (sequenceRef.current) {
+        sequenceRef.current.start(0);
+      }
       transport.start();
       transport.loop = true;
       transport.loopEnd = "1m";
