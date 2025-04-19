@@ -49,12 +49,7 @@ const HarmonicsExplorer = () => {
   const gainNodesRef = useRef([]);
   const masterGainRef = useRef(null);
   const waveCanvasRef = useRef(null);
-  const spectrumCanvasRef = useRef(null);
   const animationRef = useRef(null);
-
-  // Add new refs for container dimensions
-  const containerRef = useRef(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
 
   // Instrument presets
   const presets = {
@@ -303,217 +298,69 @@ const HarmonicsExplorer = () => {
     setHarmonics(newHarmonics);
   };
 
-  // Add resize handler
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.clientWidth;
-        // Set canvas dimensions based on container width
-        setDimensions({
-          width: containerWidth,
-          height: Math.min(400, containerWidth * 0.5), // Maintain aspect ratio with max height
-        });
-      }
-    };
-
-    // Initial size
-    handleResize();
-
-    // Add resize listener
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Modify startVisualization to use responsive dimensions
+  // Start visualization
   const startVisualization = () => {
-    const waveCanvas = waveCanvasRef.current;
-    const spectrumCanvas = spectrumCanvasRef.current;
-    if (!waveCanvas || !spectrumCanvas) {
-      console.error("Canvas elements not found");
-      return;
-    }
+    const canvas = waveCanvasRef.current;
+    if (!canvas) return;
 
-    // Set canvas dimensions
-    waveCanvas.width = dimensions.width;
-    waveCanvas.height = dimensions.height;
-    spectrumCanvas.width = dimensions.width;
-    spectrumCanvas.height = dimensions.height * 0.5;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    const waveCtx = waveCanvas.getContext("2d");
-    const spectrumCtx = spectrumCanvas.getContext("2d");
-
-    if (!waveCtx || !spectrumCtx) {
-      console.error("Could not get canvas context");
-      return;
-    }
-
-    // Calculate responsive font sizes
-    const baseFontSize = Math.max(10, Math.min(14, dimensions.width / 50));
-    const titleFontSize = Math.max(12, Math.min(16, dimensions.width / 40));
-
-    const waveWidth = waveCanvas.width;
-    const waveHeight = waveCanvas.height;
-    const spectrumWidth = spectrumCanvas.width;
-    const spectrumHeight = spectrumCanvas.height;
-
-    // Clear any existing animation frame
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-
-    // Set canvas background to make it visible
-    waveCtx.fillStyle = "#1a1a1a";
-    waveCtx.fillRect(0, 0, waveWidth, waveHeight);
-    spectrumCtx.fillStyle = "#1a1a1a";
-    spectrumCtx.fillRect(0, 0, spectrumWidth, spectrumHeight);
+    // Set fixed canvas size
+    canvas.width = 800;
+    canvas.height = 200;
 
     let phase = 0;
 
     const draw = () => {
-      // Clear canvases
-      waveCtx.clearRect(0, 0, waveWidth, waveHeight);
-      spectrumCtx.clearRect(0, 0, spectrumWidth, spectrumHeight);
-
-      // Draw background
-      waveCtx.fillStyle = getComputedStyle(document.documentElement)
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--component-bg-darker")
         .trim();
-      waveCtx.fillRect(0, 0, waveWidth, waveHeight);
-      spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue("--component-bg-darker")
-        .trim();
-      spectrumCtx.fillRect(0, 0, spectrumWidth, spectrumHeight);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw center line on waveform
-      waveCtx.strokeStyle = getComputedStyle(document.documentElement)
+      // Draw center line
+      ctx.strokeStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--component-border")
         .trim();
-      waveCtx.lineWidth = 1;
-      waveCtx.beginPath();
-      waveCtx.moveTo(0, waveHeight / 2);
-      waveCtx.lineTo(waveWidth, waveHeight / 2);
-      waveCtx.stroke();
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
 
-      // Calculate combined waveform
+      // Calculate waveform
       const points = [];
-      for (let x = 0; x < waveWidth; x++) {
-        const ratio = x / waveWidth;
-        let y = waveHeight / 2;
+      for (let x = 0; x < canvas.width; x++) {
+        const ratio = x / canvas.width;
+        let y = canvas.height / 2;
 
-        // Add contribution from each enabled harmonic
         harmonics.forEach((harmonic) => {
           if (harmonic.enabled) {
-            // Adjust number of cycles based on frequency
-            // Use baseFrequency/220 to normalize cycles relative to A3 (220Hz)
             const frequencyRatio = baseFrequency / 220;
             const cycles = 2 * harmonic.number * frequencyRatio;
             const angle =
               ratio * Math.PI * 2 * cycles + phase * harmonic.number;
-            y += Math.sin(angle) * harmonic.amplitude * (waveHeight / 4);
+            y += Math.sin(angle) * harmonic.amplitude * (canvas.height / 4);
           }
         });
 
         points.push({ x, y });
       }
 
-      // Draw combined waveform
-      waveCtx.strokeStyle = getComputedStyle(document.documentElement)
+      // Draw waveform
+      ctx.strokeStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--primary-blue")
         .trim();
-      waveCtx.lineWidth = 2;
-      waveCtx.beginPath();
-
+      ctx.lineWidth = 2;
+      ctx.beginPath();
       points.forEach((point, index) => {
-        if (index === 0) {
-          waveCtx.moveTo(point.x, point.y);
-        } else {
-          waveCtx.lineTo(point.x, point.y);
-        }
+        if (index === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
       });
+      ctx.stroke();
 
-      waveCtx.stroke();
-
-      // Draw spectrum
-      const barWidth = Math.min(dimensions.width / 15, 50);
-      const barSpacing = Math.max(5, dimensions.width / 80);
-      const maxBarHeight = spectrumHeight - 40;
-
-      // Draw frequency axis
-      spectrumCtx.strokeStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue("--component-border")
-        .trim();
-      spectrumCtx.lineWidth = 1;
-      spectrumCtx.beginPath();
-      spectrumCtx.moveTo(0, spectrumHeight - 30);
-      spectrumCtx.lineTo(spectrumWidth, spectrumHeight - 30);
-      spectrumCtx.stroke();
-
-      // Draw frequency labels
-      spectrumCtx.font = `${baseFontSize}px Arial`;
-      spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue("--text-primary")
-        .trim();
-      spectrumCtx.textAlign = "center";
-
-      // Draw spectrum bars
-      harmonics.forEach((harmonic, index) => {
-        const barHeight = harmonic.enabled
-          ? harmonic.amplitude * maxBarHeight
-          : 0;
-        const x = index * (barWidth + barSpacing) + barSpacing * 2;
-        const y = spectrumHeight - 30 - barHeight;
-
-        // Draw bar
-        spectrumCtx.fillStyle = harmonic.color;
-        spectrumCtx.fillRect(x, y, barWidth, barHeight);
-
-        // Draw outline
-        spectrumCtx.strokeStyle = getComputedStyle(document.documentElement)
-          .getPropertyValue("--component-border")
-          .trim();
-        spectrumCtx.lineWidth = 1;
-        spectrumCtx.strokeRect(x, y, barWidth, barHeight);
-
-        // Draw frequency label
-        spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
-          .getPropertyValue("--text-primary")
-          .trim();
-        spectrumCtx.fillText(
-          `${baseFrequency * harmonic.number} Hz`,
-          x + barWidth / 2,
-          spectrumHeight - 10
-        );
-
-        // Draw harmonic number
-        spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
-          .getPropertyValue("--text-primary")
-          .trim();
-        spectrumCtx.fillText(
-          `${harmonic.number}×`,
-          x + barWidth / 2,
-          spectrumHeight - 50 - barHeight
-        );
-      });
-
-      // Add spectrum title
-      spectrumCtx.font = `${titleFontSize}px Arial`;
-      spectrumCtx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue("--text-primary")
-        .trim();
-      spectrumCtx.textAlign = "center";
-      spectrumCtx.fillText("Frequency Spectrum", spectrumWidth / 2, 20);
-
-      // Add waveform title
-      waveCtx.font = `${titleFontSize}px Arial`;
-      waveCtx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue("--text-primary")
-        .trim();
-      waveCtx.textAlign = "center";
-      waveCtx.fillText("Resulting Waveform", waveWidth / 2, 20);
-
-      // Update phase for animation
       phase += 0.02;
-
       animationRef.current = requestAnimationFrame(draw);
     };
 
@@ -529,15 +376,54 @@ const HarmonicsExplorer = () => {
 
   return (
     <div className={styles["harmonics-explorer"]}>
-      <div ref={containerRef} className={styles["visualization-container"]}>
-        <canvas
-          ref={waveCanvasRef}
-          className={styles["visualization-canvas"]}
-        />
-        <canvas
-          ref={spectrumCanvasRef}
-          className={styles["visualization-canvas"]}
-        />
+      <canvas ref={waveCanvasRef} className={styles["visualization-canvas"]} />
+      <div className={styles["spectrum-container"]}>
+        <h3 className={styles["spectrum-title"]}>Frequency Spectrum</h3>
+        <svg
+          className={styles["spectrum-svg"]}
+          viewBox="0 0 800 320"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          {harmonics.map((harmonic, index) => {
+            const barWidth = 100;
+            const barSpacing = 30;
+            const maxBarHeight = 200;
+            const x = index * (barWidth + barSpacing) + 60;
+            const barHeight = harmonic.enabled
+              ? harmonic.amplitude * maxBarHeight
+              : 0;
+            const y = maxBarHeight - barHeight + 50;
+
+            return (
+              <g key={index}>
+                <rect
+                  x={x}
+                  y={y}
+                  width={barWidth}
+                  height={barHeight}
+                  fill={harmonic.color}
+                  className={styles["spectrum-bar"]}
+                />
+                <text
+                  x={x + barWidth / 2}
+                  y={y - 20}
+                  textAnchor="middle"
+                  className={styles["harmonic-number"]}
+                >
+                  {harmonic.number}×
+                </text>
+                <text
+                  x={x + barWidth / 2}
+                  y={maxBarHeight + 80}
+                  textAnchor="middle"
+                  className={styles["frequency-label"]}
+                >
+                  {baseFrequency * harmonic.number} Hz
+                </text>
+              </g>
+            );
+          })}
+        </svg>
       </div>
 
       <div className={styles.controls}>

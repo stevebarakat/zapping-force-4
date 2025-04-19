@@ -3,7 +3,6 @@
   border-radius: 8px;
   padding: 16px;
   margin: 20px 0;
-  box-shadow: var(--container-shadow);
 }
 
 .visualization-container {
@@ -18,7 +17,6 @@
 .visualization-canvas {
   width: 100%;
   height: auto;
-  max-height: 200px;
   background-color: var(--component-bg-darker);
   border: 1px solid var(--component-border);
   border-radius: 8px;
@@ -204,7 +202,7 @@
 
 @media (max-width: 768px) {
   .harmonics-explorer {
-    padding: 12px;
+    padding: 8px;
   }
 
   .bottom-controls {
@@ -219,6 +217,18 @@
   .play-button {
     width: 100%;
   }
+
+  .spectrum-container {
+    padding: 8px;
+  }
+
+  .frequency-label {
+    font-size: 16px;
+  }
+
+  .harmonic-number {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -230,5 +240,63 @@
 
   .harmonic-frequency {
     text-align: left;
+  }
+}
+
+.spectrum-container {
+  margin-top: 16px;
+  margin-bottom: 24px;
+  background-color: var(--component-bg-darker);
+  border: 1px solid var(--component-border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.spectrum-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+
+.spectrum-svg {
+  width: 100%;
+  height: auto;
+}
+
+.spectrum-bar {
+  transition: height 0.3s ease-in-out;
+}
+
+.frequency-label {
+  font-size: 20px;
+  fill: var(--text-muted);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.harmonic-number {
+  font-size: 24px;
+  fill: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .spectrum-container {
+    padding: 8px 4px;
+  }
+
+  .spectrum-title {
+    font-size: 18px;
+    margin: 0 0 12px 0;
+  }
+
+  .frequency-label {
+    font-size: 16px;
+  }
+
+  .harmonic-number {
+    font-size: 18px;
   }
 }
