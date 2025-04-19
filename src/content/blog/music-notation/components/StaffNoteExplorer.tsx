@@ -13,25 +13,56 @@ type Note = {
 };
 
 const StaffNoteExplorer = () => {
-  const [activeNote, setActiveNote] = useState<Note | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const synthRef = useRef<Tone.Synth | null>(null);
+  const [activeNotes, setActiveNotes] = useState<Set<string>>(new Set());
+  const [isLoaded, setIsLoaded] = useState(false);
+  const samplerRef = useRef<Tone.Sampler | null>(null);
 
-  // Initialize synth
+  // Initialize sampler
   React.useEffect(() => {
-    synthRef.current = new Tone.Synth({
-      oscillator: { type: "triangle" },
-      envelope: {
-        attack: 0.02,
-        decay: 0.1,
-        sustain: 0.3,
-        release: 1,
+    const baseUrl = "https://tonejs.github.io/audio/salamander/";
+    const sampleConfig: Partial<Tone.SamplerOptions> = {
+      urls: {
+        A0: "A0.mp3",
+        C1: "C1.mp3",
+        "D#1": "Ds1.mp3",
+        "F#1": "Fs1.mp3",
+        A1: "A1.mp3",
+        C2: "C2.mp3",
+        "D#2": "Ds2.mp3",
+        "F#2": "Fs2.mp3",
+        A2: "A2.mp3",
+        C3: "C3.mp3",
+        "D#3": "Ds3.mp3",
+        "F#3": "Fs3.mp3",
+        A3: "A3.mp3",
+        C4: "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        A4: "A4.mp3",
+        C5: "C5.mp3",
+        "D#5": "Ds5.mp3",
+        "F#5": "Fs5.mp3",
+        A5: "A5.mp3",
+        C6: "C6.mp3",
+        "D#6": "Ds6.mp3",
+        "F#6": "Fs6.mp3",
+        A6: "A6.mp3",
+        C7: "C7.mp3",
+        "D#7": "Ds7.mp3",
+        "F#7": "Fs7.mp3",
+        A7: "A7.mp3",
       },
-    }).toDestination();
+      baseUrl,
+      onload: () => {
+        setIsLoaded(true);
+      },
+    };
+
+    samplerRef.current = new Tone.Sampler(sampleConfig).toDestination();
 
     return () => {
-      if (synthRef.current) {
-        synthRef.current.dispose();
+      if (samplerRef.current) {
+        samplerRef.current.dispose();
       }
     };
   }, []);
@@ -50,23 +81,25 @@ const StaffNoteExplorer = () => {
   ];
 
   const playNote = async (note: Note) => {
-    if (isPlaying) return;
-
-    setIsPlaying(true);
-    setActiveNote(note);
+    if (!isLoaded) return;
 
     try {
       await Tone.start();
-      if (synthRef.current) {
-        synthRef.current.triggerAttackRelease(note.name, "2n");
-      }
+      if (samplerRef.current) {
+        setActiveNotes((prev) => new Set(prev).add(note.name));
+        samplerRef.current.triggerAttackRelease(note.name, "2n");
 
-      setTimeout(() => {
-        setIsPlaying(false);
-      }, 1500);
+        // Remove note from active set after it finishes playing
+        setTimeout(() => {
+          setActiveNotes((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(note.name);
+            return newSet;
+          });
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error playing note:", error);
-      setIsPlaying(false);
     }
   };
 
@@ -92,7 +125,7 @@ const StaffNoteExplorer = () => {
               <div
                 key={note.name}
                 className={`${styles.noteArea} ${
-                  activeNote?.name === note.name ? styles.active : ""
+                  activeNotes.has(note.name) ? styles.active : ""
                 }`}
                 onClick={() => playNote(note)}
               >
@@ -113,18 +146,12 @@ const StaffNoteExplorer = () => {
 
         {/* Information panel */}
         <div className="info-box">
-          {activeNote ? (
+          {!isLoaded ? (
+            <p>Loading piano samples...</p>
+          ) : activeNotes.size > 0 ? (
             <>
-              <h4>Selected Note: {activeNote.name}</h4>
-              <p>
-                This note is on {activeNote.isLine ? "a line" : "a space"} of
-                the staff.
-              </p>
-              <p>Frequency: {activeNote.frequency.toFixed(2)} Hz</p>
-              <Button onClick={() => playNote(activeNote)} disabled={isPlaying}>
-                <Play size={16} />
-                {isPlaying ? "Playing..." : "Play Again"}
-              </Button>
+              <h4>Playing Notes: {Array.from(activeNotes).join(", ")}</h4>
+              <p>Click on multiple lines or spaces to play notes together!</p>
             </>
           ) : (
             <p>

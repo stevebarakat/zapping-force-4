@@ -270,8 +270,7 @@ const ChordProgressionPlayerContent = () => {
     const initializeInstrument = async () => {
       try {
         let newInstrument: Tone.PolySynth<Tone.Synth> | Tone.Sampler;
-
-        // Use Tone.js built-in samples for reliability
+        // Use Tone.js built-in synth
         if (selectedInstrument === INSTRUMENT_TYPES.SYNTH) {
           newInstrument = new Tone.PolySynth(Tone.Synth, {
             envelope: {
