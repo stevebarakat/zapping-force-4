@@ -139,32 +139,22 @@ const WaveVisualizer = () => {
           ctx.stroke();
         }
 
-        // Add labels
+        // Add labels with fixed positions
         ctx.font = "14px Arial";
         ctx.fillStyle = textColor;
         ctx.textAlign = "center";
 
-        // Find positions of maximum compression and rarefaction
-        let maxCompression = 0;
-        let maxRarefaction = 0;
-        let maxCompressionX = 0;
-        let maxRarefactionX = 0;
+        // Only show labels when animation is paused
+        if (!isPlaying) {
+          // Fixed positions for labels (approximately where compression and rarefaction occur)
+          const compressionX = width * 0.25;
+          const rarefactionX = width * 0.75;
 
-        for (let x = 0; x < width; x++) {
-          if (pressureData[x] > maxCompression) {
-            maxCompression = pressureData[x];
-            maxCompressionX = x;
-          }
-          if (pressureData[x] < maxRarefaction) {
-            maxRarefaction = pressureData[x];
-            maxRarefactionX = x;
-          }
+          // Label compression and rarefaction areas
+          ctx.fillStyle = textColor;
+          ctx.fillText("Compression", compressionX, height - 20);
+          ctx.fillText("Rarefaction", rarefactionX, height - 20);
         }
-
-        // Label compression and rarefaction areas
-        ctx.fillStyle = textColor;
-        ctx.fillText("Compression", maxCompressionX, height - 20);
-        ctx.fillText("Rarefaction", maxRarefactionX, height - 20);
 
         // Direction of travel arrow
         ctx.fillStyle = textColor;
@@ -357,13 +347,14 @@ const WaveVisualizer = () => {
           <label className={styles["control-label"]}>Animation Speed</label>
           <input
             type="range"
-            min="0.5"
-            max="2"
+            min="0.1"
+            max="3"
             step="0.1"
             value={speed}
             onChange={(e) => setSpeed(parseFloat(e.target.value))}
             className={styles.slider}
           />
+          <span className={styles["speed-value"]}>{speed.toFixed(1)}x</span>
         </div>
 
         <button className={styles["play-button"]} onClick={togglePlay}>
