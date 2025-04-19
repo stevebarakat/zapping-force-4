@@ -86,20 +86,37 @@
 .harmonic-checkbox-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.harmonic-checkbox-container:hover {
+  background-color: var(--component-bg-darker-2);
 }
 
 .harmonic-checkbox {
   margin: 0;
   cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-blue);
 }
 
 .harmonic-checkbox-label {
   color: var(--text-primary);
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.harmonic-checkbox-container:hover .harmonic-checkbox-label {
+  color: var(--primary-blue);
 }
 
 .harmonic-frequency {
