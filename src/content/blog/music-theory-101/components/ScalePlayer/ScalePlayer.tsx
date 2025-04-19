@@ -12,6 +12,10 @@ import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { INSTRUMENT_TYPES } from "@/consts";
 import { InstrumentProvider } from "../../lib/contexts/InstrumentContext";
 import { useInstrument } from "../../lib/hooks/useInstrument";
+import {
+  initializeAudio,
+  isAudioInitialized,
+} from "../../utils/audioInitializer";
 
 type ScaleType =
   | "major"
@@ -33,7 +37,8 @@ const ScalePlayerContent = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentNote, setCurrentNote] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [selectedInstrument, setSelectedInstrument] = useState("piano");
+  const [selectedInstrument, setSelectedInstrument] =
+    useState<keyof typeof INSTRUMENT_TYPES>("PIANO");
   const [octaveRange, setOctaveRange] = useState({ min: 3, max: 5 });
   const containerRef = useRef<HTMLDivElement>(null);
   const loopRef = useRef<Tone.Loop | null>(null);
@@ -99,16 +104,18 @@ const ScalePlayerContent = () => {
 
   // Handle audio initialization
   useEffect(() => {
-    const handleClick = async () => {
-      if (!isInitialized) {
-        await Tone.start();
+    if (typeof window !== "undefined" && !isAudioInitialized()) {
+      const handleClick = async () => {
+        await initializeAudio();
         setIsInitialized(true);
-      }
-    };
+      };
 
-    window.addEventListener("click", handleClick);
-    return () => window.removeEventListener("click", handleClick);
-  }, [isInitialized]);
+      window.addEventListener("click", handleClick);
+      return () => window.removeEventListener("click", handleClick);
+    } else {
+      setIsInitialized(true);
+    }
+  }, []);
 
   // Register with audio coordinator
   useEffect(() => {
@@ -285,12 +292,12 @@ const ScalePlayerContent = () => {
       <div className="info-box">{scales[selectedScale].description}</div>
 
       <InstrumentPlayer
-        instrumentType={selectedInstrument}
+        instrumentType={INSTRUMENT_TYPES[selectedInstrument]}
         octaveRange={octaveRange}
         showLabels={true}
         activeKeys={getActiveKeys()}
         onInstrumentChange={(instrument) => {
-          setSelectedInstrument(instrument);
+          setSelectedInstrument(instrument as keyof typeof INSTRUMENT_TYPES);
         }}
         onOctaveRangeChange={(newRange) => setOctaveRange(newRange)}
       />

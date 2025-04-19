@@ -11,6 +11,7 @@ import ScalePlayer from "./ScalePlayer";
 import NotePlayer from "./NotePlayer/NotePlayer";
 import { InstrumentProvider } from "../lib/contexts/InstrumentContext";
 import { audioCoordinator } from "../utils/audioCoordinator";
+import { addAudioInitializationListener } from "../utils/audioInitializer";
 
 // Intersection observer wrapper for components
 const IntersectionWrapper = ({
@@ -33,8 +34,8 @@ const IntersectionWrapper = ({
         }
       },
       {
-        threshold: 0.1, // Reduced threshold for earlier detection
-        rootMargin: "300px", // Increased margin for earlier detection
+        threshold: 0.1,
+        rootMargin: "300px",
       }
     );
 
@@ -54,7 +55,7 @@ const IntersectionWrapper = ({
       ref={ref}
       style={{
         position: "relative",
-        minHeight: "1px", // Prevent collapse when empty
+        minHeight: "1px",
       }}
     >
       {(isVisible || hasBeenVisible) && <Component />}
@@ -62,15 +63,26 @@ const IntersectionWrapper = ({
   );
 };
 
+// Add audio initialization listener when the component mounts
+const AudioInitializer = () => {
+  useEffect(() => {
+    addAudioInitializationListener();
+  }, []);
+  return null;
+};
+
 export const ClientScalePlayer = () => (
-  <IntersectionWrapper
-    Component={() => (
-      <InstrumentProvider>
-        <ScalePlayer />
-      </InstrumentProvider>
-    )}
-    id="scale-player"
-  />
+  <>
+    <AudioInitializer />
+    <IntersectionWrapper
+      Component={() => (
+        <InstrumentProvider>
+          <ScalePlayer />
+        </InstrumentProvider>
+      )}
+      id="scale-player"
+    />
+  </>
 );
 
 export const ClientRhythmSequencer = () => (

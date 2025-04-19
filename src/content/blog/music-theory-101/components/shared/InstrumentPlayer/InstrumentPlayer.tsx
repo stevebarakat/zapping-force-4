@@ -19,23 +19,27 @@ export interface InstrumentPlayerRef {
 }
 
 interface InstrumentPlayerProps {
+  instrumentType?: string;
   octaveRange?: { min: number; max: number };
   onKeyClick?: (key: string) => void;
   showLabels?: boolean;
   activeKeys?: string[];
   highlightedKeys?: string[];
   onOctaveRangeChange?: (range: { min: number; max: number }) => void;
+  onInstrumentChange?: (instrument: string) => void;
 }
 
 const InstrumentPlayer = forwardRef<InstrumentPlayerRef, InstrumentPlayerProps>(
   (
     {
+      instrumentType = "piano",
       octaveRange: initialOctaveRange = { min: 3, max: 5 },
       onKeyClick = () => {},
       showLabels = true,
       activeKeys = [],
       highlightedKeys = [],
       onOctaveRangeChange,
+      onInstrumentChange,
     },
     ref
   ) => {
