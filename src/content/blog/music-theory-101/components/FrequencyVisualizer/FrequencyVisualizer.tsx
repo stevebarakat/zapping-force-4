@@ -69,8 +69,7 @@ const FrequencyVisualizer = () => {
     const drawWaveform = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.beginPath();
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      ctx.strokeStyle = isDarkMode ? "#60a5fa" : "#4F46E5";
+      ctx.strokeStyle = "#60a5fa"; // Always use the blue color
       ctx.lineWidth = 2;
 
       const width = canvas.width;
@@ -120,12 +119,11 @@ const FrequencyVisualizer = () => {
 
       analyser.getFloatTimeDomainData(dataArray);
 
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      ctx.fillStyle = isDarkMode ? "rgb(17, 24, 39)" : "rgb(249, 250, 251)";
+      ctx.fillStyle = "rgb(17, 24, 39)"; // Always dark background
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = isDarkMode ? "#60a5fa" : "#4F46E5";
+      ctx.strokeStyle = "#60a5fa"; // Always use the blue color
       ctx.beginPath();
 
       const sliceWidth = canvas.width / bufferLength;
