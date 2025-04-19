@@ -88,7 +88,7 @@ const StaffNoteExplorer = () => {
 
           {/* Note positions */}
           <div className={styles.noteAreas}>
-            {[...staffNotes].reverse().map((note) => (
+            {[...staffNotes].reverse().map((note, index) => (
               <div
                 key={note.name}
                 className={`${styles.noteArea} ${
@@ -96,7 +96,16 @@ const StaffNoteExplorer = () => {
                 }`}
                 onClick={() => playNote(note)}
               >
-                <div className={styles.noteLabel}>{note.name}</div>
+                <div
+                  className={styles.noteLabel}
+                  style={
+                    {
+                      "--label-offset": `${20 + index * 15}px`,
+                    } as React.CSSProperties
+                  }
+                >
+                  {note.name}
+                </div>
               </div>
             ))}
           </div>

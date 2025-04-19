@@ -76,7 +76,7 @@
 
 .noteLabel {
   position: absolute;
-  right: 20px;
+  right: var(--label-offset, 20px);
   background-color: #fff;
   padding: 2px 12px;
   border-radius: 12px;
