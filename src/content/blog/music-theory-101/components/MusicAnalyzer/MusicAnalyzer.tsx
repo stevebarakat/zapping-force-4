@@ -42,7 +42,7 @@ type Analysis = {
 };
 
 function MusicAnalyzer() {
-  const [selectedExample, setSelectedExample] = useState<string>("twinkle");
+  const [selectedExample, setSelectedExample] = useState<string>("mary");
   const [midiData, setMidiData] = useState<Note[] | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -63,25 +63,6 @@ function MusicAnalyzer() {
 
   // Example pieces
   const examples: Examples = {
-    twinkle: {
-      name: "Twinkle, Twinkle, Little Star",
-      notes: [
-        { time: 0, note: "C4", duration: "4n" },
-        { time: "4n", note: "C4", duration: "4n" },
-        { time: "2n", note: "G4", duration: "4n" },
-        { time: "2n + 4n", note: "G4", duration: "4n" },
-        { time: "1m", note: "A4", duration: "4n" },
-        { time: "1m + 4n", note: "A4", duration: "4n" },
-        { time: "1m + 2n", note: "G4", duration: "2n" },
-        { time: "2m", note: "F4", duration: "4n" },
-        { time: "2m + 4n", note: "F4", duration: "4n" },
-        { time: "2m + 2n", note: "E4", duration: "4n" },
-        { time: "2m + 2n + 4n", note: "E4", duration: "4n" },
-        { time: "3m", note: "D4", duration: "4n" },
-        { time: "3m + 4n", note: "D4", duration: "4n" },
-        { time: "3m + 2n", note: "C4", duration: "2n" },
-      ],
-    },
     mary: {
       name: "Mary Had a Little Lamb",
       notes: [
@@ -125,6 +106,25 @@ function MusicAnalyzer() {
         { time: "7m + 2n", note: "r", duration: "4n" },
         { time: "7m + 2n + 4n", note: "r", duration: "4n" },
         { time: "7m + 4n", note: "r", duration: "4n" },
+      ],
+    },
+    twinkle: {
+      name: "Twinkle, Twinkle, Little Star",
+      notes: [
+        { time: 0, note: "C4", duration: "4n" },
+        { time: "4n", note: "C4", duration: "4n" },
+        { time: "2n", note: "G4", duration: "4n" },
+        { time: "2n + 4n", note: "G4", duration: "4n" },
+        { time: "1m", note: "A4", duration: "4n" },
+        { time: "1m + 4n", note: "A4", duration: "4n" },
+        { time: "1m + 2n", note: "G4", duration: "2n" },
+        { time: "2m", note: "F4", duration: "4n" },
+        { time: "2m + 4n", note: "F4", duration: "4n" },
+        { time: "2m + 2n", note: "E4", duration: "4n" },
+        { time: "2m + 2n + 4n", note: "E4", duration: "4n" },
+        { time: "3m", note: "D4", duration: "4n" },
+        { time: "3m + 4n", note: "D4", duration: "4n" },
+        { time: "3m + 2n", note: "C4", duration: "2n" },
       ],
     },
     jingle: {
@@ -456,7 +456,7 @@ function MusicAnalyzer() {
         <Select
           value={selectedExample}
           onChange={loadExample}
-          label="Select Example:"
+          label="Select Example"
         >
           {exampleOptions.map((option) => (
             <option key={option.value} value={option.value}>

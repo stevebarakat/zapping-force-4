@@ -938,7 +938,7 @@ const ChordProgressionPlayerContent = () => {
     <div className="demo-container">
       <VisuallyHidden>Chord Progression Player</VisuallyHidden>
 
-      <div className="chord-progression-controls">
+      <div className="controls">
         {/* Play button */}
         <Button
           size="small"

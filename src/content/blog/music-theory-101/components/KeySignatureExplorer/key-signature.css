@@ -16,20 +16,21 @@
 /* Related keys grid */
 .related-keys {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 0.5rem;
   margin: 1rem 0;
+  border: 1px solid var(--component-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 
 .related-key {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .related-key-title {
   font-weight: 500;
-  min-width: 120px;
+  margin-right: 0.5rem;
 }
 
 .related-key-value {
