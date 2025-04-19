@@ -395,23 +395,28 @@ const HarmonicsExplorer = () => {
             const y = maxBarHeight + 50;
 
             return (
-              <g key={index}>
-                <rect
-                  x={x}
-                  y={y - barHeight}
-                  width={barWidth}
-                  height={barHeight}
-                  fill={harmonic.color}
-                  className={styles["spectrum-bar"]}
-                />
-                <text
-                  x={x + barWidth / 2}
-                  y={y - barHeight - 20}
-                  textAnchor="middle"
-                  className={styles["harmonic-number"]}
+              <React.Fragment key={index}>
+                <g
+                  className={styles["harmonic-group"]}
+                  transform={`translate(0, ${y - barHeight})`}
                 >
-                  {harmonic.number}×
-                </text>
+                  <rect
+                    x={x}
+                    y={0}
+                    width={barWidth}
+                    height={barHeight}
+                    fill={harmonic.color}
+                    className={styles["spectrum-bar"]}
+                  />
+                  <text
+                    x={x + barWidth / 2}
+                    y={-20}
+                    textAnchor="middle"
+                    className={styles["harmonic-number"]}
+                  >
+                    {harmonic.number}×
+                  </text>
+                </g>
                 <text
                   x={x + barWidth / 2}
                   y={maxBarHeight + 80}
@@ -420,7 +425,7 @@ const HarmonicsExplorer = () => {
                 >
                   {baseFrequency * harmonic.number} Hz
                 </text>
-              </g>
+              </React.Fragment>
             );
           })}
         </svg>
