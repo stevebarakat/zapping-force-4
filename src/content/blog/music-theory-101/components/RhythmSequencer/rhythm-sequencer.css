@@ -54,7 +54,7 @@
 .measure-numbers {
   display: flex;
   margin-bottom: 0.5rem;
-  padding-left: 80px;
+  padding-left: 70px;
   list-style: none;
   color: var(--text-secondary);
 }

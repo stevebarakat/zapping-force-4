@@ -387,13 +387,13 @@ function RhythmSequencer() {
         {timeSignature === "4/4" && (
           <ul className="measure-numbers">
             <li>1</li>
-            <li>&</li>
             <li>2</li>
-            <li>&</li>
             <li>3</li>
-            <li>&</li>
             <li>4</li>
-            <li>&</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
           </ul>
         )}
         {timeSignature === "12/8" && (
