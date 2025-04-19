@@ -2,9 +2,9 @@
 
 :root {
   /* Primary colors */
-  --primary-blue: hsl(213 94% 68%);
+  --primary-blue: hsl(213, 94%, 52%);
+  --primary-blue-hover: hsl(213 94% 68%);
   --primary-blue-2: hsl(213 94% 68% / 0.5);
-  --primary-blue-hover: hsl(213, 94%, 52%);
   --primary-button: transparent;
   --primary-button-border: var(--input-border);
   --primary-button-light: hsl(212, 96%, 78%);

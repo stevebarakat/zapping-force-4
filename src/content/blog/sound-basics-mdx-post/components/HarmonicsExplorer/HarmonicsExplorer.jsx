@@ -430,6 +430,9 @@ const HarmonicsExplorer = () => {
           })}
         </svg>
       </div>
+      <button onClick={togglePlay} className={styles["play-button"]}>
+        {isPlaying ? "Stop Sound" : "Play Sound"}
+      </button>
 
       <div className={styles.controls}>
         <div className={styles["presets-section"]}>
@@ -518,10 +521,6 @@ const HarmonicsExplorer = () => {
               </button>
             </div>
           </div>
-
-          <button onClick={togglePlay} className={styles["play-button"]}>
-            {isPlaying ? "Stop Sound" : "Play Sound"}
-          </button>
         </div>
       </div>
 
