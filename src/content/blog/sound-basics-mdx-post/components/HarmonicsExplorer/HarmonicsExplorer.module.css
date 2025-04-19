@@ -1,0 +1,206 @@
+.harmonics-explorer {
+  background-color: var(--component-bg);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: var(--container-shadow);
+}
+
+.visualization-container {
+  margin-bottom: 20px;
+}
+
+.visualization-canvas {
+  width: 100%;
+  height: 300px;
+  background-color: var(--component-bg-darker);
+  border-radius: 8px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.control-section {
+  flex: 1;
+  min-width: 250px;
+  background-color: var(--component-bg-darker);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.slider-container {
+  margin-bottom: 8px;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--component-bg-darker-2);
+  border-radius: 3px;
+  outline: none;
+  margin-bottom: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-blue);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--primary-blue);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.value-display {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.harmonics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.harmonic-control {
+  background-color: var(--component-bg-darker);
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.harmonic-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.harmonic-number {
+  font-weight: 600;
+}
+
+.harmonic-frequency {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.frequency-controls {
+  margin-bottom: 20px;
+}
+
+.frequency-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.frequency-button {
+  padding: 8px 12px;
+  background-color: var(--component-bg-darker);
+  border: none;
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frequency-button:hover {
+  background-color: var(--component-bg-darker-2);
+}
+
+.frequency-button.selected {
+  background-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.play-button {
+  padding: 10px 16px;
+  background-color: var(--primary-blue);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.play-button:hover {
+  background-color: var(--primary-blue-hover);
+}
+
+.harmonics-info {
+  background-color: var(--component-bg-darker);
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.harmonics-info p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.harmonics-info strong {
+  color: var(--text-primary);
+}
+
+.preset-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.preset-button {
+  padding: 8px 12px;
+  background-color: var(--component-bg-darker);
+  border: none;
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-button:hover {
+  background-color: var(--component-bg-darker-2);
+}
+
+.play-controls {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}

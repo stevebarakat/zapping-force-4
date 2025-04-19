@@ -1,0 +1,127 @@
+.wave-visualizer {
+  background-color: var(--component-bg);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: var(--container-shadow);
+}
+
+.wave-canvas {
+  width: 100%;
+  height: 300px;
+  background-color: var(--component-bg-darker);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.control-group {
+  flex: 1;
+}
+
+.speed-control {
+  max-width: 200px;
+}
+
+.control-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.wave-button {
+  padding: 8px 12px;
+  background-color: var(--component-bg-darker);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wave-button:hover {
+  background-color: var(--component-bg-darker-2);
+}
+
+.wave-button.selected {
+  background-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--component-bg-darker-2);
+  border-radius: 3px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-blue);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--primary-blue);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.play-button {
+  padding: 10px 16px;
+  background-color: var(--primary-blue);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.play-button:hover {
+  background-color: var(--primary-blue-hover);
+}
+
+.explanation {
+  background-color: var(--component-bg-darker);
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.explanation p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.explanation strong {
+  color: var(--text-primary);
+}
