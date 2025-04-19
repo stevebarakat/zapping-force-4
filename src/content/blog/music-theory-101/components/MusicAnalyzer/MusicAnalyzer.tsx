@@ -119,21 +119,45 @@ function MusicAnalyzer() {
       ],
       bassNotes: [
         // Bar 1
-        { time: 0, note: "C3", duration: "1m" },
+        { time: 0, note: "C3", duration: "4n" },
+        { time: "4n", note: "G3", duration: "4n" },
+        { time: "2n", note: "C3", duration: "4n" },
+        { time: "2n + 4n", note: "G3", duration: "4n" },
         // Bar 2
-        { time: "1m", note: "C3", duration: "1m" },
+        { time: "1m", note: "C3", duration: "4n" },
+        { time: "1m + 4n", note: "G3", duration: "4n" },
+        { time: "1m + 2n", note: "C3", duration: "4n" },
+        { time: "1m + 2n + 4n", note: "G3", duration: "4n" },
         // Bar 3
-        { time: "2m", note: "G3", duration: "1m" },
+        { time: "2m", note: "G3", duration: "4n" },
+        { time: "2m + 4n", note: "D3", duration: "4n" },
+        { time: "2m + 2n", note: "G3", duration: "4n" },
+        { time: "2m + 2n + 4n", note: "D3", duration: "4n" },
         // Bar 4
-        { time: "3m", note: "C3", duration: "1m" },
+        { time: "3m", note: "C3", duration: "4n" },
+        { time: "3m + 4n", note: "G3", duration: "4n" },
+        { time: "3m + 2n", note: "C3", duration: "4n" },
+        { time: "3m + 2n + 4n", note: "G3", duration: "4n" },
         // Bar 5
-        { time: "4m", note: "C3", duration: "1m" },
+        { time: "4m", note: "C3", duration: "4n" },
+        { time: "4m + 4n", note: "G3", duration: "4n" },
+        { time: "4m + 2n", note: "C3", duration: "4n" },
+        { time: "4m + 2n + 4n", note: "G3", duration: "4n" },
         // Bar 6
-        { time: "5m", note: "C3", duration: "1m" },
+        { time: "5m", note: "C3", duration: "4n" },
+        { time: "5m + 4n", note: "G3", duration: "4n" },
+        { time: "5m + 2n", note: "C3", duration: "4n" },
+        { time: "5m + 2n + 4n", note: "G3", duration: "4n" },
         // Bar 7
-        { time: "6m", note: "G3", duration: "1m" },
+        { time: "6m", note: "G3", duration: "4n" },
+        { time: "6m + 4n", note: "D3", duration: "4n" },
+        { time: "6m + 2n", note: "G3", duration: "4n" },
+        { time: "6m + 2n + 4n", note: "D3", duration: "4n" },
         // Bar 8
-        { time: "7m", note: "C3", duration: "2m" },
+        { time: "7m", note: "C3", duration: "4n" },
+        { time: "7m + 4n", note: "G3", duration: "4n" },
+        { time: "7m + 2n", note: "C3", duration: "4n" },
+        { time: "7m + 2n + 4n", note: "C3", duration: "4n" },
       ],
     },
     twinkle: {
@@ -460,19 +484,51 @@ function MusicAnalyzer() {
           }
         },
         bassSequence,
-        "1m"
+        "4n"
       ).start(0);
 
-      // Create drum sequence
+      // Create drum sequence with more variation and hi-hats
       const drumPattern = [
+        // Bar 1
         { time: "0:0", note: "kick" },
+        { time: "0:1", note: "hihat" },
         { time: "0:2", note: "snare" },
+        { time: "0:3", note: "hihat" },
+        // Bar 2
         { time: "1:0", note: "kick" },
+        { time: "1:1", note: "hihat" },
         { time: "1:2", note: "snare" },
+        { time: "1:3", note: "hihat" },
+        // Bar 3
         { time: "2:0", note: "kick" },
+        { time: "2:1", note: "hihat" },
         { time: "2:2", note: "snare" },
+        { time: "2:3", note: "hihat" },
+        // Bar 4
         { time: "3:0", note: "kick" },
+        { time: "3:1", note: "hihat" },
         { time: "3:2", note: "snare" },
+        { time: "3:3", note: "hihat" },
+        // Bar 5
+        { time: "4:0", note: "kick" },
+        { time: "4:1", note: "hihat" },
+        { time: "4:2", note: "snare" },
+        { time: "4:3", note: "hihat" },
+        // Bar 6
+        { time: "5:0", note: "kick" },
+        { time: "5:1", note: "hihat" },
+        { time: "5:2", note: "snare" },
+        { time: "5:3", note: "hihat" },
+        // Bar 7
+        { time: "6:0", note: "kick" },
+        { time: "6:1", note: "hihat" },
+        { time: "6:2", note: "snare" },
+        { time: "6:3", note: "hihat" },
+        // Bar 8
+        { time: "7:0", note: "kick" },
+        { time: "7:1", note: "hihat" },
+        { time: "7:2", note: "snare" },
+        { time: "7:3", note: "hihat" },
       ];
 
       drumSequenceRef.current = new Tone.Sequence(
@@ -484,6 +540,9 @@ function MusicAnalyzer() {
               break;
             case "snare":
               if (snarePlayer.current) snarePlayer.current.start(time);
+              break;
+            case "hihat":
+              if (hihatPlayer.current) hihatPlayer.current.start(time);
               break;
           }
         },
