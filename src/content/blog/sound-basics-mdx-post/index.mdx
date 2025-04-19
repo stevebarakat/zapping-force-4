@@ -25,6 +25,7 @@ import {
   ClientMusicAnalyzer,
   ClientFrequencyVisualizer,
 } from "./components/ClientComponents";
+import { Callout } from "@/components/Callout";
 
 # How Sound Works: The Science of What We Hear
 
@@ -32,9 +33,21 @@ From the soothing sounds of ocean waves to the complex harmonies of a symphony o
 
 ## What Is Sound?
 
+<Callout type="term">
+  Sound is a form of energy that travels through matter as a pressure wave. When
+  an object vibrates, it creates disturbances in the surrounding medium (usually
+  air), causing molecules to compress and expand in a wave-like pattern.
+</Callout>
+
 At its most basic level, sound is a form of energy that travels through matter as a pressure wave. When an object vibrates, it creates disturbances in the surrounding medium (usually air), causing molecules to compress and expand in a wave-like pattern. These pressure waves radiate outward from the source, eventually reaching our ears where they're transformed into the sensation we know as sound.
 
 <ClientWaveVisualizer client:load="lazy" />
+
+<Callout type="note">
+  Unlike water waves, which move up and down, sound waves are **longitudinal
+  waves** — the air molecules move back and forth in the same direction that the
+  wave travels.
+</Callout>
 
 Unlike water waves, which move up and down, sound waves are **longitudinal waves** — the air molecules move back and forth in the same direction that the wave travels. This creates areas of higher pressure (compressions) and lower pressure (rarefactions) that propagate through the air.
 
@@ -50,7 +63,10 @@ Frequency refers to the number of complete wave cycles that occur in one second,
 - **Mid frequencies** (250-4,000 Hz) cover most speech and common sounds
 - **High frequencies** (4,000-20,000 Hz) give sounds their clarity and brilliance
 
-Try adjusting the frequency slider below to hear how changes in frequency affect the pitch of a sound:
+<Callout type="interactive">
+  Try adjusting the frequency slider below to hear how changes in frequency
+  affect the pitch of a sound:
+</Callout>
 
 <ClientFrequencyDemo client:load="lazy" />
 
@@ -61,6 +77,11 @@ When we talk about musical notes, we're really talking about specific frequencie
 Amplitude refers to the magnitude of the pressure change in a sound wave. Larger amplitudes result in louder sounds, while smaller amplitudes create quieter sounds. We typically measure sound amplitude in decibels (dB), a logarithmic scale that better matches how our ears perceive loudness.
 
 <ClientAmplitudeDemo client:load="lazy" />
+
+<Callout type="caution">
+  Prolonged exposure to sounds above 85 dB can cause permanent hearing damage.
+  Always use hearing protection in loud environments!
+</Callout>
 
 Here are some common sounds and their approximate decibel levels:
 
@@ -118,6 +139,12 @@ When sound waves reflect back and forth in an enclosed space, they can create **
 
 <ClientStandingWavesDemo client:load="lazy" />
 
+<Callout type="practice">
+  Try this: Clap your hands in different rooms of your house. Notice how the
+  sound changes based on the room's size and materials. This is due to standing
+  waves and room acoustics!
+</Callout>
+
 Standing waves are fundamental to how many instruments work:
 
 - In wind instruments, standing waves form in air columns
@@ -135,6 +162,12 @@ Our auditory system is a remarkable biological mechanism that converts pressure 
 3. **Inner ear** (cochlea): Transforms mechanical vibrations into electrical signals
 4. **Auditory nerve**: Carries electrical signals to the brain
 5. **Auditory cortex**: Processes and interprets signals as sound
+
+<Callout type="term">
+  The cochlea is a fluid-filled, spiral-shaped structure in the inner ear that
+  contains thousands of tiny hair cells, each tuned to respond to specific
+  frequencies.
+</Callout>
 
 The cochlea is particularly fascinating. This fluid-filled, spiral-shaped structure contains thousands of tiny hair cells, each tuned to respond to specific frequencies. When sound causes the basilar membrane to vibrate, it bends these hair cells, triggering electrical impulses that our brain interprets as different pitches.
 
@@ -157,6 +190,12 @@ Sound spectrum analysis is used in many applications:
 The spectrum view reveals details that our ears might miss, showing how even simple sounds contain complex patterns of frequencies, and how different sounds occupy different regions of the frequency spectrum.
 
 ## The Speed of Sound: Not Always 343 m/s
+
+<Callout type="note">
+  The speed of sound varies with temperature, medium, humidity, and altitude.
+  This explains phenomena like thunder and why sound behaves differently
+  underwater.
+</Callout>
 
 While we commonly use 343 meters per second (1,125 feet per second) as the speed of sound in air, this value only applies at room temperature (20°C or 68°F) at sea level. The speed of sound varies with:
 
