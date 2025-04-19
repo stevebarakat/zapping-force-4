@@ -284,13 +284,13 @@ const ChordExplorer = () => {
           </h4>
         </header>
         <div>
-          <div className="flex-col" style={{ width: "50%" }}>
+          <div className="flex-col">
             <span className="description-label">Description:</span>
             <span className="chord-description">
               {chordTypes[chordType as keyof typeof chordTypes].description}
             </span>
           </div>
-          <div className="flex-col" style={{ width: "50%" }}>
+          <div className="flex">
             <div className="chord-intervals">
               <div className="intervals-label">Chord Notes:</div>
               <div className="flex gap-4 start">
