@@ -1,4 +1,5 @@
 import React from "react";
+import * as SliderPrimitive from "@radix-ui/react-slider";
 import "./Slider.css";
 
 type SliderProps = {
@@ -29,10 +30,6 @@ export default function Slider({
   suffix,
   id,
 }: SliderProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(Number(e.target.value));
-  };
-
   return (
     <div className="slider-container">
       {label && showLabel && (
@@ -47,17 +44,21 @@ export default function Slider({
         </div>
       )}
       <div className="slider-wrapper">
-        <input
+        <SliderPrimitive.Root
           id={id}
-          type="range"
+          className="slider"
           min={min}
           max={max}
           step={step}
-          value={value}
-          onChange={handleChange}
+          value={[value]}
+          onValueChange={([newValue]) => onChange(newValue)}
           disabled={disabled}
-          className="slider"
-        />
+        >
+          <SliderPrimitive.Track className="slider-track">
+            <SliderPrimitive.Range className="slider-range" />
+          </SliderPrimitive.Track>
+          <SliderPrimitive.Thumb className="slider-thumb" />
+        </SliderPrimitive.Root>
       </div>
     </div>
   );

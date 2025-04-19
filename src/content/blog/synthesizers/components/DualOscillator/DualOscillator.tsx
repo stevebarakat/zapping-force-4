@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import * as Slider from "@radix-ui/react-slider";
 import styles from "./DualOscillator.module.css";
 
 type WaveformType = "sine" | "square" | "sawtooth" | "triangle";
@@ -261,6 +262,55 @@ const DualOscillator = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.controlSection}>
+        <button onClick={toggleSound} className={styles.button}>
+          {isPlaying ? "Stop" : "Play"}
+        </button>
+        <div className={styles.sliderContainer}>
+          <label className={styles.sliderLabel}>
+            Volume: {Math.round(volume * 100)}%
+          </label>
+          <Slider.Root
+            className={styles.sliderRoot}
+            value={[volume]}
+            onValueChange={([value]) =>
+              handleVolumeChange({
+                target: { value: value.toString() },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }
+            max={1}
+            step={0.01}
+          >
+            <Slider.Track className={styles.sliderTrack}>
+              <Slider.Range className={styles.sliderRange} />
+            </Slider.Track>
+            <Slider.Thumb className={styles.sliderThumb} />
+          </Slider.Root>
+        </div>
+        <div className={styles.sliderContainer}>
+          <label className={styles.sliderLabel}>
+            Frequency: {frequency.toFixed(1)} Hz
+          </label>
+          <Slider.Root
+            className={styles.sliderRoot}
+            value={[frequency]}
+            onValueChange={([value]) =>
+              handleFrequencyChange({
+                target: { value: value.toString() },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }
+            min={50}
+            max={1000}
+            step={1}
+          >
+            <Slider.Track className={styles.sliderTrack}>
+              <Slider.Range className={styles.sliderRange} />
+            </Slider.Track>
+            <Slider.Thumb className={styles.sliderThumb} />
+          </Slider.Root>
+        </div>
+      </div>
+
       <div className={styles.waveformContainer}>
         <canvas
           ref={canvasRef}
@@ -271,83 +321,51 @@ const DualOscillator = () => {
       </div>
 
       <div className={styles.controls}>
-        <div className={styles.controlSection}>
-          <h3 className={styles.controlTitle}>Waveform</h3>
-          <div className={styles.buttonGroup}>
-            {["sine", "square", "sawtooth", "triangle"].map((type) => (
-              <button
-                key={type}
-                onClick={() => handleWaveformChange(type as WaveformType)}
-                className={`${styles.button} ${
-                  waveform === type ? styles.selected : ""
-                }`}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
-          </div>
+        <h3 className={styles.controlTitle}>Waveform</h3>
+        <div className={styles.buttonGroup}>
+          {["sine", "square", "sawtooth", "triangle"].map((type) => (
+            <button
+              key={type}
+              onClick={() => handleWaveformChange(type as WaveformType)}
+              className={`${styles.button} ${
+                waveform === type ? styles.selected : ""
+              }`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
         </div>
 
-        <div className={styles.controlSection}>
-          <div className={styles.sliderContainer}>
-            <label className={styles.sliderLabel}>
-              Frequency: {frequency.toFixed(1)} Hz
-            </label>
-            <input
-              type="range"
-              min="50"
-              max="1000"
-              step="1"
-              value={frequency}
-              onChange={handleFrequencyChange}
-              className={styles.slider}
-            />
-          </div>
-
-          <div
-            className={`${styles.sliderContainer} ${styles.oscillatorSection}`}
+        <div
+          className={`${styles.sliderContainer} ${styles.oscillatorSection}`}
+        >
+          <label className={styles.sliderLabel}>Detune: {detune} cents</label>
+          <Slider.Root
+            className={styles.sliderRoot}
+            value={[detune]}
+            onValueChange={([value]) =>
+              handleDetuneChange({
+                target: { value: value.toString() },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }
+            min={-50}
+            max={50}
+            step={1}
           >
-            <label className={styles.sliderLabel}>Detune: {detune} cents</label>
-            <input
-              type="range"
-              min="-50"
-              max="50"
-              step="1"
-              value={detune}
-              onChange={handleDetuneChange}
-              className={styles.slider}
-            />
-            <div className={styles.info}>
-              <div className={styles.infoIcon}>i</div>
-              <div className={styles.infoText}>
-                Detune adds a second oscillator slightly offset from the main
-                frequency. This creates a richer "fatter" sound similar to how
-                multiple musicians playing together creates a fuller sound than
-                a single instrument.
-              </div>
+            <Slider.Track className={styles.sliderTrack}>
+              <Slider.Range className={styles.sliderRange} />
+            </Slider.Track>
+            <Slider.Thumb className={styles.sliderThumb} />
+          </Slider.Root>
+          <div className={styles.info}>
+            <div className={styles.infoIcon}>i</div>
+            <div className={styles.infoText}>
+              Detune adds a second oscillator slightly offset from the main
+              frequency. This creates a richer "fatter" sound similar to how
+              multiple musicians playing together creates a fuller sound than a
+              single instrument.
             </div>
           </div>
-
-          <div className={styles.sliderContainer}>
-            <label className={styles.sliderLabel}>
-              Volume: {Math.round(volume * 100)}%
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-              className={styles.slider}
-            />
-          </div>
-        </div>
-
-        <div className={styles.controlSection}>
-          <button onClick={toggleSound} className={styles.button}>
-            {isPlaying ? "Stop" : "Play"}
-          </button>
         </div>
       </div>
     </div>

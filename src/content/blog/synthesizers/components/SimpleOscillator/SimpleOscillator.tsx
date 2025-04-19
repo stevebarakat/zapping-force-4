@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import * as Slider from "@radix-ui/react-slider";
 import styles from "./SimpleOscillator.module.css";
 
 type WaveformType = "sine" | "square" | "sawtooth" | "triangle";
@@ -246,30 +247,54 @@ function SimpleOscillator() {
             <label className={styles.sliderLabel}>
               Frequency: {frequency.toFixed(1)} Hz
             </label>
-            <input
-              type="range"
-              min="50"
-              max="1000"
-              step="1"
-              value={frequency}
-              onChange={handleFrequencyChange}
-              className={styles.slider}
-            />
+            <Slider.Root
+              className={styles.sliderRoot}
+              min={50}
+              max={1000}
+              step={1}
+              value={[frequency]}
+              onValueChange={([value]) => {
+                setFrequency(value);
+                if (oscillatorRef.current && audioContextRef.current) {
+                  oscillatorRef.current.frequency.setValueAtTime(
+                    value,
+                    audioContextRef.current.currentTime
+                  );
+                }
+              }}
+            >
+              <Slider.Track className={styles.sliderTrack}>
+                <Slider.Range className={styles.sliderRange} />
+              </Slider.Track>
+              <Slider.Thumb className={styles.sliderThumb} />
+            </Slider.Root>
           </div>
 
           <div className={styles.sliderContainer}>
             <label className={styles.sliderLabel}>
               Volume: {Math.round(volume * 100)}%
             </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-              className={styles.slider}
-            />
+            <Slider.Root
+              className={styles.sliderRoot}
+              min={0}
+              max={1}
+              step={0.01}
+              value={[volume]}
+              onValueChange={([value]) => {
+                setVolume(value);
+                if (gainNodeRef.current && audioContextRef.current) {
+                  gainNodeRef.current.gain.setValueAtTime(
+                    value,
+                    audioContextRef.current.currentTime
+                  );
+                }
+              }}
+            >
+              <Slider.Track className={styles.sliderTrack}>
+                <Slider.Range className={styles.sliderRange} />
+              </Slider.Track>
+              <Slider.Thumb className={styles.sliderThumb} />
+            </Slider.Root>
           </div>
         </div>
 
