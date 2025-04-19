@@ -46,17 +46,12 @@ const ChordProgressionPlayerContent = () => {
   const [selectedKey, setSelectedKey] = useState<Note>("C");
   const [currentChord, setCurrentChord] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedInstrument, setSelectedInstrument] = useState(
-    INSTRUMENT_TYPES.PIANO
-  );
   const [isLoaded, setIsLoaded] = useState(false);
   const [bpm, setBpm] = useState(80);
   const [octaveRange, setOctaveRange] = useState({ min: 2, max: 5 });
 
   // Reference to synth
-  const synthRef = useRef<Tone.PolySynth<Tone.Synth> | Tone.Sampler | null>(
-    null
-  );
+  const synthRef = useRef<Tone.Sampler | null>(null);
   const sequenceRef = useRef<Tone.Sequence | null>(null);
 
   // Define notes
@@ -265,360 +260,73 @@ const ChordProgressionPlayerContent = () => {
     return numerals[roman];
   };
 
-  // Initialize synth
+  // Initialize piano
   useEffect(() => {
-    const initializeInstrument = async () => {
+    const initializePiano = async () => {
       try {
-        let newInstrument: Tone.PolySynth<Tone.Synth> | Tone.Sampler;
-        // Use Tone.js built-in synth
-        if (selectedInstrument === INSTRUMENT_TYPES.SYNTH) {
-          newInstrument = new Tone.PolySynth(Tone.Synth, {
-            envelope: {
-              attack: 0.02,
-              decay: 0.1,
-              sustain: 0.3,
-              release: 1,
-            },
-          }).toDestination();
-          setIsLoaded(true);
-          synthRef.current = newInstrument as Tone.PolySynth;
-        } else {
-          // For sampled instruments, use different configurations based on instrument type
-          let baseUrl = "https://tonejs.github.io/audio/salamander/";
-          let sampleConfig: Partial<Tone.SamplerOptions> = {
-            urls: {
-              A0: "A0.mp3",
-              C1: "C1.mp3",
-              "D#1": "Ds1.mp3",
-              "F#1": "Fs1.mp3",
-              A1: "A1.mp3",
-              C2: "C2.mp3",
-              "D#2": "Ds2.mp3",
-              "F#2": "Fs2.mp3",
-              A2: "A2.mp3",
-              C3: "C3.mp3",
-              "D#3": "Ds3.mp3",
-              "F#3": "Fs3.mp3",
-              A3: "A3.mp3",
-              C4: "C4.mp3",
-              "D#4": "Ds4.mp3",
-              "F#4": "Fs4.mp3",
-              A4: "A4.mp3",
-              C5: "C5.mp3",
-              "D#5": "Ds5.mp3",
-              "F#5": "Fs5.mp3",
-              A5: "A5.mp3",
-              C6: "C6.mp3",
-              "D#6": "Ds6.mp3",
-              "F#6": "Fs6.mp3",
-              A6: "A6.mp3",
-              C7: "C7.mp3",
-              "D#7": "Ds7.mp3",
-              "F#7": "Fs7.mp3",
-              A7: "A7.mp3",
-            },
-            baseUrl: "",
-            onload: () => {},
-            onerror: () => {},
-          };
-
-          // Customize the sampler based on instrument type
-          switch (selectedInstrument) {
-            case INSTRUMENT_TYPES.PIANO:
-              // Use default piano samples
-              break;
-
-            case INSTRUMENT_TYPES.XYLO:
-              // Use local xylophone samples in MP3 format
-              const xyloUrls: Record<string, string> = {};
-              const xyloNotes = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-                "A#",
-                "B",
-              ];
-              const xyloNotesOctave4 = ["F", "F#", "G", "G#", "A", "A#", "B"];
-              xyloNotesOctave4.forEach((note) => {
-                const noteWithOctave = `${note}4`;
-                const safeNote = note.replace("#", "s");
-                xyloUrls[noteWithOctave] = `${safeNote}4.mp3`;
-              });
-              [5, 6, 7].forEach((octave) => {
-                xyloNotes.forEach((note) => {
-                  const noteWithOctave = `${note}${octave}`;
-                  const safeNote = note.replace("#", "s");
-                  xyloUrls[noteWithOctave] = `${safeNote}${octave}.mp3`;
-                });
-              });
-              xyloUrls["C8"] = "C8.mp3";
-              newInstrument = new Tone.Sampler({
-                urls: xyloUrls,
-                baseUrl: "/audio/xylo-mp3/",
-                onload: () => {
-                  console.log("Xylophone samples loaded successfully!");
-                  setIsLoaded(true);
-                  synthRef.current = newInstrument;
-                },
-                onerror: (error: Error) => {
-                  console.error("Error loading xylophone samples:", error);
-                  setTimeout(() => {
-                    setIsLoaded(true);
-                  }, 3000);
-                },
-              }).toDestination();
-              return;
-
-            case INSTRUMENT_TYPES.FLUTE:
-              // Use local flute samples in MP3 format
-              const fluteUrls: Record<string, string> = {};
-              const fluteNotes = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-                "A#",
-                "B",
-              ];
-              [4, 5, 6].forEach((octave) => {
-                fluteNotes.forEach((note) => {
-                  const noteWithOctave = `${note}${octave}`;
-                  const safeNote = note.replace("#", "s");
-                  fluteUrls[noteWithOctave] = `${safeNote}${octave}.mp3`;
-                });
-              });
-              fluteUrls["B3"] = "B3.mp3";
-              fluteUrls["C#7"] = "Cs7.mp3";
-              newInstrument = new Tone.Sampler({
-                urls: fluteUrls,
-                baseUrl: "/audio/flute-mp3/",
-                onload: () => {
-                  console.log("Flute samples loaded successfully!");
-                  setIsLoaded(true);
-                  synthRef.current = newInstrument;
-                },
-                onerror: (error: Error) => {
-                  console.error("Error loading flute samples:", error);
-                  setTimeout(() => {
-                    setIsLoaded(true);
-                  }, 3000);
-                },
-              }).toDestination();
-              return;
-
-            case INSTRUMENT_TYPES.VIOLIN:
-              // Use local violin samples in MP3 format
-              const violinUrls: Record<string, string> = {};
-              const violinNotes = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-                "A#",
-                "B",
-              ];
-              const violinNotesOctave3 = ["G#", "A", "A#", "B"];
-              violinNotesOctave3.forEach((note) => {
-                const noteWithOctave = `${note}3`;
-                const safeNote = note.replace("#", "s");
-                violinUrls[noteWithOctave] = `${safeNote}3.mp3`;
-              });
-              [4, 5, 6].forEach((octave) => {
-                violinNotes.forEach((note) => {
-                  const noteWithOctave = `${note}${octave}`;
-                  const safeNote = note.replace("#", "s");
-                  violinUrls[noteWithOctave] = `${safeNote}${octave}.mp3`;
-                });
-              });
-              const violinNotesOctave7 = ["C", "C#", "D", "D#", "E"];
-              violinNotesOctave7.forEach((note) => {
-                const noteWithOctave = `${note}7`;
-                const safeNote = note.replace("#", "s");
-                violinUrls[noteWithOctave] = `${safeNote}7.mp3`;
-              });
-              newInstrument = new Tone.Sampler({
-                urls: violinUrls,
-                baseUrl: "/audio/violin-mp3/",
-                onload: () => {
-                  console.log("Violin samples loaded successfully!");
-                  setIsLoaded(true);
-                  synthRef.current = newInstrument;
-                },
-                onerror: (error: Error) => {
-                  console.error("Error loading violin samples:", error);
-                  setTimeout(() => {
-                    setIsLoaded(true);
-                  }, 3000);
-                },
-              }).toDestination();
-              return;
-
-            case INSTRUMENT_TYPES.CELLO:
-              // Use local cello samples in MP3 format
-              const celloUrls: Record<string, string> = {};
-              const celloNotes = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-                "A#",
-                "B",
-              ];
-              [2, 3, 4].forEach((octave) => {
-                celloNotes.forEach((note) => {
-                  const noteWithOctave = `${note}${octave}`;
-                  const safeNote = note.replace("#", "s");
-                  celloUrls[noteWithOctave] = `${safeNote}${octave}.mp3`;
-                });
-              });
-              const availableNotesOctave5 = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-              ];
-              availableNotesOctave5.forEach((note) => {
-                const noteWithOctave = `${note}5`;
-                const safeNote = note.replace("#", "s");
-                celloUrls[noteWithOctave] = `${safeNote}5.mp3`;
-              });
-              newInstrument = new Tone.Sampler({
-                urls: celloUrls,
-                baseUrl: "/audio/cello-mp3/",
-                onload: () => {
-                  console.log("Cello samples loaded successfully!");
-                  setIsLoaded(true);
-                  synthRef.current = newInstrument;
-                },
-                onerror: (error: Error) => {
-                  console.error("Error loading cello samples:", error);
-                  setTimeout(() => {
-                    setIsLoaded(true);
-                  }, 3000);
-                },
-              }).toDestination();
-              return;
-
-            case INSTRUMENT_TYPES.HORN:
-              // Use local horn samples in MP3 format
-              const hornUrls: Record<string, string> = {};
-              const hornNotes = [
-                "C",
-                "C#",
-                "D",
-                "D#",
-                "E",
-                "F",
-                "F#",
-                "G",
-                "G#",
-                "A",
-                "A#",
-                "B",
-              ];
-              ["A#", "B"].forEach((note) => {
-                const noteWithOctave = `${note}1`;
-                const safeNote = note.replace("#", "s");
-                hornUrls[noteWithOctave] = `${safeNote}1.mp3`;
-              });
-              [2, 3, 4].forEach((octave) => {
-                hornNotes.forEach((note) => {
-                  const noteWithOctave = `${note}${octave}`;
-                  const safeNote = note.replace("#", "s");
-                  hornUrls[noteWithOctave] = `${safeNote}${octave}.mp3`;
-                });
-              });
-              const hornNotesOctave5 = ["C", "C#", "D", "D#", "E", "F"];
-              hornNotesOctave5.forEach((note) => {
-                const noteWithOctave = `${note}5`;
-                const safeNote = note.replace("#", "s");
-                hornUrls[noteWithOctave] = `${safeNote}5.mp3`;
-              });
-              newInstrument = new Tone.Sampler({
-                urls: hornUrls,
-                baseUrl: "/audio/horn-mp3/",
-                onload: () => {
-                  console.log("Horn samples loaded successfully!");
-                  setIsLoaded(true);
-                  synthRef.current = newInstrument;
-                },
-                onerror: (error: Error) => {
-                  console.error("Error loading horn samples:", error);
-                  setTimeout(() => {
-                    setIsLoaded(true);
-                  }, 3000);
-                },
-              }).toDestination();
-              return;
-          }
-
-          // Common configuration for sampled instruments
-          sampleConfig = {
-            ...sampleConfig,
-            baseUrl,
-            onload: () => {
-              console.log(`${selectedInstrument} samples loaded successfully!`);
+        let newInstrument: Tone.Sampler;
+        // Use Tone.js hosted piano samples
+        const baseUrl = "https://tonejs.github.io/audio/salamander/";
+        const sampleConfig: Partial<Tone.SamplerOptions> = {
+          urls: {
+            A0: "A0.mp3",
+            C1: "C1.mp3",
+            "D#1": "Ds1.mp3",
+            "F#1": "Fs1.mp3",
+            A1: "A1.mp3",
+            C2: "C2.mp3",
+            "D#2": "Ds2.mp3",
+            "F#2": "Fs2.mp3",
+            A2: "A2.mp3",
+            C3: "C3.mp3",
+            "D#3": "Ds3.mp3",
+            "F#3": "Fs3.mp3",
+            A3: "A3.mp3",
+            C4: "C4.mp3",
+            "D#4": "Ds4.mp3",
+            "F#4": "Fs4.mp3",
+            A4: "A4.mp3",
+            C5: "C5.mp3",
+            "D#5": "Ds5.mp3",
+            "F#5": "Fs5.mp3",
+            A5: "A5.mp3",
+            C6: "C6.mp3",
+            "D#6": "Ds6.mp3",
+            "F#6": "Fs6.mp3",
+            A6: "A6.mp3",
+            C7: "C7.mp3",
+            "D#7": "Ds7.mp3",
+            "F#7": "Fs7.mp3",
+            A7: "A7.mp3",
+          },
+          baseUrl: baseUrl,
+          onload: () => {
+            console.log("Piano samples loaded successfully!");
+            setIsLoaded(true);
+            synthRef.current = newInstrument;
+          },
+          onerror: (error: Error) => {
+            console.error("Error loading piano samples:", error);
+            setTimeout(() => {
               setIsLoaded(true);
-              synthRef.current = newInstrument;
-            },
-            onerror: (error: Error) => {
-              console.error(
-                `Error loading ${selectedInstrument} samples:`,
-                error
-              );
-              setTimeout(() => {
-                setIsLoaded(true);
-              }, 3000);
-            },
-          };
+            }, 3000);
+          },
+        };
 
-          // Create the sampler with the appropriate configuration
-          newInstrument = new Tone.Sampler(sampleConfig).toDestination();
-        }
+        newInstrument = new Tone.Sampler(sampleConfig).toDestination();
 
         // Start audio context
         await Tone.start();
         console.log("Audio context started");
       } catch (e) {
-        console.error("Error initializing instrument:", e);
+        console.error("Error initializing piano:", e);
         setTimeout(() => {
           setIsLoaded(true);
         }, 3000);
       }
     };
 
-    initializeInstrument();
+    initializePiano();
 
     return () => {
       if (synthRef.current) {
@@ -630,7 +338,7 @@ const ChordProgressionPlayerContent = () => {
       Tone.Transport.stop();
       Tone.Transport.cancel();
     };
-  }, [selectedInstrument]);
+  }, []);
 
   // Update BPM based on progression
   useEffect(() => {
