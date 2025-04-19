@@ -6,7 +6,7 @@ import { ResonanceDemo } from "./ResonanceDemo";
 import { SoundSpectrumAnalyzer } from "./SoundSpectrumAnalyzer";
 import { StandingWavesDemo } from "./StandingWavesDemo";
 import { WaveVisualizer } from "./WaveVisualizer";
-import "@/content/blog/sound-basics-mdx-post/components/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 
 const ClientWrapper = ({ Component }: { Component: React.ComponentType }) => {
   const [isClient, setIsClient] = useState(false);

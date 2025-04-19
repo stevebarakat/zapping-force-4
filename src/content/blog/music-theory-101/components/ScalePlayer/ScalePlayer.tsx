@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import * as Tone from "tone";
 import "./scale-player.css";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { Play } from "lucide-react";
 import { Callout } from "@/components/Callout";

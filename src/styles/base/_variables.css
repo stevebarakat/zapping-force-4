@@ -1,17 +1,5 @@
 /* Colors */
 :root {
-  --bg-color: linear-gradient(var(--gray-gradient)) no-repeat;
-  --accent: hsl(217, 91%, 60%);
-  --accent-dark: hsl(217, 91%, 50%);
-  --black: hsl(0, 0%, 20%);
-  --gray-light: 220 33% 92%;
-  --gray: 222 25% 50%;
-  --gray-dark: 222 25% 18%;
-  --gray-gradient: hsl(220 33% 92% / 0.5), hsl(0 0% 100%);
-  --box-shadow: var(--shadow-medium);
-}
-
-:root.dark {
   --bg-color: hsl(228 20% 11%);
   --bg-color-light: hsl(228 20% 11% / 0.5);
   --accent: hsl(217 91% 60%);

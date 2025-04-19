@@ -1,7 +1,7 @@
-/* Dark Mode Shared Styles for Sound Basics Components */
+/* Dark Mode Shared Styles */
 
 :root {
-  /* Dark mode variables - refined color palette */
+  /* Primary colors */
   --primary-blue: hsl(213 94% 68%);
   --primary-blue-2: hsl(213 94% 68% / 0.5);
   --primary-blue-hover: hsl(213, 94%, 52%);
@@ -9,38 +9,74 @@
   --primary-button-border: var(--input-border);
   --primary-button-light: hsl(212, 96%, 78%);
 
-  /* Component backgrounds - softer, more sophisticated dark theme */
+  /* Component backgrounds */
   --component-bg: #1e293b;
   --component-bg-darker: hsl(222, 47%, 11%);
   --component-bg-darker-2: hsl(222 47% 11% / 0.25);
   --component-border: #334155;
 
-  /* Input elements - better contrast and reduced eye strain */
+  /* Input elements */
   --input-bg: #1e293b;
   --input-border: #475569;
   --input-text: #f1f5f9;
 
-  /* Text colors - improved readability and hierarchy */
+  /* Text colors */
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
 
-  /* Container styles - deeper shadows for better depth */
+  /* Container styles */
   --container-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+
+  /* Background colors */
+  --bg-primary: hsl(227, 20%, 11%);
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+  --bg-quaternary: #334155;
+  --bg-quinary: #475569;
+  --bg-senary: #64748b;
+  --bg-septenary: #94a3b8;
+  --bg-octonary: #cbd5e1;
+  --bg-nonary: #e2e8f0;
+  --bg-denary: #f1f5f9;
+  --bg-elevenary: #f8fafc;
+  --bg-twelveary: #ffffff;
 }
 
-/* Force dark mode styles */
+/* Base styles */
 html {
-  background-color: hsl(228 20% 11%);
+  background-color: #0f172a;
   color: #f1f5f9;
 }
 
 body {
-  background-color: hsl(228 20% 11%);
+  background-color: var(--bg-primary);
   color: #f1f5f9;
 }
 
-/* Shared Demo Container - replaces component-specific containers */
+label {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-bottom: 0;
+  &:after {
+    content: ":";
+  }
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-bottom: 0;
+  margin-right: 0.5rem;
+}
+
+.large {
+  font-size: 1.2rem;
+}
+
+/* Shared Demo Container */
 .demo-container {
   display: flex;
   flex-direction: column;
@@ -66,6 +102,7 @@ body {
 }
 
 /* Common Component Styles */
+.music-theory-component,
 .sound-basics-component {
   background-color: var(--component-bg);
   border: 1px solid var(--component-border);
@@ -76,12 +113,99 @@ body {
 }
 
 /* Input Styles */
+.music-theory-input,
 .sound-basics-input {
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   color: var(--input-text);
   border-radius: 4px;
   padding: 0.5rem;
+}
+
+.number-input {
+  width: fit-content;
+  min-width: 5ch;
+  padding: 0;
+  border: none;
+  background-color: var(--component-bg);
+  color: var(--text-primary);
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--primary-button);
+  box-shadow: 0 0 0 2px var(--primary-button-light);
+}
+
+.number-input::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Grid Cells/Boxes */
+.music-theory-grid-cell {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+}
+
+/* Interactive Grid Styles */
+.interactive-grid {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.interactive-grid-item {
+  min-width: 4.45rem;
+  min-height: 4.45rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--component-border);
+  border-radius: 0.25rem;
+  background-color: var(--component-bg-darker);
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.interactive-grid-item.active {
+  background-color: var(--primary-blue);
+  color: white;
+  transform: scale(1.1);
+  border-color: var(--primary-button);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+/* Info Box */
+.info-box {
+  background-color: var(--component-bg-darker);
+  padding: 15px;
+  border-radius: 0.35rem;
+  border-left: 4px solid var(--primary-blue);
+  font-size: var(--font-size-xs);
+  margin-top: 1rem;
 }
 
 /* Button Styles */
@@ -153,8 +277,17 @@ body {
     padding: 1rem;
   }
 
+  .music-theory-component,
   .sound-basics-component {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .interactive-grid-item {
+    min-width: 3.5rem;
+    min-height: 3.5rem;
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -163,7 +296,14 @@ body {
     padding: 0.75rem;
   }
 
+  .music-theory-component,
   .sound-basics-component {
     padding: 0.75rem;
+  }
+
+  .interactive-grid-item {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    font-size: 0.75rem;
   }
 }

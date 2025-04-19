@@ -51,19 +51,19 @@
 /* Blog Title and Date */
 .blog-title {
   margin: 0;
-  color: hsl(var(--black));
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .blog-date {
   margin: 0;
-  color: hsl(var(--gray));
+  color: var(--text-secondary);
 }
 
 /* Hover States */
 .blog-list li a:hover h4,
 .blog-list li a:hover .blog-date {
-  color: hsl(var(--accent));
+  color: var(--accent);
 }
 
 .blog-list a:hover img {

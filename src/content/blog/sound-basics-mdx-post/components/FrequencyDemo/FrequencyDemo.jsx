@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./FrequencyDemo.module.css";
-import "@/content/blog/sound-basics-mdx-post/components/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 
 const FrequencyDemo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -16,15 +16,23 @@ const FrequencyDemo = () => {
   const frequencyRanges = [
     { range: "Bass", min: 20, max: 250, color: "#3b82f6" }, // Blue
     { range: "Mid", min: 250, max: 4000, color: "#10b981" }, // Green
-    { range: "High", min: 4000, max: 20000, color: "#f59e0b" }, // Amber
+    { range: "High", min: 4000, max: 14500, color: "#f59e0b" }, // Amber
+    { range: "Very High", min: 14500, max: 20000, color: "#ef4444" }, // Red
   ];
 
   const noteFrequencies = [
+    { note: "A1", frequency: 55, description: "Very low A (bass)" },
     { note: "A2", frequency: 110, description: "Low A (cello)" },
     { note: "A3", frequency: 220, description: "Bass A (bass guitar)" },
     { note: "A4", frequency: 440, description: "Middle A (standard tuning)" },
     { note: "A5", frequency: 880, description: "High A (violin)" },
     { note: "A6", frequency: 1760, description: "Very high A (piccolo)" },
+    { note: "A7", frequency: 3520, description: "Extremely high A" },
+    {
+      note: "A8",
+      frequency: 7040,
+      description: "Highest A (near upper hearing limit)",
+    },
   ];
 
   // Start or update oscillator
@@ -101,6 +109,82 @@ const FrequencyDemo = () => {
     }
   }, [frequency, isPlaying]);
 
+  // Update visualization when frequency changes
+  useEffect(() => {
+    if (showVisualization) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Clear any existing animation frame
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+
+      // Draw static waveform
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw background
+      ctx.fillStyle = getComputedStyle(document.documentElement)
+        .getPropertyValue("--component-bg-darker")
+        .trim();
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw center line
+      ctx.strokeStyle = getComputedStyle(document.documentElement)
+        .getPropertyValue("--component-border")
+        .trim();
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, height / 2);
+      ctx.lineTo(width, height / 2);
+      ctx.stroke();
+
+      // Draw waveform
+      ctx.strokeStyle = getCurrentRangeColor();
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      // Calculate wavelength based on frequency
+      const cycles = Math.max(1, Math.min(20, frequency / 50));
+
+      for (let x = 0; x < width; x++) {
+        const ratio = x / width;
+        const angle = ratio * Math.PI * 2 * cycles;
+        const y = height / 2 + Math.sin(angle) * (height / 3);
+
+        if (x === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+
+      ctx.stroke();
+
+      // Draw frequency value
+      ctx.font = "16px Arial";
+      ctx.fillStyle = getComputedStyle(document.documentElement)
+        .getPropertyValue("--text-primary")
+        .trim();
+      ctx.textAlign = "center";
+      ctx.fillText(`${frequency} Hz`, width / 2, 30);
+
+      // Draw range label
+      const currentRange = getCurrentRange();
+      ctx.fillStyle = currentRange.color;
+      ctx.fillText(currentRange.range + " Range", width / 2, 60);
+
+      // Start animation if playing
+      if (isPlaying) {
+        startVisualization();
+      }
+    }
+  }, [frequency, showVisualization, isPlaying]);
+
   // Draw frequency visualization
   const startVisualization = () => {
     const canvas = canvasRef.current;
@@ -139,8 +223,6 @@ const FrequencyDemo = () => {
       ctx.beginPath();
 
       // Calculate wavelength based on frequency
-      // We'll scale it to make it visible no matter the frequency
-      // Higher frequency = more waves on screen
       const cycles = Math.max(1, Math.min(20, frequency / 50));
 
       for (let x = 0; x < width; x++) {
@@ -272,11 +354,13 @@ const FrequencyDemo = () => {
 
             <input
               type="range"
-              min="20"
-              max="20000"
-              step="1"
-              value={frequency}
-              onChange={(e) => setFrequency(parseInt(e.target.value))}
+              min={Math.log10(20)}
+              max={Math.log10(20000)}
+              step="0.001"
+              value={Math.log10(frequency)}
+              onChange={(e) =>
+                setFrequency(Math.round(Math.pow(10, e.target.value)))
+              }
               className={styles.slider}
               style={{ background: "transparent" }}
             />
@@ -319,6 +403,13 @@ const FrequencyDemo = () => {
             {getCurrentRange().range}
           </strong>{" "}
           range.
+          {frequency > 14500 && (
+            <span style={{ color: "#ef4444" }}>
+              {" "}
+              Note: Most adults cannot hear frequencies above 14,500 Hz due to
+              natural hearing loss with age.
+            </span>
+          )}
           {Math.abs(frequency - getClosestNote().frequency) < 5 &&
             ` This is very close to the note ${getClosestNote().note} (${
               getClosestNote().description

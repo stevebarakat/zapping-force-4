@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./ResonanceDemo.module.css";
-import "@/content/blog/sound-basics-mdx-post/components/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 
 const ResonanceDemo = () => {
   const canvasRef = useRef(null);

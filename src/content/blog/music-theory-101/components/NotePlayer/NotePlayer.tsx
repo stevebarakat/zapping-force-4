@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { INSTRUMENT_TYPES } from "@/consts";
 import VisuallyHidden from "@/components/VisuallyHidden";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import { Select } from "@/content/blog/shared/Select";
 
 const NotePlayer = () => {

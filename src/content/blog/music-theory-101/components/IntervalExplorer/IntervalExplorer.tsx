@@ -2,7 +2,7 @@ import React, { useState, useRef, type RefObject, useMemo } from "react";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { INSTRUMENT_TYPES } from "@/consts";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import { Callout } from "@/components/Callout";
 import { Button } from "@/components/Button";
 import type { Note, InstrumentPlayerRef, OctaveRange } from "./types";

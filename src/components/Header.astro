@@ -1,14 +1,10 @@
 ---
 import { SITE_TITLE } from "../consts";
-import ThemeToggle from "./ThemeToggle.jsx";
 import SocialLinks from "./SocialLinks.astro";
 ---
 
 <header>
   <nav>
-    <div class="theme-toggle">
-      <ThemeToggle client:load />
-    </div>
     <h2><a href="/">{SITE_TITLE}</a></h2>
     <SocialLinks />
   </nav>

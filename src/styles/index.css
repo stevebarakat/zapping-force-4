@@ -22,10 +22,6 @@ body {
   overflow-wrap: break-word;
 }
 
-:root.dark body {
-  background-color: var(--bg-color);
-}
-
 /* Form Elements */
 textarea,
 input {
@@ -57,7 +53,7 @@ table {
 /* Horizontal Rule */
 hr {
   border: none;
-  border-top: 1px solid hsl(var(--gray-light));
+  border-top: 1px solid var(--component-border);
   margin: 1em 0;
 }
 

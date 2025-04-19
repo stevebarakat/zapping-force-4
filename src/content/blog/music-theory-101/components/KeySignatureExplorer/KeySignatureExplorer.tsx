@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import * as Tone from "tone";
 import { Button } from "@/components/Button";
 import "./key-signature.css";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import { Select } from "@/content/blog/shared/Select";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { Callout } from "@/components/Callout";

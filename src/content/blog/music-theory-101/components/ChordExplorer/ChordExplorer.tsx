@@ -3,7 +3,7 @@ import * as Tone from "tone";
 import { InstrumentPlayer } from "../shared/InstrumentPlayer";
 import { INSTRUMENT_TYPES } from "@/consts";
 import "./chord-explorer.css";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import { Button } from "@/components/Button";
 import type { InstrumentPlayerRef } from "../IntervalExplorer/types";

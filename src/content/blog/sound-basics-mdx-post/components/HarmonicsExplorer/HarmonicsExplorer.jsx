@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./HarmonicsExplorer.module.css";
-import "@/content/blog/sound-basics-mdx-post/components/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 
 const HarmonicsExplorer = () => {
   const [isPlaying, setIsPlaying] = useState(false);

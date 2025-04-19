@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Play, Pause } from "lucide-react";
 import VisuallyHidden from "@/components/VisuallyHidden";
 import "./frequency-visualizer.css";
-import "@/content/blog/shared/dark-mode.css";
+import "@/styles/shared/dark-mode.css";
 import { Slider } from "@/components/Slider";
 import { Number } from "@/content/blog/shared/Number";
 import IconButton from "@/components/Button/IconButton";

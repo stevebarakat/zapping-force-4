@@ -18,7 +18,7 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-  color: hsl(var(--gray-dark));
+  color: var(--text-primary);
 }
 
 h1 {
@@ -60,7 +60,7 @@ blockquote {
 
 code {
   padding: 2px 5px;
-  background-color: hsl(var(--gray-light));
+  background-color: var(--component-bg-darker);
   border-radius: var(--border-radius-sm);
 }
 
