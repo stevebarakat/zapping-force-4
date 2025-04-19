@@ -50,7 +50,6 @@ function MusicAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [currentNote, setCurrentNote] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [showAccompaniment, setShowAccompaniment] = useState<boolean>(false);
 
   // Add useEffect to monitor midiData changes
   useEffect(() => {
@@ -465,8 +464,8 @@ function MusicAnalyzer() {
       "4n"
     ).start(0);
 
-    // Create bass sequence if accompaniment is enabled
-    if (showAccompaniment && examples[selectedExample].bassNotes) {
+    // Create bass sequence
+    if (examples[selectedExample].bassNotes) {
       const bassSequence = examples[selectedExample].bassNotes!.map((note) => ({
         note: note.note,
         duration: note.duration,
@@ -624,27 +623,17 @@ function MusicAnalyzer() {
           {isPlaying ? "Stop" : isAnalyzing ? "Analyzing..." : "Play Music"}
         </Button>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setShowAccompaniment(!showAccompaniment)}
-            disabled={!isInitialized}
-            variant={showAccompaniment ? "primary" : "secondary"}
-          >
-            {showAccompaniment ? "Hide Accompaniment" : "Show Accompaniment"}
-          </Button>
-
-          <Select
-            value={selectedExample}
-            onChange={loadExample}
-            label="Select Example"
-          >
-            {exampleOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </div>
+        <Select
+          value={selectedExample}
+          onChange={loadExample}
+          label="Select Example"
+        >
+          {exampleOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
       </div>
 
       {/* Visualization of the notes */}
