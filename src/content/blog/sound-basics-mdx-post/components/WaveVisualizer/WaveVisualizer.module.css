@@ -125,3 +125,8 @@
 .explanation strong {
   color: var(--text-primary);
 }
+
+.outline {
+  border: 1px solid var(--component-border);
+  background-color: var(--component-bg);
+}

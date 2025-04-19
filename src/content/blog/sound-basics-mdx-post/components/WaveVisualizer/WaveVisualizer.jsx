@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./WaveVisualizer.module.css";
 import "@/styles/shared/dark-mode.css";
-
+import { Button } from "@/components/Button";
 const WaveVisualizer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [waveType, setWaveType] = useState("longitudinal");
@@ -322,22 +322,12 @@ const WaveVisualizer = () => {
         <div className={styles["control-group"]}>
           <label className={styles["control-label"]}>Wave Type</label>
           <div className={styles["button-group"]}>
-            <button
-              className={`${styles["wave-button"]} ${
-                waveType === "longitudinal" ? styles.selected : ""
-              }`}
-              onClick={() => setWaveType("longitudinal")}
-            >
+            <Button onClick={() => setWaveType("longitudinal")}>
               Longitudinal (Sound)
-            </button>
-            <button
-              className={`${styles["wave-button"]} ${
-                waveType === "transverse" ? styles.selected : ""
-              }`}
-              onClick={() => setWaveType("transverse")}
-            >
+            </Button>
+            <Button onClick={() => setWaveType("transverse")} className="dark">
               Transverse (Comparison)
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -357,9 +347,9 @@ const WaveVisualizer = () => {
           <span className={styles["speed-value"]}>{speed.toFixed(1)}x</span>
         </div>
 
-        <button className={styles["play-button"]} onClick={togglePlay}>
+        <Button className={styles["play-button"]} onClick={togglePlay}>
           {isPlaying ? "Pause Animation" : "Start Animation"}
-        </button>
+        </Button>
       </div>
 
       <div className={styles.explanation}>

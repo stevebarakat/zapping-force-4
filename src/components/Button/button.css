@@ -86,6 +86,16 @@ button {
   border-color: var(--accent);
 }
 
+.button.dark {
+  background-color: var(--component-bg-darker);
+  color: var(--text-primary);
+  border-color: var(--component-border);
+}
+
+.button.dark:hover {
+  background-color: var(--component-bg-darker-2);
+}
+
 /* Sizes */
 .button.small {
   padding: 0.2rem 0.75rem;
