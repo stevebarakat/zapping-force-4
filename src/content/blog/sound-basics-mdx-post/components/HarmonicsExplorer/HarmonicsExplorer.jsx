@@ -249,6 +249,13 @@ const HarmonicsExplorer = () => {
           audioContextRef.current.currentTime
         );
       });
+
+      // Restart visualization to reflect new frequency
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      startVisualization();
     }
   }, [baseFrequency, harmonics, isPlaying]);
 
@@ -396,7 +403,10 @@ const HarmonicsExplorer = () => {
         // Add contribution from each enabled harmonic
         harmonics.forEach((harmonic) => {
           if (harmonic.enabled) {
-            const cycles = 2 * harmonic.number; // Show 2 cycles of fundamental
+            // Adjust number of cycles based on frequency
+            // Use baseFrequency/220 to normalize cycles relative to A3 (220Hz)
+            const frequencyRatio = baseFrequency / 220;
+            const cycles = 2 * harmonic.number * frequencyRatio;
             const angle =
               ratio * Math.PI * 2 * cycles + phase * harmonic.number;
             y += Math.sin(angle) * harmonic.amplitude * (waveHeight / 4);
