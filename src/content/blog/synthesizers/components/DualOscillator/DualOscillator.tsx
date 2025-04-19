@@ -4,12 +4,12 @@ import VisuallyHidden from "@/components/VisuallyHidden";
 import "./DualOscillator.module.css";
 import "@/styles/shared/dark-mode.css";
 import { Slider } from "@/components/Slider";
-import { Number } from "@/content/blog/shared/Number";
 import IconButton from "@/components/Button/IconButton";
 
 const DualOscillator = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const oscillator1Ref = useRef<OscillatorNode | null>(null);
+  const oscillator2Ref = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -17,8 +17,10 @@ const DualOscillator = () => {
   const realWaveformCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [frequency, setFrequency] = useState(440);
-  const [waveform, setWaveform] = useState<OscillatorType>("sine");
+  const [frequency1, setFrequency1] = useState(440);
+  const [frequency2, setFrequency2] = useState(440);
+  const [waveform1, setWaveform1] = useState<OscillatorType>("sine");
+  const [waveform2, setWaveform2] = useState<OscillatorType>("sine");
   const [error, setError] = useState<string | null>(null);
 
   // Find the nearest note name for a given frequency
@@ -51,13 +53,19 @@ const DualOscillator = () => {
   };
 
   useEffect(() => {
-    if (oscillatorRef.current && audioContextRef.current) {
-      oscillatorRef.current.frequency.setValueAtTime(
-        frequency,
+    if (oscillator1Ref.current && audioContextRef.current) {
+      oscillator1Ref.current.frequency.setValueAtTime(
+        frequency1,
         audioContextRef.current.currentTime
       );
     }
-  }, [frequency]);
+    if (oscillator2Ref.current && audioContextRef.current) {
+      oscillator2Ref.current.frequency.setValueAtTime(
+        frequency2,
+        audioContextRef.current.currentTime
+      );
+    }
+  }, [frequency1, frequency2]);
 
   // Canvas drawing effect
   useEffect(() => {
@@ -77,7 +85,7 @@ const DualOscillator = () => {
       const height = canvas.height;
       const centerY = height / 2;
 
-      const cycles = frequency / 100;
+      const cycles = frequency1 / 100;
 
       for (let x = 0; x < width; x++) {
         const t = (x / width) * Math.PI * 2 * cycles;
@@ -93,7 +101,7 @@ const DualOscillator = () => {
     };
 
     drawWaveform();
-  }, [frequency]);
+  }, [frequency1]);
 
   useEffect(() => {
     return () => {
@@ -157,21 +165,27 @@ const DualOscillator = () => {
 
     const ctx = audioContextRef.current;
 
-    if (oscillatorRef.current) {
-      oscillatorRef.current.stop();
-      oscillatorRef.current.disconnect();
+    if (oscillator1Ref.current) {
+      oscillator1Ref.current.stop();
+      oscillator1Ref.current.disconnect();
+    }
+    if (oscillator2Ref.current) {
+      oscillator2Ref.current.stop();
+      oscillator2Ref.current.disconnect();
     }
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
     }
 
-    oscillatorRef.current = ctx.createOscillator();
+    oscillator1Ref.current = ctx.createOscillator();
+    oscillator2Ref.current = ctx.createOscillator();
     gainNodeRef.current = ctx.createGain();
     analyserRef.current = ctx.createAnalyser();
 
     if (
       !analyserRef.current ||
-      !oscillatorRef.current ||
+      !oscillator1Ref.current ||
+      !oscillator2Ref.current ||
       !gainNodeRef.current
     ) {
       setError("Failed to initialize audio nodes");
@@ -180,10 +194,27 @@ const DualOscillator = () => {
 
     analyserRef.current.fftSize = 2048;
 
-    oscillatorRef.current.type = waveform;
-    oscillatorRef.current.frequency.setValueAtTime(frequency, ctx.currentTime);
+    oscillator1Ref.current.type = waveform1;
+    oscillator2Ref.current.type = waveform2;
+    oscillator1Ref.current.frequency.setValueAtTime(
+      frequency1,
+      ctx.currentTime
+    );
+    oscillator2Ref.current.frequency.setValueAtTime(
+      frequency2,
+      ctx.currentTime
+    );
 
-    oscillatorRef.current.connect(gainNodeRef.current);
+    // Create a gain node for each oscillator to control their individual volumes
+    const gain1 = ctx.createGain();
+    const gain2 = ctx.createGain();
+    gain1.gain.value = 0.5;
+    gain2.gain.value = 0.5;
+
+    oscillator1Ref.current.connect(gain1);
+    oscillator2Ref.current.connect(gain2);
+    gain1.connect(gainNodeRef.current);
+    gain2.connect(gainNodeRef.current);
     gainNodeRef.current.connect(analyserRef.current);
     analyserRef.current.connect(ctx.destination);
 
@@ -191,7 +222,8 @@ const DualOscillator = () => {
     gainNodeRef.current.gain.setValueAtTime(0, now);
     gainNodeRef.current.gain.linearRampToValueAtTime(0.5, now + 0.1);
 
-    oscillatorRef.current.start();
+    oscillator1Ref.current.start();
+    oscillator2Ref.current.start();
 
     drawRealWaveform();
 
@@ -200,7 +232,8 @@ const DualOscillator = () => {
 
   const stopAudio = () => {
     if (
-      oscillatorRef.current &&
+      oscillator1Ref.current &&
+      oscillator2Ref.current &&
       gainNodeRef.current &&
       audioContextRef.current
     ) {
@@ -212,10 +245,15 @@ const DualOscillator = () => {
       }
 
       setTimeout(() => {
-        if (oscillatorRef.current) {
-          oscillatorRef.current.stop();
-          oscillatorRef.current.disconnect();
-          oscillatorRef.current = null;
+        if (oscillator1Ref.current) {
+          oscillator1Ref.current.stop();
+          oscillator1Ref.current.disconnect();
+          oscillator1Ref.current = null;
+        }
+        if (oscillator2Ref.current) {
+          oscillator2Ref.current.stop();
+          oscillator2Ref.current.disconnect();
+          oscillator2Ref.current = null;
         }
       }, 100);
     }
@@ -231,7 +269,7 @@ const DualOscillator = () => {
   };
 
   return (
-    <div className="demo-container">
+    <>
       <VisuallyHidden as="h3">Dual Oscillator</VisuallyHidden>
       <div className="visualizer-content">
         {error && (
@@ -251,56 +289,88 @@ const DualOscillator = () => {
             {isPlaying ? "Stop" : "Play"}
           </IconButton>
 
-          <div
-            className="waveform-buttons"
-            style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}
-          >
-            {(["sine", "square", "triangle", "sawtooth"] as const).map(
-              (type) => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setWaveform(type);
-                    if (oscillatorRef.current) {
-                      oscillatorRef.current.type = type;
-                    }
-                  }}
-                  style={{
-                    padding: "0.5rem 1rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: waveform === type ? "#60a5fa" : "#1f2937",
-                    color: waveform === type ? "#1f2937" : "#ffffff",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: waveform === type ? "bold" : "normal",
-                  }}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              )
-            )}
-          </div>
+          <div className="oscillator-controls">
+            <div className="oscillator-1">
+              <h4>Oscillator 1</h4>
+              <div className="waveform-buttons">
+                {(["sine", "square", "triangle", "sawtooth"] as const).map(
+                  (type) => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setWaveform1(type);
+                        if (oscillator1Ref.current) {
+                          oscillator1Ref.current.type = type;
+                        }
+                      }}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        borderRadius: "0.375rem",
+                        backgroundColor:
+                          waveform1 === type ? "#60a5fa" : "#1f2937",
+                        color: waveform1 === type ? "#1f2937" : "#ffffff",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: waveform1 === type ? "bold" : "normal",
+                      }}
+                    >
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
+                  )
+                )}
+              </div>
+              <Slider
+                value={frequency1}
+                onChange={(value) => setFrequency1(value)}
+                min={55}
+                max={880}
+                step={1}
+                label="Frequency 1"
+                showLabel={true}
+                showValue={true}
+              />
+            </div>
 
-          <Number
-            id="frequency"
-            value={frequency}
-            onChange={(value) => setFrequency(value)}
-            min={55}
-            max={880}
-            step={1}
-            label="Frequency"
-            suffix="Hz"
-            labelPosition="left"
-          />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              minHeight: "2rem",
-            }}
-          >
-            <span className="label">Nearest Note:</span>
-            <span>{getNoteFromFrequency(frequency)}</span>
+            <div className="oscillator-2">
+              <h4>Oscillator 2</h4>
+              <div className="waveform-buttons">
+                {(["sine", "square", "triangle", "sawtooth"] as const).map(
+                  (type) => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setWaveform2(type);
+                        if (oscillator2Ref.current) {
+                          oscillator2Ref.current.type = type;
+                        }
+                      }}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        borderRadius: "0.375rem",
+                        backgroundColor:
+                          waveform2 === type ? "#60a5fa" : "#1f2937",
+                        color: waveform2 === type ? "#1f2937" : "#ffffff",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: waveform2 === type ? "bold" : "normal",
+                      }}
+                    >
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
+                  )
+                )}
+              </div>
+              <Slider
+                value={frequency2}
+                onChange={(value) => setFrequency2(value)}
+                min={55}
+                max={880}
+                step={1}
+                label="Frequency 2"
+                showLabel={true}
+                showValue={true}
+              />
+            </div>
           </div>
         </div>
 
@@ -310,24 +380,8 @@ const DualOscillator = () => {
           height={200}
           className="waveform-canvas"
         />
-
-        <Slider
-          value={frequency}
-          onChange={(value) => setFrequency(value)}
-          min={55}
-          max={880}
-          step={1}
-          label="Frequency"
-          showLabel={false}
-          showValue={false}
-        />
-        <div className="frequency-labels">
-          <span>55 Hz (A1)</span>
-          <span>440 Hz (A4)</span>
-          <span>880 Hz (A5)</span>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 

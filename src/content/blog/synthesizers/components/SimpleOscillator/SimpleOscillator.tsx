@@ -4,7 +4,6 @@ import VisuallyHidden from "@/components/VisuallyHidden";
 import "./SimpleOscillator.module.css";
 import "@/styles/shared/dark-mode.css";
 import { Slider } from "@/components/Slider";
-import { Number } from "@/content/blog/shared/Number";
 import IconButton from "@/components/Button/IconButton";
 
 const SimpleOscillator = () => {
@@ -231,7 +230,7 @@ const SimpleOscillator = () => {
   };
 
   return (
-    <div className="demo-container">
+    <>
       <VisuallyHidden as="h3">Simple Oscillator</VisuallyHidden>
       <div className="visualizer-content">
         {error && (
@@ -280,28 +279,6 @@ const SimpleOscillator = () => {
               )
             )}
           </div>
-
-          <Number
-            id="frequency"
-            value={frequency}
-            onChange={(value) => setFrequency(value)}
-            min={55}
-            max={880}
-            step={1}
-            label="Frequency"
-            suffix="Hz"
-            labelPosition="left"
-          />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              minHeight: "2rem",
-            }}
-          >
-            <span className="label">Nearest Note:</span>
-            <span>{getNoteFromFrequency(frequency)}</span>
-          </div>
         </div>
 
         <canvas
@@ -321,13 +298,8 @@ const SimpleOscillator = () => {
           showLabel={false}
           showValue={false}
         />
-        <div className="frequency-labels">
-          <span>55 Hz (A1)</span>
-          <span>440 Hz (A4)</span>
-          <span>880 Hz (A5)</span>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 
