@@ -14,6 +14,8 @@ import {
   ClientLFODemo,
   ClientCompleteSynth,
 } from "./components/ClientComponents";
+import "../../../styles/shared/dark-mode.css";
+import "../../../styles/components/synthesizer.css";
 
 # How Synthesizers Work: From Sound Waves to Music
 
@@ -40,11 +42,15 @@ Sound has several key properties:
 
 The heart of any synthesizer is the **oscillator**. An oscillator generates a repeating waveform at a specific frequency. Different waveforms have distinct timbres due to their unique harmonic content:
 
-<ClientWaveformExplorer client:load />
+<div class="demo-container">
+  <ClientWaveformExplorer client:load />
+</div>
 
 Let's try a simple oscillator. Press the Play button to hear a sine wave, then experiment with different waveforms and frequencies:
 
-<ClientSimpleOscillator client:load />
+<div class="demo-container">
+  <ClientSimpleOscillator client:load />
+</div>
 
 Notice how each waveform has its own unique sound:
 
@@ -59,7 +65,9 @@ Most synthesizers use multiple oscillators to create richer sounds. By combining
 
 Try this dual-oscillator synthesizer. The "Detune" slider adjusts how far the second oscillator is tuned away from the first:
 
-<ClientDualOscillator client:load />
+<div class="demo-container">
+  <ClientDualOscillator client:load />
+</div>
 
 When you slightly detune one oscillator from another, you create subtle phase differences that make the sound fuller and more animated. This is similar to how a choir or string section sounds rich compared to a single voice or instrument — slight variations between performers create a more engaging sound.
 
@@ -76,7 +84,9 @@ Synthesizers model these natural dynamics using what's called an **ADSR envelope
 
 The envelope shapes the amplitude (volume) of the sound over time:
 
-<ClientADSRVisualizer client:load />
+<div class="demo-container">
+  <ClientADSRVisualizer client:load />
+</div>
 
 Try adjusting these parameters and listen to how they affect the sound:
 
@@ -97,7 +107,9 @@ The most common filter types are:
 
 Try this filter demonstration. The "Cutoff" knob controls which frequencies are affected, while "Resonance" creates emphasis around the cutoff frequency:
 
-<ClientFilterDemo client:load />
+<div class="demo-container">
+  <ClientFilterDemo client:load />
+</div>
 
 Filters are essential for creating classic synthesizer sounds:
 
@@ -111,7 +123,9 @@ Static sounds can be boring. Synthesizers use **LFOs** (Low-Frequency Oscillator
 
 Instead of producing audible sound, LFOs modulate (change over time) other parameters like pitch, filter cutoff, or volume:
 
-<ClientLFODemo client:load />
+<div class="demo-container">
+  <ClientLFODemo client:load />
+</div>
 
 Common LFO applications include:
 
@@ -126,7 +140,9 @@ The LFO rate controls how fast the modulation happens, while the amount determin
 
 A complete synthesizer combines all these elements into a powerful sound design tool. Here's a more comprehensive synthesizer with all the components we've explored:
 
-<ClientCompleteSynth client:load />
+<div class="demo-container">
+  <ClientCompleteSynth client:load />
+</div>
 
 With this synthesizer, you can:
 

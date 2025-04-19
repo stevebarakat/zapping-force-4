@@ -30,17 +30,6 @@
 
   /* Background colors */
   --bg-primary: hsl(227, 20%, 11%);
-  --bg-secondary: #0f172a;
-  --bg-tertiary: #1e293b;
-  --bg-quaternary: #334155;
-  --bg-quinary: #475569;
-  --bg-senary: #64748b;
-  --bg-septenary: #94a3b8;
-  --bg-octonary: #cbd5e1;
-  --bg-nonary: #e2e8f0;
-  --bg-denary: #f1f5f9;
-  --bg-elevenary: #f8fafc;
-  --bg-twelveary: #ffffff;
 }
 
 /* Base styles */

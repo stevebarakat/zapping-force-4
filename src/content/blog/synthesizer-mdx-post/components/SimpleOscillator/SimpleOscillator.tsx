@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import styles from "./SimpleOscillator.module.css";
 
-const SimpleOscillator = () => {
+type WaveformType = "sine" | "square" | "sawtooth" | "triangle";
+
+function SimpleOscillator() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [frequency, setFrequency] = useState(440); // A4 note
-  const [waveform, setWaveform] = useState("sine");
+  const [waveform, setWaveform] = useState<WaveformType>("sine");
   const [volume, setVolume] = useState(0.5);
 
-  const audioContextRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const gainNodeRef = useRef(null);
-  const canvasRef = useRef(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Drawing the waveform visualization
   useEffect(() => {
@@ -17,48 +20,33 @@ const SimpleOscillator = () => {
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-    const width = canvas.width;
-    const height = canvas.height;
+    if (!ctx) return;
 
-    // Clear the canvas
-    ctx.clearRect(0, 0, width, height);
+    // Get the computed styles to access CSS variables
+    const computedStyle = getComputedStyle(document.documentElement);
+    const bgColor = computedStyle
+      .getPropertyValue("--component-bg-darker")
+      .trim();
+    const primaryBlue = computedStyle.getPropertyValue("--primary-blue").trim();
 
-    // Draw grid lines
-    ctx.strokeStyle = "#e5e7eb";
-    ctx.lineWidth = 1;
+    // Clear with background color from CSS
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (let x = 0; x < width; x += width / 10) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-
-    for (let y = 0; y < height; y += height / 5) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-
-    // Set line style for waveform
-    ctx.strokeStyle = "#4F46E5";
+    // Draw waveform
+    ctx.beginPath();
+    ctx.strokeStyle = primaryBlue;
     ctx.lineWidth = 2;
 
-    // Start drawing path
-    ctx.beginPath();
-
-    // Calculate center Y position
+    const width = canvas.width;
+    const height = canvas.height;
     const centerY = height / 2;
 
     // Draw waveform
     const cycles = frequency < 100 ? 1 : 3; // Show more cycles for higher frequencies
 
     for (let x = 0; x < width; x++) {
-      // Calculate the normalized position in the wave cycle
       const t = (x / width) * Math.PI * 2 * cycles;
-
-      // Calculate Y position based on waveform type
       let y = centerY;
 
       switch (waveform) {
@@ -92,7 +80,6 @@ const SimpleOscillator = () => {
       }
     }
 
-    // Stroke the path
     ctx.stroke();
   }, [waveform, frequency, volume]);
 
@@ -101,10 +88,11 @@ const SimpleOscillator = () => {
     // Create audio context if it doesn't exist
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext ||
-        window.webkitAudioContext)();
+        (window as any).webkitAudioContext)();
     }
 
     const audioContext = audioContextRef.current;
+    if (!audioContext) return;
 
     // Stop any playing oscillator
     if (oscillatorRef.current) {
@@ -148,7 +136,7 @@ const SimpleOscillator = () => {
     }
   };
 
-  const handleWaveformChange = (newWaveform) => {
+  const handleWaveformChange = (newWaveform: WaveformType) => {
     setWaveform(newWaveform);
     // Update the oscillator if it's playing
     if (oscillatorRef.current) {
@@ -156,7 +144,7 @@ const SimpleOscillator = () => {
     }
   };
 
-  const handleFrequencyChange = (e) => {
+  const handleFrequencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFrequency = parseFloat(e.target.value);
     setFrequency(newFrequency);
     // Update the oscillator if it's playing
@@ -168,7 +156,7 @@ const SimpleOscillator = () => {
     }
   };
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     // Update the gain node if it exists
@@ -203,26 +191,26 @@ const SimpleOscillator = () => {
   ];
 
   return (
-    <div className="simple-oscillator">
-      <div className="waveform-container">
+    <div className={styles.container}>
+      <div className={styles.waveformContainer}>
         <canvas
           ref={canvasRef}
-          width={600}
-          height={150}
-          className="waveform-canvas"
+          width={800}
+          height={200}
+          className={styles.canvas}
         />
       </div>
 
-      <div className="controls">
-        <div className="control-section">
-          <h3 className="control-title">Waveform</h3>
-          <div className="button-group">
+      <div className={styles.controls}>
+        <div className={styles.controlSection}>
+          <h3 className={styles.controlTitle}>Waveform</h3>
+          <div className={styles.buttonGroup}>
             {["sine", "square", "sawtooth", "triangle"].map((type) => (
               <button
                 key={type}
-                onClick={() => handleWaveformChange(type)}
-                className={`waveform-button ${
-                  waveform === type ? "selected" : ""
+                onClick={() => handleWaveformChange(type as WaveformType)}
+                className={`${styles.button} ${
+                  waveform === type ? styles.selected : ""
                 }`}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -231,12 +219,12 @@ const SimpleOscillator = () => {
           </div>
         </div>
 
-        <div className="control-section">
-          <div className="piano-keys">
+        <div className={styles.controlSection}>
+          <div className={styles.pianoKeys}>
             {notes.map((note) => (
               <button
                 key={note.name}
-                className="piano-key"
+                className={styles.pianoKey}
                 onClick={() => {
                   setFrequency(note.frequency);
                   if (oscillatorRef.current && audioContextRef.current) {
@@ -253,9 +241,9 @@ const SimpleOscillator = () => {
           </div>
         </div>
 
-        <div className="control-section sliders">
-          <div className="flex">
-            <label className="control-label">
+        <div className={styles.controlSection}>
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Frequency: {frequency.toFixed(1)} Hz
             </label>
             <input
@@ -265,12 +253,12 @@ const SimpleOscillator = () => {
               step="1"
               value={frequency}
               onChange={handleFrequencyChange}
-              className="slider"
+              className={styles.slider}
             />
           </div>
 
-          <div className="flex">
-            <label className="control-label">
+          <div className={styles.sliderContainer}>
+            <label className={styles.sliderLabel}>
               Volume: {Math.round(volume * 100)}%
             </label>
             <input
@@ -280,178 +268,19 @@ const SimpleOscillator = () => {
               step="0.01"
               value={volume}
               onChange={handleVolumeChange}
-              className="slider"
+              className={styles.slider}
             />
           </div>
         </div>
 
-        <div className="play-controls">
-          <button onClick={toggleSound} className="play-button">
+        <div className={styles.controlSection}>
+          <button onClick={toggleSound} className={styles.button}>
             {isPlaying ? "Stop" : "Play"}
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        .simple-oscillator {
-          margin: 24px 0;
-          padding: 20px;
-          background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .waveform-container {
-          margin-bottom: 16px;
-        }
-
-        .waveform-canvas {
-          width: 100%;
-          height: 150px;
-          background-color: #f9fafb;
-          border-radius: 8px;
-        }
-
-        .controls {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .control-section {
-          margin-bottom: 16px;
-        }
-
-        .control-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 8px;
-        }
-
-        .button-group {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .waveform-button {
-          padding: 8px 12px;
-          background-color: #f3f4f6;
-          border: none;
-          border-radius: 4px;
-          font-size: var(--font-size-xs);
-          font-weight: 500;
-          color: #4b5563;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .waveform-button:hover {
-          background-color: #e5e7eb;
-        }
-
-        .waveform-button.selected {
-          background-color: #4f46e5;
-          color: white;
-        }
-
-        .piano-keys {
-          display: flex;
-          gap: 4px;
-          margin-bottom: 16px;
-        }
-
-        .piano-key {
-          flex: 1;
-          padding: 12px 8px;
-          background-color: #f3f4f6;
-          border: 1px solid #d1d5db;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.1s;
-        }
-
-        .piano-key:hover {
-          background-color: #e5e7eb;
-        }
-
-        .piano-key:active {
-          background-color: #d1d5db;
-          transform: translateY(2px);
-        }
-
-        .sliders {
-          margin-bottom: 16px;
-        }
-
-        .flex {
-          margin-bottom: 12px;
-        }
-
-        .control-label {
-          display: block;
-          font-size: var(--font-size-xs);
-          color: #4b5563;
-          margin-bottom: 4px;
-        }
-
-        .slider {
-          width: 100%;
-          height: 6px;
-          -webkit-appearance: none;
-          appearance: none;
-          background: #e5e7eb;
-          border-radius: 3px;
-          outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .play-controls {
-          display: flex;
-          justify-content: center;
-        }
-
-        .play-button {
-          padding: 10px 24px;
-          background-color: #4f46e5;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .play-button:hover {
-          background-color: #4338ca;
-        }
-
-        .play-button:active {
-          transform: translateY(1px);
-        }
-      `}</style>
     </div>
   );
-};
+}
 
 export default SimpleOscillator;

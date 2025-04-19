@@ -1,0 +1,62 @@
+/* Override synthesizer component styles for dark mode */
+
+/* Base container overrides */
+.waveform-explorer,
+.simple-oscillator,
+.dual-oscillator,
+.filter-demo,
+.lfo-demo,
+.complete-synth {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Canvas background overrides */
+.waveform-canvas,
+.visualization-canvas {
+  background-color: var(--component-bg-darker) !important;
+}
+
+/* Button overrides */
+.waveform-button,
+.filter-button,
+.small-button,
+.play-button {
+  background-color: var(--component-bg-darker) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--component-border) !important;
+}
+
+.waveform-button:hover,
+.filter-button:hover,
+.small-button:hover,
+.play-button:hover {
+  background-color: var(--primary-blue) !important;
+  color: white !important;
+}
+
+.waveform-button.selected,
+.filter-button.selected,
+.small-button.selected {
+  background-color: var(--primary-blue) !important;
+  color: white !important;
+}
+
+/* Text color overrides */
+.control-title,
+.control-label,
+.visualization-title {
+  color: var(--text-primary) !important;
+}
+
+.value-display,
+.control-info {
+  color: var(--text-secondary) !important;
+}
+
+/* Grid lines and waveform colors */
+canvas {
+  filter: invert(1) hue-rotate(180deg);
+}

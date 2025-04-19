@@ -7,7 +7,7 @@ import FilterDemo from "./FilterDemo";
 import LFODemo from "./LFODemo";
 import CompleteSynth from "./CompleteSynth";
 
-function ClientWrapper({ Component }) {
+function ClientWrapper({ Component }: { Component: React.ComponentType }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
