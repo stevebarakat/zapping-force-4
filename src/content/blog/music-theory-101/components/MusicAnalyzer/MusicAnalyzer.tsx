@@ -24,6 +24,7 @@ type Note = {
 type Example = {
   name: string;
   notes: Note[];
+  bassNotes?: Note[];
 };
 
 type Examples = {
@@ -49,6 +50,7 @@ function MusicAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [currentNote, setCurrentNote] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [showAccompaniment, setShowAccompaniment] = useState<boolean>(false);
 
   // Add useEffect to monitor midiData changes
   useEffect(() => {
@@ -57,9 +59,17 @@ function MusicAnalyzer() {
 
   // References for audio
   const synthRef = useRef<Tone.PolySynth<Tone.Synth> | null>(null);
+  const bassSynthRef = useRef<Tone.MonoSynth | null>(null);
   const sequenceRef = useRef<Tone.Sequence | null>(null);
+  const bassSequenceRef = useRef<Tone.Sequence | null>(null);
+  const drumSequenceRef = useRef<Tone.Sequence | null>(null);
   const partRef = useRef<Tone.Part | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Drum samples
+  const kickPlayer = useRef<Tone.Player | null>(null);
+  const snarePlayer = useRef<Tone.Player | null>(null);
+  const hihatPlayer = useRef<Tone.Player | null>(null);
 
   // Example pieces
   const examples: Examples = {
@@ -106,6 +116,24 @@ function MusicAnalyzer() {
         { time: "7m + 2n", note: "r", duration: "4n" },
         { time: "7m + 2n + 4n", note: "r", duration: "4n" },
         { time: "7m + 4n", note: "r", duration: "4n" },
+      ],
+      bassNotes: [
+        // Bar 1
+        { time: 0, note: "C3", duration: "1m" },
+        // Bar 2
+        { time: "1m", note: "C3", duration: "1m" },
+        // Bar 3
+        { time: "2m", note: "G3", duration: "1m" },
+        // Bar 4
+        { time: "3m", note: "C3", duration: "1m" },
+        // Bar 5
+        { time: "4m", note: "C3", duration: "1m" },
+        // Bar 6
+        { time: "5m", note: "C3", duration: "1m" },
+        // Bar 7
+        { time: "6m", note: "G3", duration: "1m" },
+        // Bar 8
+        { time: "7m", note: "C3", duration: "2m" },
       ],
     },
     twinkle: {
@@ -163,8 +191,9 @@ function MusicAnalyzer() {
           "music-analyzer",
           stopPlayback
         );
-        transport.bpm.value = 180;
+        transport.bpm.value = 120;
 
+        // Initialize melody synth
         synthRef.current = new Tone.PolySynth(Tone.Synth, {
           envelope: {
             attack: 0.02,
@@ -172,6 +201,40 @@ function MusicAnalyzer() {
             sustain: 0.3,
             release: 1,
           },
+        }).toDestination();
+
+        // Initialize bass synth
+        bassSynthRef.current = new Tone.MonoSynth({
+          oscillator: {
+            type: "sine",
+          },
+          envelope: {
+            attack: 0.01,
+            decay: 0.1,
+            sustain: 0.3,
+            release: 0.5,
+          },
+          filterEnvelope: {
+            attack: 0.001,
+            decay: 0.1,
+            sustain: 0.4,
+            release: 0.5,
+            baseFrequency: 200,
+            octaves: 2,
+          },
+        }).toDestination();
+
+        // Initialize drum samples
+        kickPlayer.current = new Tone.Player({
+          url: "https://bzdfmutmiehacjojxtaz.supabase.co/storage/v1/object/public/samples/drums/kick.ogg",
+        }).toDestination();
+
+        snarePlayer.current = new Tone.Player({
+          url: "https://bzdfmutmiehacjojxtaz.supabase.co/storage/v1/object/public/samples/drums/snare.ogg",
+        }).toDestination();
+
+        hihatPlayer.current = new Tone.Player({
+          url: "https://bzdfmutmiehacjojxtaz.supabase.co/storage/v1/object/public/samples/drums/hh.ogg",
         }).toDestination();
 
         setIsInitialized(true);
@@ -186,15 +249,15 @@ function MusicAnalyzer() {
     return () => {
       audioCoordinator.unregisterComponent("music-analyzer");
       stopPlayback();
-      if (synthRef.current) {
-        synthRef.current.dispose();
-      }
-      if (sequenceRef.current) {
-        sequenceRef.current.dispose();
-      }
-      if (partRef.current) {
-        partRef.current.dispose();
-      }
+      if (synthRef.current) synthRef.current.dispose();
+      if (bassSynthRef.current) bassSynthRef.current.dispose();
+      if (sequenceRef.current) sequenceRef.current.dispose();
+      if (bassSequenceRef.current) bassSequenceRef.current.dispose();
+      if (drumSequenceRef.current) drumSequenceRef.current.dispose();
+      if (partRef.current) partRef.current.dispose();
+      if (kickPlayer.current) kickPlayer.current.dispose();
+      if (snarePlayer.current) snarePlayer.current.dispose();
+      if (hihatPlayer.current) hihatPlayer.current.dispose();
     };
   }, []);
 
@@ -348,17 +411,12 @@ function MusicAnalyzer() {
     )
       return;
 
-    // Make sure Tone.js is ready
     await Tone.start();
-
-    // Set playing state
     setIsPlaying(true);
 
-    // Create a sequence of notes, using null for rests
-    const sequence = midiData.map((note, index) => {
-      if (note.note === "r") {
-        return null; // This will create a rest
-      }
+    // Create melody sequence
+    const melodySequence = midiData.map((note, index) => {
+      if (note.note === "r") return null;
       return {
         note: note.note,
         duration: note.duration,
@@ -366,17 +424,11 @@ function MusicAnalyzer() {
       };
     });
 
-    // Create a new sequence with quarter note subdivision
     sequenceRef.current = new Tone.Sequence(
       (time, value) => {
-        // Skip rests (null values)
         if (!value || !audioCoordinator.isComponentActive("music-analyzer"))
           return;
-
-        // Update current note for visualization
         setCurrentNote(value.index);
-
-        // Play the note
         if (synthRef.current) {
           synthRef.current.triggerAttackRelease(
             value.note,
@@ -385,9 +437,60 @@ function MusicAnalyzer() {
           );
         }
       },
-      sequence,
-      "4n" // Use quarter note subdivision for consistent timing
+      melodySequence,
+      "4n"
     ).start(0);
+
+    // Create bass sequence if accompaniment is enabled
+    if (showAccompaniment && examples[selectedExample].bassNotes) {
+      const bassSequence = examples[selectedExample].bassNotes!.map((note) => ({
+        note: note.note,
+        duration: note.duration,
+      }));
+
+      bassSequenceRef.current = new Tone.Sequence(
+        (time, value) => {
+          if (!audioCoordinator.isComponentActive("music-analyzer")) return;
+          if (bassSynthRef.current) {
+            bassSynthRef.current.triggerAttackRelease(
+              value.note,
+              value.duration,
+              time
+            );
+          }
+        },
+        bassSequence,
+        "1m"
+      ).start(0);
+
+      // Create drum sequence
+      const drumPattern = [
+        { time: "0:0", note: "kick" },
+        { time: "0:2", note: "snare" },
+        { time: "1:0", note: "kick" },
+        { time: "1:2", note: "snare" },
+        { time: "2:0", note: "kick" },
+        { time: "2:2", note: "snare" },
+        { time: "3:0", note: "kick" },
+        { time: "3:2", note: "snare" },
+      ];
+
+      drumSequenceRef.current = new Tone.Sequence(
+        (time, value) => {
+          if (!audioCoordinator.isComponentActive("music-analyzer")) return;
+          switch (value.note) {
+            case "kick":
+              if (kickPlayer.current) kickPlayer.current.start(time);
+              break;
+            case "snare":
+              if (snarePlayer.current) snarePlayer.current.start(time);
+              break;
+          }
+        },
+        drumPattern,
+        "4n"
+      ).start(0);
+    }
 
     // Start the transport
     const transport = audioCoordinator.getComponentTransport("music-analyzer");
@@ -425,6 +528,16 @@ function MusicAnalyzer() {
       sequenceRef.current = null;
     }
 
+    if (bassSequenceRef.current) {
+      bassSequenceRef.current.dispose();
+      bassSequenceRef.current = null;
+    }
+
+    if (drumSequenceRef.current) {
+      drumSequenceRef.current.dispose();
+      drumSequenceRef.current = null;
+    }
+
     if (partRef.current) {
       partRef.current.dispose();
       partRef.current = null;
@@ -445,7 +558,6 @@ function MusicAnalyzer() {
       <VisuallyHidden as="h3">Music Analyzer</VisuallyHidden>
 
       <div className="flex between">
-        {/* Play button */}
         <Button
           onClick={isPlaying ? stopPlayback : playMusic}
           disabled={!midiData || isAnalyzing || !isInitialized}
@@ -453,17 +565,27 @@ function MusicAnalyzer() {
           {isPlaying ? "Stop" : isAnalyzing ? "Analyzing..." : "Play Music"}
         </Button>
 
-        <Select
-          value={selectedExample}
-          onChange={loadExample}
-          label="Select Example"
-        >
-          {exampleOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setShowAccompaniment(!showAccompaniment)}
+            disabled={!isInitialized}
+            variant={showAccompaniment ? "primary" : "secondary"}
+          >
+            {showAccompaniment ? "Hide Accompaniment" : "Show Accompaniment"}
+          </Button>
+
+          <Select
+            value={selectedExample}
+            onChange={loadExample}
+            label="Select Example"
+          >
+            {exampleOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
       {/* Visualization of the notes */}
