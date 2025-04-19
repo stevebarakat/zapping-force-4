@@ -392,13 +392,13 @@ const HarmonicsExplorer = () => {
             const barHeight = harmonic.enabled
               ? harmonic.amplitude * maxBarHeight
               : 0;
-            const y = maxBarHeight - barHeight + 50;
+            const y = maxBarHeight + 50;
 
             return (
               <g key={index}>
                 <rect
                   x={x}
-                  y={y}
+                  y={y - barHeight}
                   width={barWidth}
                   height={barHeight}
                   fill={harmonic.color}
@@ -406,7 +406,7 @@ const HarmonicsExplorer = () => {
                 />
                 <text
                   x={x + barWidth / 2}
-                  y={y - 20}
+                  y={y - barHeight - 20}
                   textAnchor="middle"
                   className={styles["harmonic-number"]}
                 >

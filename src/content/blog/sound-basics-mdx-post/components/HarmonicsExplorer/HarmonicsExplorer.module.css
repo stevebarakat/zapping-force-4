@@ -283,7 +283,7 @@
 }
 
 .spectrum-bar {
-  transition: height 0.3s ease-in-out;
+  transition: height 0.3s ease-in-out, y 0.3s ease-in-out;
 }
 
 .frequency-label {
@@ -297,6 +297,7 @@
   fill: var(--text-primary);
   font-family: system-ui, -apple-system, sans-serif;
   font-weight: 600;
+  transition: y 0.3s ease-in-out;
 }
 
 @media (max-width: 480px) {
