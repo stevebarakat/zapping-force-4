@@ -1,27 +1,32 @@
 import React, { useState, useRef, useEffect } from "react";
+import styles from "./FilterDemo.module.css";
 
-const FilterDemo = () => {
+type AudioContextType = AudioContext & {
+  createBiquadFilter(): BiquadFilterNode;
+};
+
+function FilterDemo() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [waveform, setWaveform] = useState("sawtooth");
+  const [waveform, setWaveform] = useState<OscillatorType>("sawtooth");
   const [frequency, setFrequency] = useState(220); // A3
-  const [filterType, setFilterType] = useState("lowpass");
+  const [filterType, setFilterType] = useState<BiquadFilterType>("lowpass");
   const [cutoff, setCutoff] = useState(2000);
   const [resonance, setResonance] = useState(5);
   const [showSpectrum, setShowSpectrum] = useState(false);
 
-  const audioContextRef = useRef(null);
-  const oscillatorRef = useRef(null);
-  const filterRef = useRef(null);
-  const analyserRef = useRef(null);
-  const canvasRef = useRef(null);
-  const animationRef = useRef(null);
+  const audioContextRef = useRef<AudioContextType | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const filterRef = useRef<BiquadFilterNode | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationRef = useRef<number | null>(null);
 
   // Initialize or update audio
   const startSound = () => {
     // Create audio context if it doesn't exist
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext ||
-        window.webkitAudioContext)();
+        (window as any).webkitAudioContext)();
     }
 
     const audioContext = audioContextRef.current;
@@ -93,6 +98,7 @@ const FilterDemo = () => {
     const analyser = analyserRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     const width = canvas.width;
     const height = canvas.height;
@@ -129,7 +135,9 @@ const FilterDemo = () => {
         }
 
         // Draw cutoff frequency indicator
-        const logMax = Math.log10(audioContextRef.current.sampleRate / 2);
+        const logMax = Math.log10(
+          audioContextRef.current?.sampleRate || 44100 / 2
+        );
         const logCutoff = Math.log10(cutoff);
         const cutoffX = (logCutoff / logMax) * width;
 
@@ -240,15 +248,15 @@ const FilterDemo = () => {
   }, []);
 
   return (
-    <div className="filter-demo">
-      <div className="visualization-container">
-        <div className="visualization-header">
-          <h3 className="visualization-title">
+    <div className={styles.filterDemo}>
+      <div className={styles.visualizationContainer}>
+        <div className={styles.visualizationHeader}>
+          <h3 className={styles.visualizationTitle}>
             {showSpectrum ? "Frequency Spectrum" : "Waveform"}
           </h3>
           <button
             onClick={() => setShowSpectrum(!showSpectrum)}
-            className="toggle-button"
+            className={styles.toggleButton}
           >
             Show {showSpectrum ? "Waveform" : "Spectrum"}
           </button>
@@ -258,21 +266,21 @@ const FilterDemo = () => {
           ref={canvasRef}
           width={600}
           height={200}
-          className="visualization-canvas"
+          className={styles.visualizationCanvas}
         />
       </div>
 
-      <div className="controls">
-        <div className="control-row">
-          <div className="control-section">
-            <h3 className="control-title">Filter Type</h3>
-            <div className="button-group">
+      <div className={styles.controls}>
+        <div className={styles.controlRow}>
+          <div className={styles.controlSection}>
+            <h3 className={styles.controlTitle}>Filter Type</h3>
+            <div className={styles.buttonGroup}>
               {["lowpass", "highpass", "bandpass", "notch"].map((type) => (
                 <button
                   key={type}
-                  onClick={() => setFilterType(type)}
-                  className={`filter-button ${
-                    filterType === type ? "selected" : ""
+                  onClick={() => setFilterType(type as BiquadFilterType)}
+                  className={`${styles.filterButton} ${
+                    filterType === type ? styles.selected : ""
                   }`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -281,20 +289,20 @@ const FilterDemo = () => {
             </div>
           </div>
 
-          <div className="control-section">
-            <h3 className="control-title">Waveform</h3>
-            <div className="button-group">
+          <div className={styles.controlSection}>
+            <h3 className={styles.controlTitle}>Waveform</h3>
+            <div className={styles.buttonGroup}>
               {["sine", "square", "sawtooth", "triangle"].map((type) => (
                 <button
                   key={type}
                   onClick={() => {
-                    setWaveform(type);
+                    setWaveform(type as OscillatorType);
                     if (oscillatorRef.current) {
-                      oscillatorRef.current.type = type;
+                      oscillatorRef.current.type = type as OscillatorType;
                     }
                   }}
-                  className={`waveform-button ${
-                    waveform === type ? "selected" : ""
+                  className={`${styles.waveformButton} ${
+                    waveform === type ? styles.selected : ""
                   }`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -304,48 +312,54 @@ const FilterDemo = () => {
           </div>
         </div>
 
-        <div className="control-section sliders">
-          <div className="flex highlight-control">
-            <label className="control-label">
+        <div className={styles.controlSection}>
+          <div className={`${styles.flex} ${styles.highlightControl}`}>
+            <label className={styles.controlLabel}>
               Cutoff Frequency: {cutoff} Hz
             </label>
-            <div className="slider-with-infographic">
-              <div className="filter-infographic">
+            <div className={styles.sliderWithInfographic}>
+              <div className={styles.filterInfographic}>
                 {filterType === "lowpass" && (
                   <>
-                    <div className="freq-pass">PASS</div>
-                    <div className="freq-cutoff">|</div>
-                    <div className="freq-reject">REJECT</div>
+                    <div className={styles.freqPass}>PASS</div>
+                    <div className={styles.freqCutoff}>|</div>
+                    <div className={styles.freqReject}>REJECT</div>
                   </>
                 )}
                 {filterType === "highpass" && (
                   <>
-                    <div className="freq-reject">REJECT</div>
-                    <div className="freq-cutoff">|</div>
-                    <div className="freq-pass">PASS</div>
+                    <div className={styles.freqReject}>REJECT</div>
+                    <div className={styles.freqCutoff}>|</div>
+                    <div className={styles.freqPass}>PASS</div>
                   </>
                 )}
                 {(filterType === "bandpass" || filterType === "notch") && (
                   <>
                     <div
                       className={
-                        filterType === "bandpass" ? "freq-reject" : "freq-pass"
+                        filterType === "bandpass"
+                          ? styles.freqReject
+                          : styles.freqPass
                       }
                     >
                       {filterType === "bandpass" ? "REJECT" : "PASS"}
                     </div>
-                    <div className="freq-cutoff">|</div>
+                    <div className={styles.freqCutoff}>|</div>
                     <div
                       className={
-                        filterType === "bandpass" ? "freq-pass" : "freq-reject"
+                        filterType === "bandpass"
+                          ? styles.freqPass
+                          : styles.freqReject
                       }
                     >
                       {filterType === "bandpass" ? "PASS" : "REJECT"}
                     </div>
-                    <div className="freq-cutoff">|</div>
+                    <div className={styles.freqCutoff}>|</div>
                     <div
                       className={
-                        filterType === "bandpass" ? "freq-reject" : "freq-pass"
+                        filterType === "bandpass"
+                          ? styles.freqReject
+                          : styles.freqPass
                       }
                     >
                       {filterType === "bandpass" ? "REJECT" : "PASS"}
@@ -360,19 +374,19 @@ const FilterDemo = () => {
                 step="1"
                 value={cutoff}
                 onChange={(e) => setCutoff(parseFloat(e.target.value))}
-                className="slider"
+                className={styles.slider}
               />
             </div>
-            <div className="frequency-markers">
+            <div className={styles.frequencyMarkers}>
               <span>20 Hz</span>
               <span>100 Hz</span>
               <span>1 kHz</span>
               <span>10 kHz</span>
               <span>20 kHz</span>
             </div>
-            <div className="control-info">
-              <div className="info-icon">i</div>
-              <div className="info-text">
+            <div className={styles.controlInfo}>
+              <div className={styles.infoIcon}>i</div>
+              <div className={styles.infoText}>
                 The cutoff frequency determines where the filter begins to
                 affect the sound.
                 {filterType === "lowpass" &&
@@ -387,8 +401,8 @@ const FilterDemo = () => {
             </div>
           </div>
 
-          <div className="flex">
-            <label className="control-label">
+          <div className={styles.flex}>
+            <label className={styles.controlLabel}>
               Resonance (Q): {resonance.toFixed(1)}
             </label>
             <input
@@ -398,19 +412,21 @@ const FilterDemo = () => {
               step="0.1"
               value={resonance}
               onChange={(e) => setResonance(parseFloat(e.target.value))}
-              className="slider"
+              className={styles.slider}
             />
-            <div className="control-info">
-              <div className="info-icon">i</div>
-              <div className="info-text">
+            <div className={styles.controlInfo}>
+              <div className={styles.infoIcon}>i</div>
+              <div className={styles.infoText}>
                 Resonance (Q) creates emphasis around the cutoff frequency.
                 Higher values create a more pronounced peak or notch effect.
               </div>
             </div>
           </div>
 
-          <div className="flex">
-            <label className="control-label">Frequency: {frequency} Hz</label>
+          <div className={styles.flex}>
+            <label className={styles.controlLabel}>
+              Frequency: {frequency} Hz
+            </label>
             <input
               type="range"
               min="50"
@@ -427,261 +443,19 @@ const FilterDemo = () => {
                   );
                 }
               }}
-              className="slider"
+              className={styles.slider}
             />
           </div>
         </div>
 
-        <div className="play-controls">
-          <button onClick={toggleSound} className="play-button">
+        <div className={styles.playControls}>
+          <button onClick={toggleSound} className={styles.playButton}>
             {isPlaying ? "Stop" : "Play"}
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        .filter-demo {
-          margin: 24px 0;
-          padding: 20px;
-          background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .visualization-container {
-          margin-bottom: 20px;
-        }
-
-        .visualization-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-
-        .visualization-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0;
-        }
-
-        .toggle-button {
-          padding: 4px 8px;
-          background-color: #f3f4f6;
-          border: 1px solid #d1d5db;
-          border-radius: 4px;
-          font-size: 12px;
-          color: #4b5563;
-          cursor: pointer;
-        }
-
-        .toggle-button:hover {
-          background-color: #e5e7eb;
-        }
-
-        .visualization-canvas {
-          width: 100%;
-          height: 200px;
-          background-color: #f9fafb;
-          border-radius: 8px;
-        }
-
-        .controls {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .control-row {
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .control-section {
-          flex: 1;
-          min-width: 200px;
-          margin-bottom: 16px;
-        }
-
-        .control-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 8px;
-        }
-
-        .button-group {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .filter-button,
-        .waveform-button {
-          padding: 8px 12px;
-          background-color: #f3f4f6;
-          border: none;
-          border-radius: 4px;
-          font-size: var(--font-size-xs);
-          font-weight: 500;
-          color: #4b5563;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .filter-button:hover,
-        .waveform-button:hover {
-          background-color: #e5e7eb;
-        }
-
-        .filter-button.selected,
-        .waveform-button.selected {
-          background-color: #4f46e5;
-          color: white;
-        }
-
-        .sliders {
-          margin-bottom: 16px;
-        }
-
-        .flex {
-          margin-bottom: 16px;
-        }
-
-        .highlight-control {
-          padding: 16px;
-          background-color: #f9fafb;
-          border-radius: 6px;
-          border-left: 3px solid #4f46e5;
-        }
-
-        .control-label {
-          display: block;
-          font-size: var(--font-size-xs);
-          font-weight: 500;
-          color: #4b5563;
-          margin-bottom: 8px;
-        }
-
-        .slider-with-infographic {
-          position: relative;
-          margin-bottom: 4px;
-        }
-
-        .filter-infographic {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 12px;
-          color: #6b7280;
-          margin-bottom: 4px;
-          padding: 0 10px;
-        }
-
-        .freq-pass {
-          color: #10b981; /* Green */
-        }
-
-        .freq-reject {
-          color: #ef4444; /* Red */
-        }
-
-        .freq-cutoff {
-          color: #6b7280; /* Gray */
-          font-weight: bold;
-        }
-
-        .frequency-markers {
-          display: flex;
-          justify-content: space-between;
-          font-size: 10px;
-          color: #9ca3af;
-          margin-top: 4px;
-        }
-
-        .slider {
-          width: 100%;
-          height: 6px;
-          -webkit-appearance: none;
-          appearance: none;
-          background: #e5e7eb;
-          border-radius: 3px;
-          outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          background: #4f46e5;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .control-info {
-          display: flex;
-          align-items: flex-start;
-          margin-top: 8px;
-          font-size: 12px;
-          color: #6b7280;
-        }
-
-        .info-icon {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 16px;
-          height: 16px;
-          background-color: #e5e7eb;
-          color: #4b5563;
-          border-radius: 50%;
-          font-style: italic;
-          font-weight: bold;
-          margin-right: 8px;
-          flex-shrink: 0;
-        }
-
-        .info-text {
-          flex: 1;
-          line-height: 1.4;
-        }
-
-        .play-controls {
-          display: flex;
-          justify-content: center;
-        }
-
-        .play-button {
-          padding: 10px 24px;
-          background-color: #4f46e5;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .play-button:hover {
-          background-color: #4338ca;
-        }
-
-        .play-button:active {
-          transform: translateY(1px);
-        }
-      `}</style>
     </div>
   );
-};
+}
 
 export default FilterDemo;

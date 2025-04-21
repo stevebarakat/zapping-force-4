@@ -23,35 +23,6 @@ const DualOscillator = () => {
   const [waveform2, setWaveform2] = useState<OscillatorType>("sine");
   const [error, setError] = useState<string | null>(null);
 
-  // Find the nearest note name for a given frequency
-  const getNoteFromFrequency = (freq: number): string => {
-    const noteNames = [
-      "C",
-      "C#",
-      "D",
-      "D#",
-      "E",
-      "F",
-      "F#",
-      "G",
-      "G#",
-      "A",
-      "A#",
-      "B",
-    ];
-    const a4 = 440;
-    const a4Index = 69; // MIDI note number for A4
-
-    // Calculate how many half steps away from A4
-    const halfStepsFromA4 = Math.round(12 * Math.log2(freq / a4));
-    const noteIndex = (a4Index + halfStepsFromA4) % 12;
-
-    // Calculate the octave
-    const octave = Math.floor((a4Index + halfStepsFromA4) / 12) - 1;
-
-    return `${noteNames[noteIndex]}${octave}`;
-  };
-
   useEffect(() => {
     if (oscillator1Ref.current && audioContextRef.current) {
       oscillator1Ref.current.frequency.setValueAtTime(

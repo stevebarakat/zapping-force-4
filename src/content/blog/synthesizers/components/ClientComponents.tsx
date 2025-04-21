@@ -3,7 +3,7 @@ import SimpleOscillator from "./SimpleOscillator";
 import WaveformExplorer from "./WaveformExplorer";
 import DualOscillator from "./DualOscillator";
 import ADSRVisualizer from "./ADSRVisualizer";
-import FilterDemo from "./FilterDemo";
+import FilterDemo from "./FilterDemo/FilterDemo";
 import LFODemo from "./LFODemo";
 import CompleteSynth from "./CompleteSynth";
 
