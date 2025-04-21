@@ -54,12 +54,16 @@
   composes: music-theory-grid-cell;
   padding: 0.5rem;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  position: relative;
+  z-index: 1;
+  border-radius: 8px;
 }
 
 .note-cell.active {
-  background-color: var(--primary-button-hover);
+  background-color: #4a90e2;
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .note-name {
